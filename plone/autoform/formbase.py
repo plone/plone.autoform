@@ -16,7 +16,7 @@ from plone.z3cform.fieldsets.group import GroupFactory
 
 from plone.z3cform.fieldsets.utils import move
 
-from plone.supermodel.model import FIELDSETS_KEY
+from plone.supermodel.interfaces import FIELDSETS_KEY
 from plone.autoform.interfaces import FORMDATA_KEY
 
 _marker = object()
