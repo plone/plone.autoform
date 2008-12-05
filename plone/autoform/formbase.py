@@ -142,8 +142,6 @@ class AutoExtensibleForm(ExtensibleForm):
         
     def updateFields(self):
         
-        import pdb; pdb.set_trace( )
-        
         # Keep an existing value if we've been subclassed and this has been
         # set to a real set of fields
         if self.fields is _marker:
