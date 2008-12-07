@@ -3,7 +3,7 @@ from zope.schema import getFieldsInOrder
 
 from z3c.form import field
 from z3c.form.util import expandPrefix
-from z3c.form.interfaces import INPUT_MODE
+from z3c.form.interfaces import INPUT_MODE, IFieldWidget
 
 from plone.autoform.interfaces import IAutoExtensibleForm
 
@@ -43,8 +43,9 @@ def process_fields(form, schema, prefix=None):
                     for field_name, value in form_data.get('modes', [])])
     widgets = dict([(_fn(field_name), value)
                     for field_name, value in form_data.get('widgets', [])])
-    moves = dict([(_fn(field_name), value)
-                    for field_name, value in form_data.get('moves', [])])
+    
+    # Not a dict, since order matters!
+    moves = [(_fn(field_name), value) for field_name, value in form_data.get('moves', [])]
     
     already_processed = []
     if form.fields is not None:
@@ -77,11 +78,14 @@ def process_fields(form, schema, prefix=None):
     def process_widgets(new_fields):
         for field_name in new_fields:
             widget_name = widgets.get(field_name, None)
+            widget_factory = None
             if widget_name is not None:
                 if isinstance(widget_name, basestring):
                     widget_factory = resolve_dotted_name(widget_name)
+                elif IFieldWidget.implementedBy(widget_name):
+                    widget_factory = widget_name
                 if widget_factory is not None:
-                    new_fields[field_name].widgetFactory[INPUT_MODE] = widget_factory
+                    new_fields[field_name].widgetFactory[modes.get(field_name, INPUT_MODE)] = widget_factory
             if field_name in modes:
                 new_fields[field_name].mode = modes[field_name]
     
@@ -108,7 +112,7 @@ def process_fields(form, schema, prefix=None):
             groups[fieldset.__name__].fields += new_fields.omit(*already_processed)
     
     # Process moves
-    for field_name, before in moves.items():
+    for field_name, before in moves:
         try:
             move(form, field_name, before=before)
         except KeyError:

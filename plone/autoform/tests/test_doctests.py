@@ -1,0 +1,14 @@
+import unittest
+
+import zope.app.testing.placelesssetup
+import zope.testing.doctest
+
+def test_suite():
+    return unittest.TestSuite((
+        zope.testing.doctest.DocFileSuite('../autoform.txt',
+            setUp=zope.app.testing.placelesssetup.setUp,
+            tearDown=zope.app.testing.placelesssetup.tearDown),
+        zope.testing.doctest.DocFileSuite('../supermodel.txt',
+            setUp=zope.app.testing.placelesssetup.setUp,
+            tearDown=zope.app.testing.placelesssetup.tearDown),
+        ))
