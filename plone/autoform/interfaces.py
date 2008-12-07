@@ -31,6 +31,9 @@ class IAutoExtensibleForm(Interface):
         
         'before' -- used to move fields; the value part is the name of another
             field, before which the given field will be moved
+
+        'after' -- used to move fields; the value part is the name of another
+            field, after which the given field will be moved
         
     Under each key is a list of (fieldname, value) pairs, where fieldname
     refers to the name of a schema field, and value is a string specific
