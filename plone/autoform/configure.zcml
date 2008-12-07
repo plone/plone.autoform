@@ -3,6 +3,7 @@
     i18n_domain="plone.autoform">
 
     <include package="plone.z3cform" />
+    <include package="plone.supermodel" />
 
     <utility
         factory=".supermodel.FormSchema"

@@ -122,14 +122,18 @@ The form data dict can contain the following keys.
         the dotted name of a z3c.form field widget factory, or an actual
         instance of one.
         
-    'moves' -- A list of (field_name, before_name) pairs. before_name can
+    'before' -- A list of (field_name, before_name) pairs. before_name can
         be '*' (any/all fields), or the name of a field to move the given
         field before in the form.
+
+    'after' -- A list of (field_name, after_name) pairs. after_name can
+        be '*' (any/all fields), or the name of a field to move the given
+        field after in the form.        
         
 Field names should not contain a prefix. The default form schema interface
 will not have a prefix, and additional schemata (see below) will have a
 prefix constructed from their __identifier__ (full dotted name). The 
-exception is the 'before_name' in a 'moves' declaration, which must include
+exceptions are 'before_name' and 'after_name', which must include
 the relevant prefix.
 
 Fieldset data is kept under the key defined in the constant FIELDSETS_KEY.
@@ -168,8 +172,9 @@ Widgets can be specified either by a dotted name string or an actual instance:
 
 Fields can be moved like this:
 
-    >>> supplementary_form_data['moves'] = [('one', '*'), ('two', 'one')]
-    >>> other_form_data['moves'] = [('five', '__builtin__.ISupplementarySchema.one')]
+    >>> test_form_data['after'] = [('one', 'two')]
+    >>> supplementary_form_data['before'] = [('one', '*'), ('two', 'one')]
+    >>> other_form_data['before'] = [('four', '__builtin__.ISupplementarySchema.one')]
 
 Note how the second value of each tuple refers to the full name with a prefix,
 so the field 'two' from ISupplementarySchema is moved before the field 'one'
@@ -189,15 +194,18 @@ The results of all of this can be seen below:
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
     >>> test_form.fields.keys() #doctest: +NORMALIZE_WHITESPACE
-    ['__builtin__.IOtherSchema.five',
+    ['__builtin__.IOtherSchema.four',
      '__builtin__.ISupplementarySchema.one',
+     'two',
      '__builtin__.ISupplementarySchema.two',
-     'one', 'two',
-     '__builtin__.IOtherSchema.four']
+     'one',
+     '__builtin__.IOtherSchema.five']
 
 The field ISupplementarySchema['one'] was moved to the top of the form, but
-then IOtherSchema['five'] was moved before this one. ITestSchema['two'] was
-moved before ITestSchema['one'].
+then IOtherSchema['four'] was moved before this one again. ITestSchema['one']
+was moved after ITestSchema['two']. ISupplementarySchema['two'] was then
+moved before ITestSchema['one'], coming between ITestSchema['one'] and
+ITestSchema['two'].
 
 ITestSchema['one'] was hidden and ITestSchema['two'] was put into display
 mode:

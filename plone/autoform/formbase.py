@@ -44,8 +44,9 @@ def process_fields(form, schema, prefix=None):
     widgets = dict([(_fn(field_name), value)
                     for field_name, value in form_data.get('widgets', [])])
     
-    # Not a dict, since order matters!
-    moves = [(_fn(field_name), value) for field_name, value in form_data.get('moves', [])]
+    # Not dicts, since order matters!
+    befores = [(_fn(field_name), value) for field_name, value in form_data.get('before', [])]
+    afters = [(_fn(field_name), value) for field_name, value in form_data.get('after', [])]
     
     already_processed = []
     if form.fields is not None:
@@ -112,9 +113,16 @@ def process_fields(form, schema, prefix=None):
             groups[fieldset.__name__].fields += new_fields.omit(*already_processed)
     
     # Process moves
-    for field_name, before in moves:
+    for field_name, before in befores:
         try:
             move(form, field_name, before=before)
+        except KeyError:
+            # The 'before' field doesn't exist
+            pass
+    
+    for field_name, after in afters:
+        try:
+            move(form, field_name, after=after)
         except KeyError:
             # The 'before' field doesn't exist
             pass

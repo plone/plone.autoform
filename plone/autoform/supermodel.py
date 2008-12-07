@@ -21,6 +21,7 @@ class FormSchema(object):
         mode = field_node.get(ns('mode', self.namespace))
         omitted = field_node.get(ns('omitted', self.namespace))
         before = field_node.get(ns('before', self.namespace))
+        after = field_node.get(ns('after', self.namespace))
         
         settings = schema.queryTaggedValue(FORMDATA_KEY, {})
         updated = False
@@ -37,6 +38,9 @@ class FormSchema(object):
         if before:
             settings.setdefault('before', []).append((name, before))
             updated = True
+        if after:
+            settings.setdefault('after', []).append((name, after))
+            updated = True
             
         if updated:
             schema.setTaggedValue(FORMDATA_KEY, settings)
@@ -50,6 +54,7 @@ class FormSchema(object):
         mode = [v for n,v in settings.get('modes', []) if n == name]
         omitted = [v for n,v in settings.get('omitted', []) if n == name]
         before = [v for n,v in settings.get('before', []) if n == name]
+        after = [v for n,v in settings.get('after', []) if n == name]
         
         if widget:
             field_node.set(ns('widget', self.namespace), widget[0])
@@ -59,3 +64,5 @@ class FormSchema(object):
             field_node.set(ns('omitted', self.namespace), omitted[0])
         if before:
             field_node.set(ns('before', self.namespace), before[0])
+        if after:
+            field_node.set(ns('after', self.namespace), after[0])

@@ -1,0 +1,66 @@
+===================
+Supermodel handlers
+===================
+
+Test setup
+----------
+
+First, let's load this package's ZCML so that we can run the tests:
+
+    >>> configuration = """\
+    ... <configure xmlns="http://namespaces.zope.org/zope">
+    ...
+    ...     <include package="Products.Five" file="configure.zcml" />
+    ...     <include package="plone.autoform" />
+    ...     
+    ... </configure>
+    ... """
+    >>> from StringIO import StringIO
+    >>> from zope.configuration import xmlconfig
+    >>> xmlconfig.xmlconfig(StringIO(configuration))
+
+XML sample
+----------
+
+Next, let's define a sample model that exercises the various form fields:
+
+    >>> schema = """\
+    ... <?xml version="1.0" encoding="UTF-8"?>
+    ... <model xmlns="http://namespaces.plone.org/supermodel/schema"
+    ...        xmlns:form="http://namespaces.plone.org/dexterity/form">
+    ...     <schema>
+    ...         <field type="zope.schema.TextLine" name="one"
+    ...                 form:omitted="true"
+    ...                 form:after="two">
+    ...             <title>One</title>
+    ...         </field>
+    ...         <field type="zope.schema.TextLine" name="two"
+    ...                form:mode="hidden">
+    ...             <title>Two</title>
+    ...         </field>
+    ...         <field type="zope.schema.TextLine" name="three"
+    ...                 form:before="two"
+    ...                 form:widget="z3c.form.browser.password.PasswordFieldWidget">
+    ...             <title>Three</title>
+    ...         </field>
+    ...     </schema>
+    ... </model>
+    ... """
+
+We can load this using plone.supermodel:
+
+    >>> from plone.supermodel import load_string
+    >>> model = load_string(schema)
+
+The interface defined in the model should now have the relevant form data:
+
+    >>> from plone.autoform.interfaces import FORMDATA_KEY
+    >>> model.schema.getTaggedValue(FORMDATA_KEY) # doctest: +NORMALIZE_WHITESPACE
+    {'widgets': [('three', 'z3c.form.browser.password.PasswordFieldWidget')],
+     'omitted': [('one', 'true')],
+     'after': [('one', 'two')],
+     'modes': [('two', 'hidden')],
+     'before': [('three', 'two')]}
+
+See autoform.txt for details on how this form data is used to manipulate
+form layout.
