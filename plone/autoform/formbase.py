@@ -37,8 +37,11 @@ def process_fields(form, schema, prefix=None):
     
     # Get metadata
     
-    omitted = frozenset([_fn(field_name) 
-                    for field_name, value in form_data.get('omitted', []) if value])
+    omitted = {}
+    for field_name, value in form_data.get('omitted', []):
+        omitted[_fn(field_name)] = value
+    omitted = frozenset([k for k, v in omitted.items() if v])
+
     modes = dict([(_fn(field_name), value)
                     for field_name, value in form_data.get('modes', [])])
     widgets = dict([(_fn(field_name), value)
