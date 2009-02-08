@@ -7,7 +7,7 @@ from plone.supermodel.utils import ns
 
 from elementtree import ElementTree
 
-from plone.autoform.interfaces import FORMDATA_KEY
+from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
 from plone.autoform.supermodel import FormSchema
 
 class TestFormSchema(unittest.TestCase):
@@ -27,12 +27,10 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
         
-        metadata = IDummy.getTaggedValue(FORMDATA_KEY)
-        
-        self.assertEquals({'widgets': [('dummy', 'SomeWidget')], 
-                           'omitted': [('dummy', 'true')],
-                           'modes': [('dummy', 'hidden')],
-                           'before': [('dummy', 'somefield')]}, metadata)
+        self.assertEquals({'dummy': 'SomeWidget'}, IDummy.getTaggedValue(WIDGETS_KEY))
+        self.assertEquals({'dummy': 'true'}, IDummy.getTaggedValue(OMITTED_KEY))
+        self.assertEquals({'dummy': 'hidden'}, IDummy.getTaggedValue(MODES_KEY))
+        self.assertEquals([('dummy', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
 
     def test_read_multiple(self):
         field_node1 = ElementTree.Element('field')
@@ -52,13 +50,11 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.read(field_node1, IDummy, IDummy['dummy1'])
         handler.read(field_node2, IDummy, IDummy['dummy2'])
-        
-        metadata = IDummy.getTaggedValue(FORMDATA_KEY)
-        
-        self.assertEquals({'widgets': [('dummy1', 'SomeWidget')], 
-                           'omitted': [('dummy1', 'true'), ('dummy2', 'yes')],
-                           'modes': [('dummy1', 'hidden'), ('dummy2', 'display')],
-                           'before': [('dummy1', 'somefield')]}, metadata)
+    
+        self.assertEquals({'dummy1': 'SomeWidget'}, IDummy.getTaggedValue(WIDGETS_KEY))
+        self.assertEquals({'dummy1': 'true', 'dummy2': 'yes'}, IDummy.getTaggedValue(OMITTED_KEY))
+        self.assertEquals({'dummy1': 'hidden', 'dummy2': 'display'}, IDummy.getTaggedValue(MODES_KEY))
+        self.assertEquals([('dummy1', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
     
     def test_read_no_data(self):
         field_node = ElementTree.Element('field')
@@ -69,7 +65,10 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
         
-        self.assertEquals(None, IDummy.queryTaggedValue(FORMDATA_KEY))
+        self.assertEquals(None, IDummy.queryTaggedValue(WIDGETS_KEY))
+        self.assertEquals(None, IDummy.queryTaggedValue(OMITTED_KEY))
+        self.assertEquals(None, IDummy.queryTaggedValue(MODES_KEY))
+        self.assertEquals(None, IDummy.queryTaggedValue(ORDER_KEY))
         
     def test_write(self):
         field_node = ElementTree.Element('field')
@@ -77,10 +76,10 @@ class TestFormSchema(unittest.TestCase):
         class IDummy(Interface):
             dummy = zope.schema.TextLine(title=u"dummy1")
             
-        IDummy.setTaggedValue(FORMDATA_KEY, { 'widgets': [('dummy', 'SomeWidget')], 
-                                                   'omitted': [('dummy', 'true')],
-                                                   'modes': [('dummy', 'hidden')],
-                                                   'before': [('dummy', 'somefield')]})
+        IDummy.setTaggedValue(WIDGETS_KEY, {'dummy': 'SomeWidget'})
+        IDummy.setTaggedValue(OMITTED_KEY, {'dummy': 'true'})
+        IDummy.setTaggedValue(MODES_KEY, {'dummy': 'hidden'})
+        IDummy.setTaggedValue(ORDER_KEY, [('dummy', 'before', 'somefield',)])
         
         handler = FormSchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
@@ -95,11 +94,11 @@ class TestFormSchema(unittest.TestCase):
         
         class IDummy(Interface):
             dummy = zope.schema.TextLine(title=u"dummy1")
-            
-        IDummy.setTaggedValue(FORMDATA_KEY, { 'widgets': [('dummy', 'SomeWidget')], 
-                                                   'omitted': [('dummy2', 'true')],
-                                                   'modes': [('dummy', 'display'), ('dummy2', 'hidden')],
-                                                   'before': []})
+        
+        IDummy.setTaggedValue(WIDGETS_KEY, {'dummy': 'SomeWidget'})
+        IDummy.setTaggedValue(OMITTED_KEY, {'dummy2': 'true'})
+        IDummy.setTaggedValue(MODES_KEY, {'dummy': 'display', 'dummy2': 'hidden'})
+        IDummy.setTaggedValue(ORDER_KEY, [])
         
         handler = FormSchema()
         handler.write(field_node, IDummy, IDummy['dummy'])

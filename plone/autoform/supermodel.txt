@@ -54,13 +54,15 @@ We can load this using plone.supermodel:
 
 The interface defined in the model should now have the relevant form data:
 
-    >>> from plone.autoform.interfaces import FORMDATA_KEY
-    >>> model.schema.getTaggedValue(FORMDATA_KEY) # doctest: +NORMALIZE_WHITESPACE
-    {'widgets': [('three', 'z3c.form.browser.password.PasswordFieldWidget')],
-     'omitted': [('one', 'true')],
-     'after': [('one', 'two')],
-     'modes': [('two', 'hidden')],
-     'before': [('three', 'two')]}
+    >>> from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
+    >>> model.schema.getTaggedValue(WIDGETS_KEY)
+    {'three': 'z3c.form.browser.password.PasswordFieldWidget'}
+    >>> model.schema.getTaggedValue(OMITTED_KEY)
+    {'one': 'true'}
+    >>> model.schema.getTaggedValue(ORDER_KEY)
+    [('one', 'after', 'two'), ('three', 'before', 'two')]
+    >>> model.schema.getTaggedValue(MODES_KEY)
+    {'two': 'hidden'}
 
 See autoform.txt for details on how this form data is used to manipulate
 form layout.

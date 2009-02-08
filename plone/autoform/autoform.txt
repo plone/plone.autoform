@@ -6,10 +6,13 @@ This package provides tools to construct z3c.form forms out of hints stored
 in tagged values on schema interfaces. A special form base class is used to
 set up the 'fields' and 'groups' properties on form instances.
 
-The tagged values are stored under a key represented by the following 
-constant:
+The tagged values are stored under keys represented by the following 
+constants:
 
-    >>> from plone.autoform.interfaces import FORMDATA_KEY
+    >>> from plone.autoform.interfaces import OMITTED_KEY
+    >>> from plone.autoform.interfaces import WIDGETS_KEY
+    >>> from plone.autoform.interfaces import MODES_KEY
+    >>> from plone.autoform.interfaces import ORDER_KEY
 
 In addition, field groups are constructed from plone.supermodel fieldsets,
 which are also stored in tagged values, under the following constant:
@@ -65,6 +68,7 @@ We also need a few sample interfaces:
     ...     three = schema.TextLine(title=u"Three")
     ...     four = schema.TextLine(title=u"Four")
     ...     five = schema.TextLine(title=u"Five")
+    ...     six = schema.TextLine(title=u"Six")
 
 And a test context and request, marked with the IFormLayer interface to make
 z3c.form happy:
@@ -91,55 +95,43 @@ And finally, a form:
 Adding form data
 ----------------
 
-The form data is a simple dict. We'll keep track of that in a variable so
-that we can modify it for the tests later, and then set it onto the
-interface as a tagged value.
+Form data can be held under the following keys:
 
-    >>> test_form_data = {}
-    >>> test_fieldsets = []
-    >>> ITestSchema.setTaggedValue(FORMDATA_KEY, test_form_data)
-    >>> ITestSchema.setTaggedValue(FIELDSETS_KEY, test_fieldsets)
-
-    >>> supplementary_form_data = {}
-    >>> supplementary_fieldsets = []
-    >>> ISupplementarySchema.setTaggedValue(FORMDATA_KEY, supplementary_form_data)
-    >>> ISupplementarySchema.setTaggedValue(FIELDSETS_KEY, supplementary_fieldsets)
-
-    >>> other_form_data = {}
-    >>> other_fieldsets = []
-    >>> IOtherSchema.setTaggedValue(FORMDATA_KEY, other_form_data)
-    >>> IOtherSchema.setTaggedValue(FIELDSETS_KEY, other_fieldsets)
-
-The form data dict can contain the following keys.
-
-    'omitted' -- A list of (field_name, boolean) pairs. If the second value
+    OMITTED_KEY -- A dict of field_name => boolean. If the second value
         evaluates to true, the given field name is omitted.
     
-    'modes' -- A list of (field_name, mode) string pairs specifying z3c.form
+    MODES_KEY -- A dict of field_name => mode string, specifying z3c.form
         widget modes, including 'hidden', 'input' and 'display'.
     
-    'widgets' -- A list of (field_name, widget) pairs. The widget can be
+    WIDGETS_KEY -- A dict of field_name => widget. The widget can be
         the dotted name of a z3c.form field widget factory, or an actual
         instance of one.
         
-    'before' -- A list of (field_name, before_name) pairs. before_name can
-        be '*' (any/all fields), or the name of a field to move the given
-        field before in the form.
-
-    'after' -- A list of (field_name, after_name) pairs. after_name can
-        be '*' (any/all fields), or the name of a field to move the given
-        field after in the form.        
+    ORDER_KEY -- A list of (field_name, direction, relative_to) triples.
+        direction can be one of 'before' or 'after'. relative_to can be '*'
+        (any/all fields), or the name of a field to move the given field 
+        before or after in the form.
         
-Field names should not contain a prefix. The default form schema interface
-will not have a prefix, and additional schemata (see below) will have a
-prefix constructed from their __identifier__ (full dotted name). The 
-exceptions are 'before_name' and 'after_name', which must include
-the relevant prefix.
+Note order directives are processed after all schemata in the form are set up.
+Ordering will start by going through the additional_schemata in order. The
+form's base schema is processed last.
+
+This means that the last ordering directive to be run is the last item in the
+list in the form's base schema. Hence, this can be used to override any
+ordering information from additional schemata.
+
+The field_name should never contain a prefix or a dot. However, the
+relative_to name under ORDER_KEY should contain a prefixed name. The default
+form schema will not have a prefix, but additional schemata will have a prefix
+constructed from their __identifier__ (full dotted name). To explicitly
+reference a field in the current schema (or a base schema), use a leading
+dot, e.g. ".title" would refer to the "title" field in the current schema,
+whereas "title" would refer to the "title" field in the form's base schema.
 
 Fieldset data is kept under the key defined in the constant FIELDSETS_KEY.
 This contains a list of plone.supermodel.model.Fieldset instances.
 
-At this point, the form data is empty. When the form is updated, the 'fields'
+At this point, there is no form data. When the form is updated, the 'fields'
 and 'groups' properties will be set.
 
     >>> test_form = TestForm(context, request)
@@ -147,7 +139,7 @@ and 'groups' properties will be set.
     >>> test_form.fields.keys() #doctest: +NORMALIZE_WHITESPACE
     ['one', 'two', 'three', 'four', 'five',
      '__builtin__.ISupplementarySchema.one', '__builtin__.ISupplementarySchema.two',
-     '__builtin__.IOtherSchema.three', '__builtin__.IOtherSchema.four', '__builtin__.IOtherSchema.five']
+     '__builtin__.IOtherSchema.three', '__builtin__.IOtherSchema.four', '__builtin__.IOtherSchema.five', '__builtin__.IOtherSchema.six']
     >>> test_form.groups
     ()
 
@@ -158,34 +150,42 @@ Let us now set up some form data.
 
 Omitted fields are listed like this:
 
-    >>> test_form_data['omitted'] = [('four', True), ('five', True,)]
+    >>> ITestSchema.setTaggedValue(OMITTED_KEY, {'four': True, 'five': True})
 
 Field modes can be set like this:
 
-    >>> test_form_data['modes'] = [('one', 'hidden'), ('two', 'display',)]
+    >>> ITestSchema.setTaggedValue(MODES_KEY, {'one': 'hidden', 'two': 'display'})
 
 Widgets can be specified either by a dotted name string or an actual instance:
 
     >>> from z3c.form.browser.password import PasswordFieldWidget
-    >>> test_form_data['widgets'] = [('two', PasswordFieldWidget)]
-    >>> other_form_data['widgets'] = [('five', 'z3c.form.browser.password.PasswordFieldWidget')]
+    >>> ITestSchema.setTaggedValue(WIDGETS_KEY, {'two': PasswordFieldWidget})
+    >>> IOtherSchema.setTaggedValue(WIDGETS_KEY, {'five': 'z3c.form.browser.password.PasswordFieldWidget'})
 
 Fields can be moved like this:
 
-    >>> test_form_data['after'] = [('one', 'two')]
-    >>> supplementary_form_data['before'] = [('one', '*'), ('two', 'one')]
-    >>> other_form_data['before'] = [('four', '__builtin__.ISupplementarySchema.one')]
+    >>> IOtherSchema.setTaggedValue(ORDER_KEY, [('four', 'before', '__builtin__.ISupplementarySchema.one'),
+    ...                                         ('five', 'after', '.six',)])
+
+    >>> ISupplementarySchema.setTaggedValue(ORDER_KEY, [('one', 'before', '*'),
+    ...                                                 ('two', 'before', 'one')])
+
+    >>> ITestSchema.setTaggedValue(ORDER_KEY,          [('one', 'after', 'two')])
 
 Note how the second value of each tuple refers to the full name with a prefix,
 so the field 'two' from ISupplementarySchema is moved before the field 'one'
-from the default (un-prefixed) ITestSchema.
+from the default (un-prefixed) ITestSchema. However, we move IOtherSchema's
+field 'five' after the field 'six' in the same schema by using a shortcut:
+'.six' is equivalent to '__builtin__.IOtherSchema.six' in this case.
 
 Finally, fieldsets are configured like this:
 
     >>> from plone.supermodel.model import Fieldset
-    >>> test_fieldsets.append(Fieldset('fieldset1', fields=['three'],
-    ...     label=u"Fieldset one", description=u"Description of fieldset one", ))
-    >>> other_fieldsets.append(Fieldset('fieldset1', fields=['three']))
+    >>> ITestSchema.setTaggedValue(FIELDSETS_KEY, 
+    ...                                 [Fieldset('fieldset1', fields=['three'],
+    ...                                           label=u"Fieldset one",
+    ...                                           description=u"Description of fieldset one")])
+    >>> IOtherSchema.setTaggedValue(FIELDSETS_KEY, [Fieldset('fieldset1', fields=['three'])])
 
 Note how the label/description need only be specified once.
 
@@ -196,9 +196,10 @@ The results of all of this can be seen below:
     >>> test_form.fields.keys() #doctest: +NORMALIZE_WHITESPACE
     ['__builtin__.IOtherSchema.four',
      '__builtin__.ISupplementarySchema.one',
-     'two',
      '__builtin__.ISupplementarySchema.two',
+     'two',
      'one',
+     '__builtin__.IOtherSchema.six',
      '__builtin__.IOtherSchema.five']
 
 The field ISupplementarySchema['one'] was moved to the top of the form, but
