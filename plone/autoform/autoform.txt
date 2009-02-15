@@ -13,6 +13,8 @@ constants:
     >>> from plone.autoform.interfaces import WIDGETS_KEY
     >>> from plone.autoform.interfaces import MODES_KEY
     >>> from plone.autoform.interfaces import ORDER_KEY
+    >>> from plone.autoform.interfaces import READ_PERMISSIONS_KEY
+    >>> from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 
 In addition, field groups are constructed from plone.supermodel fieldsets,
 which are also stored in tagged values, under the following constant:
@@ -59,6 +61,7 @@ We also need a few sample interfaces:
     ...     three = schema.TextLine(title=u"Three")
     ...     four = schema.TextLine(title=u"Four")
     ...     five = schema.TextLine(title=u"Five")
+    ...     six = schema.TextLine(title=u"Six")
 
     >>> class ISupplementarySchema(Interface):
     ...     one = schema.TextLine(title=u"One")
@@ -91,6 +94,10 @@ And finally, a form:
     ...     
     ...     ignoreContext = True
 
+This form is in input mode:
+
+    >>> TestForm.mode
+    'input'
 
 Adding form data
 ----------------
@@ -111,10 +118,22 @@ Form data can be held under the following keys:
         direction can be one of 'before' or 'after'. relative_to can be '*'
         (any/all fields), or the name of a field to move the given field 
         before or after in the form.
-        
-Note order directives are processed after all schemata in the form are set up.
-Ordering will start by going through the additional_schemata in order. The
-form's base schema is processed last.
+    
+    READ_PERMISSIONS_KEY -- A dict of field_name => permission id. When a 
+        form is in 'display' mode, the field will be omitted unless the user
+        has the given permission in the form's context. The permission id
+        should be a Zope 3 style IPermission utility name, not a Zope 2
+        permission string.
+
+    WRITE_PERMISSIONS_KEY -- A dict of field_name => permission id. When a 
+        form is in 'input' mode, the field will be omitted unless the user
+        has the given permission in the form's context. The permission id
+        should be a Zope 3 style IPermission utility name, not a Zope 2
+        permission string.
+
+Note that 'order' directives are processed after all schemata in the form are
+set up. Ordering will start by going through the additional_schemata in order.
+The form's base schema is processed last.
 
 This means that the last ordering directive to be run is the last item in the
 list in the form's base schema. Hence, this can be used to override any
@@ -137,7 +156,7 @@ and 'groups' properties will be set.
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
     >>> test_form.fields.keys() #doctest: +NORMALIZE_WHITESPACE
-    ['one', 'two', 'three', 'four', 'five',
+    ['one', 'two', 'three', 'four', 'five', 'six',
      '__builtin__.ISupplementarySchema.one', '__builtin__.ISupplementarySchema.two',
      '__builtin__.IOtherSchema.three', '__builtin__.IOtherSchema.four', '__builtin__.IOtherSchema.five', '__builtin__.IOtherSchema.six']
     >>> test_form.groups
@@ -177,6 +196,13 @@ so the field 'two' from ISupplementarySchema is moved before the field 'one'
 from the default (un-prefixed) ITestSchema. However, we move IOtherSchema's
 field 'five' after the field 'six' in the same schema by using a shortcut:
 '.six' is equivalent to '__builtin__.IOtherSchema.six' in this case.
+
+Field permissions can be set like this:
+
+    >>> ITestSchema.setTaggedValue(WRITE_PERMISSIONS_KEY, { 'five': u'dummy.PermissionOne',
+    ...                                                      'six': u'cmf.ManagePortal'})
+
+Note that if a permission is not found, the field will be allowed.
 
 Finally, fieldsets are configured like this:
 

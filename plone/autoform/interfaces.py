@@ -5,17 +5,21 @@ import zope.schema
 
 # Schema interface tagged value keys
 
-OMITTED_KEY      = u"plone.autoform.omitted"
-WIDGETS_KEY      = u"plone.autoform.widgets"
-MODES_KEY        = u"plone.autoform.modes"
-ORDER_KEY        = u"plone.autoform.order"
+OMITTED_KEY   = u"plone.autoform.omitted"
+WIDGETS_KEY   = u"plone.autoform.widgets"
+MODES_KEY     = u"plone.autoform.modes"
+ORDER_KEY     = u"plone.autoform.order"
 
-SECURITY_KEY     = u"plone.autoform.security"
+READ_PERMISSIONS_KEY  = u"plone.autoform.security.read-permissions"
+WRITE_PERMISSIONS_KEY = u"plone.autoform.security.write-permissions"
 
 # Supermodel namespace and prefix
 
-SUPERMODEL_NAMESPACE = 'http://namespaces.plone.org/dexterity/form'
-SUPERMODEL_PREFIX = 'form'
+FORM_NAMESPACE = 'http://namespaces.plone.org/supermodel/form'
+FORM_PREFIX = 'form'
+
+SECURITY_NAMESPACE = 'http://namespaces.plone.org/supermodel/security'
+SECURITY_PREFIX = 'security'
 
 class IFormFieldProvider(Interface):
     """Marker interface for schemata that provide form fields.

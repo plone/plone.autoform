@@ -27,9 +27,11 @@ setup(name='plone.autoform',
           'setuptools',
           'zope.interface',
           'zope.schema',
+          'zope.security',
           'zope.dottedname',
           'plone.supermodel',
           'plone.z3cform',
+          # 'AccessControl',
           # -*- Extra requirements: -*-
       ],
       entry_points="""

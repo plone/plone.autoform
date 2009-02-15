@@ -8,11 +8,12 @@ from plone.supermodel.utils import ns
 from elementtree import ElementTree
 
 from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
-from plone.autoform.supermodel import FormSchema
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
+from plone.autoform.supermodel import FormSchema, SecuritySchema
 
 class TestFormSchema(unittest.TestCase):
     
-    namespace = 'http://namespaces.plone.org/dexterity/form'
+    namespace = 'http://namespaces.plone.org/supermodel/form'
     
     def test_read(self):
         field_node = ElementTree.Element('field')
@@ -121,8 +122,80 @@ class TestFormSchema(unittest.TestCase):
         self.assertEquals(None, field_node.get(ns("omitted", self.namespace)))
         self.assertEquals(None, field_node.get(ns("mode", self.namespace)))
         self.assertEquals(None, field_node.get(ns("before", self.namespace)))
+
+class TestSecuritySchema(unittest.TestCase):
+    
+    namespace = 'http://namespaces.plone.org/supermodel/security'
+    
+    def test_read(self):
+        field_node = ElementTree.Element('field')
+        field_node.set(ns("read-permission", self.namespace), "dummy.Read")
+        field_node.set(ns("write-permission", self.namespace), "dummy.Write")
+        
+        class IDummy(Interface):
+            dummy = zope.schema.TextLine(title=u"dummy")
+        
+        handler = SecuritySchema()
+        handler.read(field_node, IDummy, IDummy['dummy'])
+        
+        self.assertEquals({u'dummy': 'dummy.Read'}, IDummy.getTaggedValue(READ_PERMISSIONS_KEY))
+        self.assertEquals({u'dummy': 'dummy.Write'}, IDummy.getTaggedValue(WRITE_PERMISSIONS_KEY))
+    
+    def test_read_no_permissions(self):
+        field_node = ElementTree.Element('field')
+        
+        class IDummy(Interface):
+            dummy = zope.schema.TextLine(title=u"dummy")
+
+        handler = SecuritySchema()
+        handler.read(field_node, IDummy, IDummy['dummy'])
+        
+        self.failIf(READ_PERMISSIONS_KEY in IDummy.getTaggedValueTags())
+        self.failIf(WRITE_PERMISSIONS_KEY in IDummy.getTaggedValueTags())
+        
+    def test_write(self):
+        field_node = ElementTree.Element('field')
+        
+        class IDummy(Interface):
+            dummy = zope.schema.TextLine(title=u"dummy")
+        
+        IDummy.setTaggedValue(READ_PERMISSIONS_KEY, {u'dummy': 'dummy.Read'})
+        IDummy.setTaggedValue(WRITE_PERMISSIONS_KEY, {u'dummy': 'dummy.Write'})
+                               
+        handler = SecuritySchema()
+        handler.write(field_node, IDummy, IDummy['dummy'])
+        
+        self.assertEquals("dummy.Read", field_node.get(ns("read-permission", self.namespace)))
+        self.assertEquals("dummy.Write", field_node.get(ns("write-permission", self.namespace)))
+    
+    def test_write_no_permissions(self):
+        field_node = ElementTree.Element('field')
+        
+        class IDummy(Interface):
+            dummy = zope.schema.TextLine(title=u"dummy")
+        
+        IDummy.setTaggedValue(READ_PERMISSIONS_KEY, {u'dummy': None})
+        
+        handler = SecuritySchema()
+        handler.write(field_node, IDummy, IDummy['dummy'])
+        
+        self.assertEquals(None, field_node.get(ns("read-permission", self.namespace)))
+        self.assertEquals(None, field_node.get(ns("write-permission", self.namespace)))
+
+    def test_write_no_metadata(self):
+        field_node = ElementTree.Element('field')
+        
+        class IDummy(Interface):
+            dummy = zope.schema.TextLine(title=u"dummy")
+        
+        handler = SecuritySchema()
+        handler.write(field_node, IDummy, IDummy['dummy'])
+        
+        self.assertEquals(None, field_node.get(ns("read-permission", self.namespace)))
+        self.assertEquals(None, field_node.get(ns("write-permission", self.namespace)))
         
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestFormSchema))
+    suite.addTest(unittest.makeSuite(TestSecuritySchema))
     return suite

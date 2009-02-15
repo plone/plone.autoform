@@ -4,15 +4,18 @@ from plone.supermodel.utils import ns
 from plone.supermodel.parser import IFieldMetadataHandler
 
 from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
-from plone.autoform.interfaces import SUPERMODEL_NAMESPACE, SUPERMODEL_PREFIX
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
+
+from plone.autoform.interfaces import FORM_NAMESPACE, FORM_PREFIX
+from plone.autoform.interfaces import SECURITY_NAMESPACE, SECURITY_PREFIX
 
 class FormSchema(object):
     """Support the form: namespace in model definitions.
     """
     implements(IFieldMetadataHandler)
     
-    namespace = SUPERMODEL_NAMESPACE
-    prefix = SUPERMODEL_PREFIX
+    namespace = FORM_NAMESPACE
+    prefix = FORM_PREFIX
     
     def _add(self, schema, key, name, value):
         tagged_value = schema.queryTaggedValue(key, {})
@@ -68,3 +71,39 @@ class FormSchema(object):
                 field_node.set(ns('before',  self.namespace), relative_to)
             elif direction == 'after':
                 field_node.set(ns('after',  self.namespace), relative_to)
+
+class SecuritySchema(object):
+    """Support the security: namespace in model definitions.
+    """
+    implements(IFieldMetadataHandler)
+    
+    namespace = SECURITY_NAMESPACE
+    prefix = SECURITY_PREFIX
+    
+    def read(self, field_node, schema, field):
+        name = field.__name__
+        
+        read_permission = field_node.get(ns('read-permission', self.namespace))
+        write_permission = field_node.get(ns('write-permission', self.namespace))
+        
+        read_permissions = schema.queryTaggedValue(READ_PERMISSIONS_KEY, {})
+        write_permissions = schema.queryTaggedValue(WRITE_PERMISSIONS_KEY, {})
+        
+        if read_permission:
+            read_permissions[name] = read_permission
+            schema.setTaggedValue(READ_PERMISSIONS_KEY, read_permissions)
+            
+        if write_permission:
+            write_permissions[name] = write_permission
+            schema.setTaggedValue(WRITE_PERMISSIONS_KEY, write_permissions)
+
+    def write(self, field_node, schema, field):
+        name = field.__name__
+        
+        read_permission = schema.queryTaggedValue(READ_PERMISSIONS_KEY, {}).get(name, None)
+        write_permission = schema.queryTaggedValue(WRITE_PERMISSIONS_KEY, {}).get(name, None)
+        
+        if read_permission:
+            field_node.set(ns('read-permission', self.namespace), read_permission)
+        if write_permission:
+            field_node.set(ns('write-permission', self.namespace), write_permission)

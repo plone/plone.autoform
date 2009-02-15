@@ -1,9 +1,13 @@
 from zope.interface import implements
+from zope.component import queryUtility
+
 from zope.schema import getFieldsInOrder
+
+from zope.security.interfaces import IPermission
 
 from z3c.form import field
 from z3c.form.util import expandPrefix
-from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IFieldWidget, INPUT_MODE, DISPLAY_MODE
 
 from plone.autoform.interfaces import IAutoExtensibleForm
 
@@ -20,8 +24,36 @@ from plone.z3cform.fieldsets.utils import move
 from plone.supermodel.interfaces import FIELDSETS_KEY
 
 from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
+
+from AccessControl import getSecurityManager
 
 _marker = object()
+
+def get_disallowed_fields(context, permissions):
+    """Get a list of fields for which the user does not have the requisite
+    permission. security is a dict with field names as keys. The value
+    under each field name is another dict, with keys 'read-permission' and/or
+    'write-permission', in turn containing the name of an IPermission utility.
+    permission_type should be one of 'read-permission' or 'write-permission'.
+    """
+    
+    security_manager = getSecurityManager()
+    
+    disallowed = []
+    permission_cache = {} # name -> True/False
+    
+    for field_name, permission_name in permissions.items():
+        if permission_name not in permission_cache:
+            permission = queryUtility(IPermission, name=permission_name)
+            if permission is None:
+                permission_cache[permission_name] = True
+            else:
+                permission_cache[permission_name] = security_manager.checkPermission(permission.title, context)
+        if not permission_cache[permission_name]:
+            disallowed.append(field_name)
+    
+    return disallowed
 
 def process_fields(form, schema, prefix=None):
     """Add the fields from the schema to the from, taking into account
@@ -30,14 +62,21 @@ def process_fields(form, schema, prefix=None):
 
     # Get data from tagged values, flattening data from super-interfaces
     
-    # Note: The names always refer to a field in the schema, and never
-    # contain a prefix.
+    # Note: The names always refer to a field in the schema, and never contain a prefix.
     
     omitted   = merged_tagged_value_dict(schema, OMITTED_KEY)   # name => e.g. 'true'
     modes     = merged_tagged_value_dict(schema, MODES_KEY)     # name => e.g. 'hidden'
     widgets   = merged_tagged_value_dict(schema, WIDGETS_KEY)   # name => widget/dotted name
 
-    fieldsets = merged_tagged_value_list(schema, FIELDSETS_KEY)  # list of IFieldset instances
+    fieldsets = merged_tagged_value_list(schema, FIELDSETS_KEY) # list of IFieldset instances
+
+    # Get either read or write permissions depending on what type of form this is
+
+    permissions = {}
+    if form.mode == DISPLAY_MODE:
+        permissions = merged_tagged_value_dict(schema, READ_PERMISSIONS_KEY)  # name => permission name
+    elif form.mode == INPUT_MODE:
+        permissions = merged_tagged_value_dict(schema, WRITE_PERMISSIONS_KEY) # name => permission name
 
     # Some helper functions
     
@@ -68,7 +107,7 @@ def process_fields(form, schema, prefix=None):
             base_name = _bn(field)
             
             widget_name = widgets.get(base_name, None)
-            widget_mode = modes.get(base_name, field.mode) or form.mode or 'input'
+            widget_mode = modes.get(base_name, field.mode) or form.mode or INPUT_MODE
             
             widget_factory = None
             if widget_name is not None:
@@ -82,7 +121,6 @@ def process_fields(form, schema, prefix=None):
             
             if base_name in modes:
                 new_fields[field_name].mode = widget_mode
-    
     
     # Keep track of the fields we've already processed (i.e. they're in
     # form.fields or in a group's fields list)
@@ -98,12 +136,14 @@ def process_fields(form, schema, prefix=None):
     
     groups = dict([(getattr(g, '__name__', g.label), g) for g in form.groups])
 
-    # Find all fields so that we have something to select from
+    disallowed_fields = get_disallowed_fields(form.context, permissions)
+
+    # Find all allowed fields so that we have something to select from
     
     if prefix:
-        all_fields = field.Fields(schema, prefix=prefix, omitReadOnly=True)
+        all_fields = field.Fields(schema, prefix=prefix, omitReadOnly=True).omit(*disallowed_fields)
     else:
-        all_fields = field.Fields(schema, omitReadOnly=True)
+        all_fields = field.Fields(schema, omitReadOnly=True).omit(*disallowed_fields)
     
     # Keep track of which fields are in a fieldset, and, by elimination,
     # which ones are not 
@@ -116,6 +156,7 @@ def process_fields(form, schema, prefix=None):
     default_fieldset_fields = [_fn(f) for f, value in getFieldsInOrder(schema) 
                                         if not value.readonly
                                             and f not in fieldset_fields
+                                            and f not in disallowed_fields
                                             and not omitted.get(f, False)]
     
     # Set up the default fields, widget factories and widget modes

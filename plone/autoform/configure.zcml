@@ -7,7 +7,12 @@
 
     <utility
         factory=".supermodel.FormSchema"
-        name="plone.autoform"
+        name="plone.autoform.form"
+        />
+        
+    <utility
+        factory=".supermodel.SecuritySchema"
+        name="plone.autoform.security"
         />
 
 </configure>

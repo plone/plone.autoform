@@ -2,6 +2,11 @@
 Supermodel handlers
 ===================
 
+This package contains handlers for two plone.supermodel namespaces: 'form',
+which can be used to set widgets, omitted fields, field modes and field
+order, and 'security', which can be used to set field read and write
+permissions.
+
 Test setup
 ----------
 
@@ -22,16 +27,20 @@ First, let's load this package's ZCML so that we can run the tests:
 XML sample
 ----------
 
-Next, let's define a sample model that exercises the various form fields:
+Next, let's define a sample model that exercises the various 'form' and
+'security' attributes.
 
     >>> schema = """\
     ... <?xml version="1.0" encoding="UTF-8"?>
     ... <model xmlns="http://namespaces.plone.org/supermodel/schema"
-    ...        xmlns:form="http://namespaces.plone.org/dexterity/form">
+    ...        xmlns:form="http://namespaces.plone.org/supermodel/form"
+    ...        xmlns:security="http://namespaces.plone.org/supermodel/security">
     ...     <schema>
     ...         <field type="zope.schema.TextLine" name="one"
     ...                 form:omitted="true"
-    ...                 form:after="two">
+    ...                 form:after="two"
+    ...                 security:read-permission="zope2.View"
+    ...                 security:write-permission="cmf.ModifyPortalContent">
     ...             <title>One</title>
     ...         </field>
     ...         <field type="zope.schema.TextLine" name="two"
@@ -47,6 +56,22 @@ Next, let's define a sample model that exercises the various form fields:
     ... </model>
     ... """
 
+Note:
+
+ o To omit a field from the form, use form:omitted="true".
+ o To re-order fields, use form:after or form:before. The value should be
+   either '*', to put the field first/last in the form, or the name of a
+   another field. Use '.fieldname' to refer to field in the current schema (or
+   a base schema). Use a fully prefixed name (e.g. 'my.package.ISomeSchema) 
+   to refer to a field in another schema. Use an unprefixed name to refer to
+   a field in the default schema for the form.
+ o To turn a field into a view mode or hidden field, use form:mode.
+ o To set a custom widget for a field, use form:widget to give a fully
+   qualified name to the field widget factory.
+ o To set a read or write permission, use security:read-permission or
+   security:write-permission. The value should be the name of a Zope 3-style
+   IPermission utility.
+
 We can load this using plone.supermodel:
 
     >>> from plone.supermodel import load_string
@@ -54,7 +79,8 @@ We can load this using plone.supermodel:
 
 The interface defined in the model should now have the relevant form data:
 
-    >>> from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
+    >>> from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, \
+    ...     MODES_KEY, ORDER_KEY, READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
     >>> model.schema.getTaggedValue(WIDGETS_KEY)
     {'three': 'z3c.form.browser.password.PasswordFieldWidget'}
     >>> model.schema.getTaggedValue(OMITTED_KEY)
@@ -63,6 +89,10 @@ The interface defined in the model should now have the relevant form data:
     [('one', 'after', 'two'), ('three', 'before', 'two')]
     >>> model.schema.getTaggedValue(MODES_KEY)
     {'two': 'hidden'}
+    >>> model.schema.getTaggedValue(READ_PERMISSIONS_KEY)
+    {'one': 'zope2.View'}
+    >>> model.schema.getTaggedValue(WRITE_PERMISSIONS_KEY)
+    {'one': 'cmf.ModifyPortalContent'}
 
 See autoform.txt for details on how this form data is used to manipulate
 form layout.
