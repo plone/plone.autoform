@@ -27,7 +27,7 @@ There are several ways to set the form data:
 To use the automatic form setup, mix in the following base class in your
 forms:
 
-    >>> from plone.autoform.formbase import AutoExtensibleForm
+    >>> from plone.autoform.form import AutoExtensibleForm
 
 and then provide the 'schema' (a schema interface) and optionally the
 'additional_schemata' (a list of schema interfaces) attributes on your form:
