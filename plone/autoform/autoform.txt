@@ -86,7 +86,7 @@ z3c.form happy:
 
 And finally, a form:
 
-    >>> from plone.autoform.formbase import AutoExtensibleForm
+    >>> from plone.autoform.form import AutoExtensibleForm
     >>> from z3c.form import form, button
     >>> class TestForm(AutoExtensibleForm, form.Form):
     ...     schema = ITestSchema
@@ -157,8 +157,8 @@ and 'groups' properties will be set.
     >>> test_form.update()
     >>> test_form.fields.keys() #doctest: +NORMALIZE_WHITESPACE
     ['one', 'two', 'three', 'four', 'five', 'six',
-     '__builtin__.ISupplementarySchema.one', '__builtin__.ISupplementarySchema.two',
-     '__builtin__.IOtherSchema.three', '__builtin__.IOtherSchema.four', '__builtin__.IOtherSchema.five', '__builtin__.IOtherSchema.six']
+     'ISupplementarySchema.one', 'ISupplementarySchema.two',
+     'IOtherSchema.three', 'IOtherSchema.four', 'IOtherSchema.five', 'IOtherSchema.six']
     >>> test_form.groups
     ()
 
@@ -183,7 +183,7 @@ Widgets can be specified either by a dotted name string or an actual instance:
 
 Fields can be moved like this:
 
-    >>> IOtherSchema.setTaggedValue(ORDER_KEY, [('four', 'before', '__builtin__.ISupplementarySchema.one'),
+    >>> IOtherSchema.setTaggedValue(ORDER_KEY, [('four', 'before', 'ISupplementarySchema.one'),
     ...                                         ('five', 'after', '.six',)])
 
     >>> ISupplementarySchema.setTaggedValue(ORDER_KEY, [('one', 'before', '*'),
@@ -195,7 +195,7 @@ Note how the second value of each tuple refers to the full name with a prefix,
 so the field 'two' from ISupplementarySchema is moved before the field 'one'
 from the default (un-prefixed) ITestSchema. However, we move IOtherSchema's
 field 'five' after the field 'six' in the same schema by using a shortcut:
-'.six' is equivalent to '__builtin__.IOtherSchema.six' in this case.
+'.six' is equivalent to 'IOtherSchema.six' in this case.
 
 Field permissions can be set like this:
 
@@ -220,13 +220,13 @@ The results of all of this can be seen below:
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
     >>> test_form.fields.keys() #doctest: +NORMALIZE_WHITESPACE
-    ['__builtin__.IOtherSchema.four',
-     '__builtin__.ISupplementarySchema.one',
-     '__builtin__.ISupplementarySchema.two',
+    ['IOtherSchema.four',
+     'ISupplementarySchema.one',
+     'ISupplementarySchema.two',
      'two',
      'one',
-     '__builtin__.IOtherSchema.six',
-     '__builtin__.IOtherSchema.five']
+     'IOtherSchema.six',
+     'IOtherSchema.five']
 
 The field ISupplementarySchema['one'] was moved to the top of the form, but
 then IOtherSchema['four'] was moved before this one again. ITestSchema['one']
@@ -248,8 +248,8 @@ widget - one by instance, the other by dotted name:
     >>> test_form.widgets['two']
     <PasswordWidget 'form.widgets.two'>
 
-    >>> test_form.widgets['__builtin__.IOtherSchema.five']
-    <PasswordWidget 'form.widgets.__builtin__.IOtherSchema.five'>
+    >>> test_form.widgets['IOtherSchema.five']
+    <PasswordWidget 'form.widgets.IOtherSchema.five'>
 
 There is one group corresponding to the fieldset where we put two fields. It
 has taken the label and description from the first definition.
@@ -261,4 +261,4 @@ has taken the label and description from the first definition.
     >>> test_form.groups[0].description
     u'Description of fieldset one'
     >>> test_form.groups[0].fields.keys() #doctest: +NORMALIZE_WHITESPACE
-    ['three', '__builtin__.IOtherSchema.three']
+    ['three', 'IOtherSchema.three']

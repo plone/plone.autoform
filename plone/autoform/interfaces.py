@@ -26,7 +26,7 @@ class IFormFieldProvider(Interface):
     """
 
 class IAutoExtensibleForm(Interface):
-    """The mixin class plone.autoform.formbase.AutoExtensibleForm can be
+    """The mixin class plone.autoform.form.AutoExtensibleForm can be
     used to have z3c.form forms that build automatically based on the contents
     of various tagged values, on multiple schema interfaces, which
     should be supplied with the properties defined below. See autoform.txt
