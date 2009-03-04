@@ -155,7 +155,7 @@ and 'groups' properties will be set.
 
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
-    >>> test_form.fields.keys() #doctest: +NORMALIZE_WHITESPACE
+    >>> test_form.fields.keys()
     ['one', 'two', 'three', 'four', 'five', 'six',
      'ISupplementarySchema.one', 'ISupplementarySchema.two',
      'IOtherSchema.three', 'IOtherSchema.four', 'IOtherSchema.five', 'IOtherSchema.six']
@@ -219,7 +219,7 @@ The results of all of this can be seen below:
 
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
-    >>> test_form.fields.keys() #doctest: +NORMALIZE_WHITESPACE
+    >>> test_form.fields.keys()
     ['IOtherSchema.four',
      'ISupplementarySchema.one',
      'ISupplementarySchema.two',
@@ -260,5 +260,69 @@ has taken the label and description from the first definition.
     u'Fieldset one'
     >>> test_form.groups[0].description
     u'Description of fieldset one'
-    >>> test_form.groups[0].fields.keys() #doctest: +NORMALIZE_WHITESPACE
+    >>> test_form.groups[0].fields.keys()
     ['three', 'IOtherSchema.three']
+
+Automatic field sets
+--------------------
+
+It is possible to create fieldsets automatically, on the principle of one
+fieldset per schema. In this case, the fieldset name is the schema name,
+the schema docstring becomes the schema description, and all fields in that
+schema that are not explicitly assigned to another fieldset, will be in the
+the per-schema fieldset.
+
+    >>> class Basics(Interface):
+    ...     """Basic metadata"""
+    ...     title = schema.TextLine(title=u"Title")
+    ...     description = schema.TextLine(title=u"Description")
+    ...     creation_date = schema.Date(title=u"Creation date")
+    ...     hidden_secret = schema.TextLine(title=u"Hidden secret!")
+
+Let's change some field settings to ensure that they are still processed,
+and move the creation_date field to another fieldset, which we will define
+in full.
+
+    >>> Basics.setTaggedValue(MODES_KEY, {'hidden_secret': 'hidden'})
+    >>> Basics.setTaggedValue(FIELDSETS_KEY, [Fieldset('Dates', label="Cool dates", fields=['creation_date'])])
+    
+    >>> class Dates(Interface):
+    ...     """Date information"""
+    ...     start_date = schema.Date(title=u"Start date")
+    ...     end_date = schema.Date(title=u"End date")
+    
+    >>> class Ownership(Interface):
+    ...     """Ownership information"""
+    ...     owner = schema.Date(title=u"The owner")
+
+We can make a form of these schemata. For the sake of this demo, we'll also
+set ignorePrefix to true, so that the form fields don't get a prefix. Note
+that this may cause clashes if fields in different schemata share a name.
+
+    >>> class CombiForm(AutoExtensibleForm, form.Form):
+    ...     schema = Basics
+    ...     additional_schemata = (Dates, Ownership,)
+    ...     
+    ...     ignoreContext = True
+    ...     ignorePrefix = True
+    ...     autoGroups = True
+
+    >>> combi_form = CombiForm(context, request)
+    >>> combi_form.update()
+
+The default fields are those from the base schema, minus the one moved to
+another fieldset.
+
+    >>> combi_form.fields.keys()
+    ['title', 'description', 'hidden_secret']
+    
+    >>> combi_form.widgets['hidden_secret'].mode
+    'hidden'
+    
+Each additional schema then has its own fields. Note that setting the 'dates'
+fieldset in the base schema had the effect of giving a more specific
+label to the automatically created group for the Dates schema.
+    
+    >>> [(g.__name__, g.label, g.description, g.fields.keys(),) for g in combi_form.groups]
+    [('Dates', 'Cool dates', None, ['creation_date', 'start_date', 'end_date']),
+     ('Ownership', 'Ownership', 'Ownership information', ['owner'])]

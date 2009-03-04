@@ -1,0 +1,117 @@
+==================
+Widget-aware views
+==================
+
+This package provides a view mixin class that can be used like a display form.
+The view is set up with widgets based on schema interfaces and/or form fields,
+and are available in 'display' mode.
+
+First, let's load this package's ZCML so that we can run the tests:
+
+    >>> configuration = """\
+    ... <configure xmlns="http://namespaces.zope.org/zope">
+    ...
+    ...     <include package="Products.Five" file="configure.zcml" />
+    ...     <include package="plone.autoform" />
+    ...     
+    ... </configure>
+    ... """
+    >>> from StringIO import StringIO
+    >>> from zope.configuration import xmlconfig
+    >>> xmlconfig.xmlconfig(StringIO(configuration))
+
+As with auto-forms, the widgets come from a primary schema interface, and
+optionally one or more secondary interfaces. Let's define two.
+
+    >>> from zope.interface import Interface
+    >>> from zope import schema
+    >>> class IDefaultSchema(Interface):
+    ...     title = schema.TextLine(title=u"Title")
+    ...     body = schema.Text(title=u"Body")
+
+    >>> class ISecondarySchema(Interface):
+    ...     summary = schema.Text(title=u"Summary")
+
+Let us also annotate these with some field hints, putting 'summary' into a
+secondary schema.
+
+    >>> from plone.supermodel.interfaces import FIELDSETS_KEY
+    >>> from plone.supermodel.model import Fieldset
+    >>> ISecondarySchema.setTaggedValue(FIELDSETS_KEY, [Fieldset('secondary', fields=['summary'])])
+
+A display form normally operates on a given context, although you could set
+ignoreContext = True and implement getContent() if applicable. The schema
+interfaces need to be provided by or adaptable from the context. For the
+purposes of this test, we'll just make them directly provided.
+
+    >>> from zope.interface import implements
+    >>> class Context(object):
+    ...     implements(IDefaultSchema, ISecondarySchema)
+    ...     title = u""
+    ...     body = u""
+    ...     summary = u""
+
+We can now define a display form view. This should sub class or mix in
+WidgetsView. It must define either an 'index' callable (usually a page
+template set by the <browser:page /> directive) or override the 'render'
+method. It should also set the 'schema' and 'additional_schemata' properties
+as required, using class variables, instance variables or properties.
+
+    >>> from plone.autoform.view import WidgetsView
+    >>> class TestView(WidgetsView):
+    ...     schema = IDefaultSchema
+    ...     additional_schemata = (ISecondarySchema,)
+    ...     def render(self):
+    ...         return u"<div>My title widget says %s</div>" % self.w['title'].render()
+
+Let us try to render this, to demonstrate that the widgets will be properly
+set up.
+
+    >>> from z3c.form.testing import TestRequest
+    >>> context = Context()
+    >>> request = TestRequest()
+
+    >>> context.title = u"Test title"
+    >>> context.body = u"Body"
+    >>> context.summary = u"Summary"
+
+    >>> view = TestView(context, request)
+    >>> print view()
+    <div>My title widget says <span id="form-widgets-title"
+          class="text-widget required textline-field">Test title</span>
+    </div>
+
+More generally, the view supports the contract of display forms. After being
+updated, we have access to widgets in the default fieldset:
+
+    >>> view.widgets.items()
+    [('title', <TextWidget 'form.widgets.title'>),
+     ('body', <TextAreaWidget 'form.widgets.body'>)]
+
+There is also a shortcut to allow access to any widget by (possibly prefixed)
+name:
+
+    >>> view.w.items()
+    [('body', <TextAreaWidget 'form.widgets.body'>), 
+     ('ISecondarySchema.summary', <TextAreaWidget 'form.widgets.ISecondarySchema.summary'>), 
+     ('title', <TextWidget 'form.widgets.title'>)]
+
+You can also see fieldsets (groups) either in order:
+
+    >>> [g.__name__ for g in view.groups]
+    ['secondary']
+
+or looked up by name:
+
+    >>> view.fieldsets.items()
+    [('secondary', <plone.z3cform.fieldsets.group.Group object at ...>)]
+
+Note how the schema name is used as a prefix to all additional schemata. If
+you wish to flatten the namespace, you can set ignorePrefix to true:
+
+    >>> view.ignorePrefix = True
+    >>> view.update()
+    >>> view.w.items()
+    [('body', <TextAreaWidget 'form.widgets.body'>), 
+     ('ISecondarySchema.summary', <TextAreaWidget 'form.widgets.ISecondarySchema.summary'>), 
+     ('title', <TextWidget 'form.widgets.title'>)]

@@ -1,19 +1,20 @@
 from zope.interface import implements
 
 from z3c.form.form import DisplayForm
-from z3c.form.interfaces import IFieldsForm, IFormLayer
+from z3c.form.interfaces import IFormLayer
 
+from Acquisition import Explicit
 from plone.z3cform import z2
 
-from plone.autoform.interfaces import IAutoExtensibleForm
+from plone.autoform.interfaces import IWidgetsView
 from plone.autoform.base import AutoFields
 
-class WidgetsView(AutoFields, DisplayForm):
+class WidgetsView(AutoFields, DisplayForm, Explicit):
     """Mix-in to allow widgets (in view mode) to be accesed from browser
     views.
     """
     
-    implements(IAutoExtensibleForm, IFieldsForm)
+    implements(IWidgetsView)
     
     # You should set one or more of these, or the 'fields' variable
     
@@ -43,9 +44,9 @@ class WidgetsView(AutoFields, DisplayForm):
         self.updateWidgets()
         
         # shortcut 'widget' dictionary for all fieldsets
-        self.widget = {}
+        self.w = {}
         for k, v in self.widgets.items():
-            self.widget[k] = v
+            self.w[k] = v
         
         groups = []
         self.fieldsets = {}
@@ -55,7 +56,7 @@ class WidgetsView(AutoFields, DisplayForm):
             group.update()
             
             for k, v in group.widgets.items():
-                self.widget[k] = v
+                self.w[k] = v
             
             groups.append(group)
             

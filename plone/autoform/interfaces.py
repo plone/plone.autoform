@@ -3,6 +3,9 @@ from zope.interface.interfaces import IInterface
 
 import zope.schema
 
+from z3c.form.interfaces import IFieldsForm, IDisplayForm, IWidget
+from plone.supermodel.interfaces import IFieldset
+
 # Schema interface tagged value keys
 
 OMITTED_KEY   = u"plone.autoform.omitted"
@@ -33,6 +36,9 @@ class IAutoExtensibleForm(Interface):
     for details.
     """
     
+    ignorePrefix = zope.schema.Bool(title=u"Do not set a prefix for additional schemata",
+                                    default=False)
+    
     schema = zope.schema.Object(title=u"Schema providing form fields",
                                 schema=IInterface)
                                 
@@ -40,3 +46,18 @@ class IAutoExtensibleForm(Interface):
                                             value_type=zope.schema.Object(title=u"Schema interface",
                                                                           schema=IInterface),
                                             required=False)
+
+class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
+    """A display form that supports setting up widgets based on schema
+    interfaces.
+    """
+    
+    w = zope.schema.Dict(title=u"Shortcut lookup for all widgets",
+                         description=u"Contains all widgets, including "
+                                      "those from groups within this form",
+                         key_type=zope.schema.ASCIILine(title=u"Widget name, with prefix"),
+                         value_type=zope.schema.Object(title=u"Widget", schema=IWidget))
+
+    fieldsets = zope.schema.Dict(title=u"Lookup fieldset (group) by name",
+                              key_type=zope.schema.ASCIILine(title=u"Fieldset name"),
+                              value_type=zope.schema.Object(title=u"Fieldset", schema=IFieldset))

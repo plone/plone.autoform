@@ -1,7 +1,5 @@
 from zope.component import queryUtility
 
-from zope.schema import getFieldsInOrder
-
 from zope.security.interfaces import IPermission
 
 from zope.dottedname.resolve import resolve
@@ -34,12 +32,11 @@ def resolve_dotted_name(dotted_name):
         _dotted_cache[dotted_name] = resolve(dotted_name)
     return _dotted_cache[dotted_name]
 
-def get_disallowed_fields(context, permissions):
+def _get_disallowed_fields(context, permissions, prefix):
     """Get a list of fields for which the user does not have the requisite
-    permission. security is a dict with field names as keys. The value
-    under each field name is another dict, with keys 'read-permission' and/or
-    'write-permission', in turn containing the name of an IPermission utility.
-    permission_type should be one of 'read-permission' or 'write-permission'.
+    permission. 'permissions' is a dict with field names as keys and
+    permission names as values. The permission names will be looked up
+    as IPermission utilities.
     """
     
     security_manager = getSecurityManager()
@@ -55,13 +52,61 @@ def get_disallowed_fields(context, permissions):
             else:
                 permission_cache[permission_name] = security_manager.checkPermission(permission.title, context)
         if not permission_cache[permission_name]:
-            disallowed.append(field_name)
+            disallowed.append(_fn(prefix, field_name))
     
     return disallowed
 
-def process_fields(form, schema, prefix=None):
+# Some helper functions
+
+def _fn(prefix, field_name):
+    """Give prefixed fieldname if applicable
+    """
+    if prefix:
+        return expandPrefix(prefix) + field_name
+    else:
+        return field_name
+
+def _bn(field):
+    """Give base (non-prefixed) fieldname
+    """
+    prefix = field.prefix
+    field_name = field.__name__
+    if prefix:
+        return field_name[len(prefix) + 1:]
+    else:
+        return field_name
+
+def _process_widgets(form, widgets, modes, new_fields):
+    """Update the fields list with widgets
+    """
+
+    for field_name in new_fields:
+        field = new_fields[field_name]
+        base_name = _bn(field)
+        
+        widget_name = widgets.get(base_name, None)
+        widget_mode = modes.get(base_name, field.mode) or form.mode or INPUT_MODE
+        
+        widget_factory = None
+        if widget_name is not None:
+            if isinstance(widget_name, basestring):
+                widget_factory = resolve_dotted_name(widget_name)
+            elif IFieldWidget.implementedBy(widget_name):
+                widget_factory = widget_name
+            
+            if widget_factory is not None:
+                field.widgetFactory[widget_mode] = widget_factory
+        
+        if base_name in modes:
+            new_fields[field_name].mode = widget_mode
+
+def process_fields(form, schema, prefix='', default_group=None):
     """Add the fields from the schema to the from, taking into account
-    the hints in the various tagged values as well as fieldsets.
+    the hints in the various tagged values as well as fieldsets. If prefix
+    is given, the fields will be prefixed with this prefix. If 
+    default_group is given (as a Fieldset instance), any field not explicitly
+    placed into a particular fieldset, will be added to the given group,
+    which must exist already.
     """
 
     # Get data from tagged values, flattening data from super-interfaces
@@ -81,104 +126,50 @@ def process_fields(form, schema, prefix=None):
         permissions = merged_tagged_value_dict(schema, READ_PERMISSIONS_KEY)  # name => permission name
     elif form.mode == INPUT_MODE:
         permissions = merged_tagged_value_dict(schema, WRITE_PERMISSIONS_KEY) # name => permission name
+    
+    # Find the fields we should not worry about
+    
+    groups = {}
+    do_not_process = list(form.fields.keys())
+    do_not_process.extend(_get_disallowed_fields(form.context, permissions, prefix))
 
-    # Some helper functions
+    for field_name, status in omitted.items():
+        do_not_process.append(_fn(prefix, field_name))
     
-    def _fn(field_name):
-        """Give prefixed fieldname if applicable
-        """
-        if prefix:
-            return expandPrefix(prefix) + field_name
-        else:
-            return field_name
-    
-    def _bn(field):
-        """Give base (non-prefixed) fieldname
-        """
-        prefix = field.prefix
-        field_name = field.__name__
-        if prefix:
-            return field_name[len(prefix) + 1:]
-        else:
-            return field_name
-    
-    def process_widgets(form, new_fields):
-        """Update the fields list with widgets
-        """
-
-        for field_name in new_fields:
-            field = new_fields[field_name]
-            base_name = _bn(field)
-            
-            widget_name = widgets.get(base_name, None)
-            widget_mode = modes.get(base_name, field.mode) or form.mode or INPUT_MODE
-            
-            widget_factory = None
-            if widget_name is not None:
-                if isinstance(widget_name, basestring):
-                    widget_factory = resolve_dotted_name(widget_name)
-                elif IFieldWidget.implementedBy(widget_name):
-                    widget_factory = widget_name
-                
-                if widget_factory is not None:
-                    field.widgetFactory[widget_mode] = widget_factory
-            
-            if base_name in modes:
-                new_fields[field_name].mode = widget_mode
-    
-    # Keep track of the fields we've already processed (i.e. they're in
-    # form.fields or in a group's fields list)
-    
-    already_processed = []
-    if form.fields is not None:
-        already_processed.extend(form.fields.keys())
     for group in form.groups:
-        if group.fields is not None:
-            already_processed.extend(group.fields.keys())
-    
-    # Keep track of groups
-    
-    groups = dict([(getattr(g, '__name__', g.label), g) for g in form.groups])
-
-    disallowed_fields = get_disallowed_fields(form.context, permissions)
+        do_not_process.extend(list(group.fields.keys()))
+        
+        group_name = getattr(group, '__name__', group.label)
+        groups[group_name] = group
 
     # Find all allowed fields so that we have something to select from
-    
-    if prefix:
-        all_fields = field.Fields(schema, prefix=prefix, omitReadOnly=True).omit(*disallowed_fields)
-    else:
-        all_fields = field.Fields(schema, omitReadOnly=True).omit(*disallowed_fields)
+    all_fields = field.Fields(schema, prefix=prefix, omitReadOnly=True).omit(*do_not_process)
     
     # Keep track of which fields are in a fieldset, and, by elimination,
     # which ones are not 
     
-    fieldset_fields = set()
+    fieldset_fields = []
     for fieldset in fieldsets:
         for field_name in fieldset.fields:
-            fieldset_fields.add(field_name)
-    
-    default_fieldset_fields = [_fn(f) for f, value in getFieldsInOrder(schema) 
-                                        if not value.readonly
-                                            and f not in fieldset_fields
-                                            and f not in disallowed_fields
-                                            and not omitted.get(f, False)]
+            fieldset_fields.append(_fn(prefix, field_name))
     
     # Set up the default fields, widget factories and widget modes
     
-    new_fields = all_fields.select(*default_fieldset_fields)
-    process_widgets(form, new_fields)
+    new_fields = all_fields.omit(*fieldset_fields)
+    _process_widgets(form, widgets, modes, new_fields)
     
-    if form.fields is None:
-        form.fields = new_fields
+    if not default_group:
+        form.fields += new_fields
     else:
-        form.fields += new_fields.omit(*already_processed)
+        groups[default_group].fields += new_fields
     
     # Set up fields for fieldsets
     
     for fieldset in fieldsets:
         
-        new_fields = all_fields.select(*[_fn(field_name) for field_name in fieldset.fields])
-        process_widgets(form, new_fields)
+        new_fields = all_fields.select(*[_fn(prefix, field_name) 
+                                            for field_name in fieldset.fields])
+        _process_widgets(form, widgets, modes, new_fields)
         
         if fieldset.__name__ not in groups:
             form.groups.append(GroupFactory(fieldset.__name__,
@@ -186,25 +177,17 @@ def process_fields(form, schema, prefix=None):
                                             description=fieldset.description,
                                             fields=new_fields))
         else:
-            groups[fieldset.__name__].fields += new_fields.omit(*already_processed)
+            groups[fieldset.__name__].fields += new_fields
     
     
-def process_field_moves(form, schema, prefix=None):
+def process_field_moves(form, schema, prefix=''):
     """Process all field moves stored under ORDER_KEY in the schema tagged
     value. This should be run after all schemata have been processed with
     process_fields().
     """
     
     order = merged_tagged_value_list(schema, ORDER_KEY)      # (name, 'before'/'after', other name)
-    
-    def _fn(field_name):
-        """Give prefixed fieldname if applicable
-        """
-        if prefix:
-            return expandPrefix(prefix) + field_name
-        else:
-            return field_name
-        
+            
     for field_name, direction, relative_to in order:
         
         # Handle shortcut: leading . means "in this form". May be useful
