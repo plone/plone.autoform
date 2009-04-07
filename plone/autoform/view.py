@@ -3,7 +3,11 @@ from zope.interface import implements
 from z3c.form.form import DisplayForm
 from z3c.form.interfaces import IFormLayer
 
-from Acquisition import Explicit
+try:
+    from Products.Five.bbb import AcquisitionBBB as Explicit
+except ImportError:
+    from Acquisition import Explicit
+
 from plone.z3cform import z2
 
 from plone.autoform.interfaces import IWidgetsView

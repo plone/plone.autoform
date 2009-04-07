@@ -4,5 +4,8 @@ Changelog
 1.0b1 - Unreleased
 ----------------
 
+* Add forward compatibility with Zope 2.12 AcquisitionBBB.
+  [hannosch]
+
 * Initial release
 
