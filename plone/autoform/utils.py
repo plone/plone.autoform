@@ -100,13 +100,14 @@ def _process_widgets(form, widgets, modes, new_fields):
         if base_name in modes:
             new_fields[field_name].mode = widget_mode
 
-def process_fields(form, schema, prefix='', default_group=None):
+def process_fields(form, schema, prefix='', default_group=None, permission_checks=True):
     """Add the fields from the schema to the from, taking into account
     the hints in the various tagged values as well as fieldsets. If prefix
     is given, the fields will be prefixed with this prefix. If 
     default_group is given (as a Fieldset instance), any field not explicitly
     placed into a particular fieldset, will be added to the given group,
-    which must exist already.
+    which must exist already. If permission_checks is false,
+    permission checks are ignored.
     """
 
     # Get data from tagged values, flattening data from super-interfaces
@@ -122,10 +123,11 @@ def process_fields(form, schema, prefix='', default_group=None):
     # Get either read or write permissions depending on what type of form this is
 
     permissions = {}
-    if form.mode == DISPLAY_MODE:
-        permissions = merged_tagged_value_dict(schema, READ_PERMISSIONS_KEY)  # name => permission name
-    elif form.mode == INPUT_MODE:
-        permissions = merged_tagged_value_dict(schema, WRITE_PERMISSIONS_KEY) # name => permission name
+    if permission_checks:
+        if form.mode == DISPLAY_MODE:
+            permissions = merged_tagged_value_dict(schema, READ_PERMISSIONS_KEY)  # name => permission name
+        elif form.mode == INPUT_MODE:
+            permissions = merged_tagged_value_dict(schema, WRITE_PERMISSIONS_KEY) # name => permission name
     
     # Find the fields we should not worry about
     

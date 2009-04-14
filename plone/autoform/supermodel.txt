@@ -82,17 +82,17 @@ The interface defined in the model should now have the relevant form data:
     >>> from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, \
     ...     MODES_KEY, ORDER_KEY, READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
     >>> model.schema.getTaggedValue(WIDGETS_KEY)
-    {'three': 'z3c.form.browser.password.PasswordFieldWidget'}
+    {u'three': 'z3c.form.browser.password.PasswordFieldWidget'}
     >>> model.schema.getTaggedValue(OMITTED_KEY)
-    {'one': 'true'}
+    {u'one': 'true'}
     >>> model.schema.getTaggedValue(ORDER_KEY)
-    [('one', 'after', 'two'), ('three', 'before', 'two')]
+    [(u'one', 'after', 'two'), (u'three', 'before', 'two')]
     >>> model.schema.getTaggedValue(MODES_KEY)
-    {'two': 'hidden'}
+    {u'two': 'hidden'}
     >>> model.schema.getTaggedValue(READ_PERMISSIONS_KEY)
-    {'one': 'zope2.View'}
+    {u'one': 'zope2.View'}
     >>> model.schema.getTaggedValue(WRITE_PERMISSIONS_KEY)
-    {'one': 'cmf.ModifyPortalContent'}
+    {u'one': 'cmf.ModifyPortalContent'}
 
 See autoform.txt for details on how this form data is used to manipulate
 form layout.

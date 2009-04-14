@@ -77,12 +77,13 @@ And a test context and request, marked with the IFormLayer interface to make
 z3c.form happy:
 
     >>> from zope.publisher.browser import TestRequest
-    >>> context = object()
-    >>> request = TestRequest()
-
     >>> from z3c.form.interfaces import IFormLayer
-    >>> from zope.interface import alsoProvides
-    >>> alsoProvides(request, IFormLayer)
+    >>> context = object()
+    >>> request = TestRequest(environ={'AUTHENTICATED_USER': 'user1'}, skin=IFormLayer)
+
+Note that we need to pretend that we have authenticated a user. Without this,
+the permission checks will be turned off. This is to support setting up a form
+pre-traversal in the ++widget++ namespace in plone.z3cform.
 
 And finally, a form:
 
@@ -262,6 +263,33 @@ has taken the label and description from the first definition.
     u'Description of fieldset one'
     >>> test_form.groups[0].fields.keys()
     ['three', 'IOtherSchema.three']
+
+Pre-traversal
+-------------
+
+plone.z3cform installs a ++widget++ namespace to allow traversal to widgets.
+Unfortunately, traversal happens before authentication. Thus, all security
+checks (read/write permissions) will fail.
+
+To work around this, we ignore security checks if no authenticated user is
+set in the request. Previously, we added one to the test request. If we
+run the same tests without an authenticated user, the field 'six' should
+return.
+
+    
+    >>> request = TestRequest(skin=IFormLayer)
+
+    >>> test_form = TestForm(context, request)
+    >>> test_form.update()
+    >>> test_form.fields.keys()
+    ['IOtherSchema.four',
+     'ISupplementarySchema.one',
+     'ISupplementarySchema.two',
+     'two',
+     'one',
+     'six',
+     'IOtherSchema.six',
+     'IOtherSchema.five']
 
 Automatic field sets
 --------------------

@@ -21,6 +21,12 @@ class AutoFields(object):
     autoGroups = False
     
     def updateFieldsFromSchemata(self):
+ 
+        # If the form is called from the ++widget++ traversal namespace,
+        # we won't have a user yet. In this case, we can't perform permission
+        # checks.
+        
+        have_user = bool(self.request.get('AUTHENTICATED_USER', False))
         
         # Turn fields into an instance variable, since we will be modifying it
         self.fields = field.Fields(self.fields)
@@ -42,7 +48,7 @@ class AutoFields(object):
         
         # Set up all widgets, modes, omitted fields and fieldsets
         if self.schema is not None:
-            process_fields(self, self.schema)
+            process_fields(self, self.schema, permission_checks=have_user)
             for schema in self.additional_schemata:
                 
                 # Find the prefix to use for this form and cache for next round
@@ -80,7 +86,7 @@ class AutoFields(object):
 
                     default_group = group_name
                     
-                process_fields(self, schema, prefix=prefix, default_group=default_group)
+                process_fields(self, schema, prefix=prefix, default_group=default_group, permission_checks=have_user)
         
         # Then process relative field movements. The base schema is processed
         # last to allow it to override any movements made in additional 
