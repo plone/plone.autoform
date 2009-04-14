@@ -168,16 +168,19 @@ def process_fields(form, schema, prefix='', default_group=None):
     for fieldset in fieldsets:
         
         new_fields = all_fields.select(*[_fn(prefix, field_name) 
-                                            for field_name in fieldset.fields])
-        _process_widgets(form, widgets, modes, new_fields)
+                                            for field_name in fieldset.fields
+                                                if _fn(prefix, field_name) in all_fields])
         
-        if fieldset.__name__ not in groups:
-            form.groups.append(GroupFactory(fieldset.__name__,
-                                            label=fieldset.label,
-                                            description=fieldset.description,
-                                            fields=new_fields))
-        else:
-            groups[fieldset.__name__].fields += new_fields
+        if len(new_fields) > 0:        
+            _process_widgets(form, widgets, modes, new_fields)
+        
+            if fieldset.__name__ not in groups:
+                form.groups.append(GroupFactory(fieldset.__name__,
+                                                label=fieldset.label,
+                                                description=fieldset.description,
+                                                fields=new_fields))
+            else:
+                groups[fieldset.__name__].fields += new_fields
     
     
 def process_field_moves(form, schema, prefix=''):
