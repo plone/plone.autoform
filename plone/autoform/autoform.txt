@@ -91,7 +91,7 @@ And finally, a form:
     >>> from z3c.form import form, button
     >>> class TestForm(AutoExtensibleForm, form.Form):
     ...     schema = ITestSchema
-    ...     additional_schemata = (ISupplementarySchema, IOtherSchema,)
+    ...     additionalSchemata = (ISupplementarySchema, IOtherSchema,)
     ...     
     ...     ignoreContext = True
 
@@ -105,42 +105,42 @@ Adding form data
 
 Form data can be held under the following keys:
 
-    OMITTED_KEY -- A dict of field_name => boolean. If the second value
+    OMITTED_KEY -- A dict of fieldName => boolean. If the second value
         evaluates to true, the given field name is omitted.
     
-    MODES_KEY -- A dict of field_name => mode string, specifying z3c.form
+    MODES_KEY -- A dict of fieldName => mode string, specifying z3c.form
         widget modes, including 'hidden', 'input' and 'display'.
     
-    WIDGETS_KEY -- A dict of field_name => widget. The widget can be
+    WIDGETS_KEY -- A dict of fieldName => widget. The widget can be
         the dotted name of a z3c.form field widget factory, or an actual
         instance of one.
         
-    ORDER_KEY -- A list of (field_name, direction, relative_to) triples.
+    ORDER_KEY -- A list of (fieldName, direction, relative_to) triples.
         direction can be one of 'before' or 'after'. relative_to can be '*'
         (any/all fields), or the name of a field to move the given field 
         before or after in the form.
     
-    READ_PERMISSIONS_KEY -- A dict of field_name => permission id. When a 
+    READ_PERMISSIONS_KEY -- A dict of fieldName => permission id. When a 
         form is in 'display' mode, the field will be omitted unless the user
         has the given permission in the form's context. The permission id
         should be a Zope 3 style IPermission utility name, not a Zope 2
         permission string.
 
-    WRITE_PERMISSIONS_KEY -- A dict of field_name => permission id. When a 
+    WRITE_PERMISSIONS_KEY -- A dict of fieldName => permission id. When a 
         form is in 'input' mode, the field will be omitted unless the user
         has the given permission in the form's context. The permission id
         should be a Zope 3 style IPermission utility name, not a Zope 2
         permission string.
 
 Note that 'order' directives are processed after all schemata in the form are
-set up. Ordering will start by going through the additional_schemata in order.
+set up. Ordering will start by going through the additionalSchemata in order.
 The form's base schema is processed last.
 
 This means that the last ordering directive to be run is the last item in the
 list in the form's base schema. Hence, this can be used to override any
 ordering information from additional schemata.
 
-The field_name should never contain a prefix or a dot. However, the
+The fieldName should never contain a prefix or a dot. However, the
 relative_to name under ORDER_KEY should contain a prefixed name. The default
 form schema will not have a prefix, but additional schemata will have a prefix
 constructed from their __identifier__ (full dotted name). To explicitly
@@ -329,7 +329,7 @@ that this may cause clashes if fields in different schemata share a name.
 
     >>> class CombiForm(AutoExtensibleForm, form.Form):
     ...     schema = Basics
-    ...     additional_schemata = (Dates, Ownership,)
+    ...     additionalSchemata = (Dates, Ownership,)
     ...     
     ...     ignoreContext = True
     ...     ignorePrefix = True

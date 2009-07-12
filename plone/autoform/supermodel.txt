@@ -74,8 +74,8 @@ Note:
 
 We can load this using plone.supermodel:
 
-    >>> from plone.supermodel import load_string
-    >>> model = load_string(schema)
+    >>> from plone.supermodel import loadString
+    >>> model = loadString(schema)
 
 The interface defined in the model should now have the relevant form data:
 

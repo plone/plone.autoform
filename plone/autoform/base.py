@@ -2,7 +2,7 @@ from z3c.form import field
 
 from plone.z3cform.fieldsets.group import GroupFactory
 
-from plone.autoform.utils import process_field_moves, process_fields
+from plone.autoform.utils import processFieldMoves, processFields
 
 _marker = object()
 
@@ -12,7 +12,7 @@ class AutoFields(object):
     """
 
     schema = None
-    additional_schemata = ()
+    additionalSchemata = ()
     
     fields = field.Fields()
     groups = []
@@ -48,8 +48,8 @@ class AutoFields(object):
         
         # Set up all widgets, modes, omitted fields and fieldsets
         if self.schema is not None:
-            process_fields(self, self.schema, permission_checks=have_user)
-            for schema in self.additional_schemata:
+            processFields(self, self.schema, permissionChecks=have_user)
+            for schema in self.additionalSchemata:
                 
                 # Find the prefix to use for this form and cache for next round
                 prefix = self.getPrefix(schema)
@@ -60,7 +60,7 @@ class AutoFields(object):
                 # By default, there's no default group, i.e. fields go 
                 # straight into the default fieldset
                 
-                default_group = None
+                defaultGroup = None
                 
                 # Create groups from schemata if requested and set default 
                 # group
@@ -68,7 +68,7 @@ class AutoFields(object):
                 if self.autoGroups:
                     group_name = schema.__name__
                     
-                    # Look for group - note that previous process_fields
+                    # Look for group - note that previous processFields
                     # may have changed the groups list, so we can't easily
                     # store this in a dict.
                     found = False
@@ -84,17 +84,17 @@ class AutoFields(object):
                                                       schema.__doc__)
                         self.groups.append(fieldset_group)
 
-                    default_group = group_name
+                    defaultGroup = group_name
                     
-                process_fields(self, schema, prefix=prefix, default_group=default_group, permission_checks=have_user)
+                processFields(self, schema, prefix=prefix, defaultGroup=defaultGroup, permissionChecks=have_user)
         
         # Then process relative field movements. The base schema is processed
         # last to allow it to override any movements made in additional 
         # schemata.
         if self.schema is not None:
-            for schema in self.additional_schemata:
-                process_field_moves(self, schema, prefix=prefixes[schema])
-            process_field_moves(self, self.schema)
+            for schema in self.additionalSchemata:
+                processFieldMoves(self, schema, prefix=prefixes[schema])
+            processFieldMoves(self, self.schema)
             
     def getPrefix(self, schema):
         """Get the preferred prefix for the given schema

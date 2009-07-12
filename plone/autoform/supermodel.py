@@ -27,14 +27,14 @@ class FormSchema(object):
         tagged_value.append((name, direction, relative_to,))
         schema.setTaggedValue(ORDER_KEY, tagged_value)
     
-    def read(self, field_node, schema, field):
+    def read(self, fieldNode, schema, field):
         name = field.__name__
         
-        widget  = field_node.get( ns('widget',  self.namespace) )
-        mode    = field_node.get( ns('mode',    self.namespace) )
-        omitted = field_node.get( ns('omitted', self.namespace) )
-        before  = field_node.get( ns('before',  self.namespace) )
-        after   = field_node.get( ns('after',   self.namespace) )
+        widget  = fieldNode.get( ns('widget',  self.namespace) )
+        mode    = fieldNode.get( ns('mode',    self.namespace) )
+        omitted = fieldNode.get( ns('omitted', self.namespace) )
+        before  = fieldNode.get( ns('before',  self.namespace) )
+        after   = fieldNode.get( ns('after',   self.namespace) )
 
         if widget:
             self._add(schema, WIDGETS_KEY, name, widget)
@@ -47,7 +47,7 @@ class FormSchema(object):
         if after:
             self._add_order(schema, name, 'after', after)
 
-    def write(self, field_node, schema, field):
+    def write(self, fieldNode, schema, field):
         name = field.__name__
         
         widget  = schema.queryTaggedValue(WIDGETS_KEY, {}).get(name, None)
@@ -58,19 +58,19 @@ class FormSchema(object):
         if widget is not None:
             if not isinstance(widget, basestring):
                 widget = "%s.%s" % (widget.__module__, widget.__name__)
-            field_node.set(ns('widget', self.namespace), str(widget))
+            fieldNode.set(ns('widget', self.namespace), str(widget))
             
         if mode is not None:
-            field_node.set(ns('mode', self.namespace), str(mode))
+            fieldNode.set(ns('mode', self.namespace), str(mode))
         
         if omitted is not None:
-            field_node.set(ns('omitted', self.namespace), str(omitted))
+            fieldNode.set(ns('omitted', self.namespace), str(omitted))
 
         for direction, relative_to in order:
             if direction == 'before':
-                field_node.set(ns('before',  self.namespace), relative_to)
+                fieldNode.set(ns('before',  self.namespace), relative_to)
             elif direction == 'after':
-                field_node.set(ns('after',  self.namespace), relative_to)
+                fieldNode.set(ns('after',  self.namespace), relative_to)
 
 class SecuritySchema(object):
     """Support the security: namespace in model definitions.
@@ -80,11 +80,11 @@ class SecuritySchema(object):
     namespace = SECURITY_NAMESPACE
     prefix = SECURITY_PREFIX
     
-    def read(self, field_node, schema, field):
+    def read(self, fieldNode, schema, field):
         name = field.__name__
         
-        read_permission = field_node.get(ns('read-permission', self.namespace))
-        write_permission = field_node.get(ns('write-permission', self.namespace))
+        read_permission = fieldNode.get(ns('read-permission', self.namespace))
+        write_permission = fieldNode.get(ns('write-permission', self.namespace))
         
         read_permissions = schema.queryTaggedValue(READ_PERMISSIONS_KEY, {})
         write_permissions = schema.queryTaggedValue(WRITE_PERMISSIONS_KEY, {})
@@ -97,13 +97,13 @@ class SecuritySchema(object):
             write_permissions[name] = write_permission
             schema.setTaggedValue(WRITE_PERMISSIONS_KEY, write_permissions)
 
-    def write(self, field_node, schema, field):
+    def write(self, fieldNode, schema, field):
         name = field.__name__
         
         read_permission = schema.queryTaggedValue(READ_PERMISSIONS_KEY, {}).get(name, None)
         write_permission = schema.queryTaggedValue(WRITE_PERMISSIONS_KEY, {}).get(name, None)
         
         if read_permission:
-            field_node.set(ns('read-permission', self.namespace), read_permission)
+            fieldNode.set(ns('read-permission', self.namespace), read_permission)
         if write_permission:
-            field_node.set(ns('write-permission', self.namespace), write_permission)
+            fieldNode.set(ns('write-permission', self.namespace), write_permission)

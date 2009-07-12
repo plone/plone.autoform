@@ -54,13 +54,13 @@ purposes of this test, we'll just make them directly provided.
 We can now define a display form view. This should sub class or mix in
 WidgetsView. It must define either an 'index' callable (usually a page
 template set by the <browser:page /> directive) or override the 'render'
-method. It should also set the 'schema' and 'additional_schemata' properties
+method. It should also set the 'schema' and 'additionalSchemata' properties
 as required, using class variables, instance variables or properties.
 
     >>> from plone.autoform.view import WidgetsView
     >>> class TestView(WidgetsView):
     ...     schema = IDefaultSchema
-    ...     additional_schemata = (ISecondarySchema,)
+    ...     additionalSchemata = (ISecondarySchema,)
     ...     def render(self):
     ...         return u"<div>My title widget says %s</div>" % self.w['title'].render()
 

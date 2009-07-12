@@ -23,7 +23,7 @@ class WidgetsView(AutoFields, DisplayForm, Explicit):
     # You should set one or more of these, or the 'fields' variable
     
     schema = None
-    additional_schemata = ()
+    additionalSchemata = ()
     
     request_layer = IFormLayer
 

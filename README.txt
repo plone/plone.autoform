@@ -32,15 +32,15 @@ forms:
     >>> from plone.autoform.form import AutoExtensibleForm
 
 and then provide the 'schema' (a schema interface) and optionally the
-'additional_schemata' (a list of schema interfaces) attributes on your form:
+'additionalSchemata' (a list of schema interfaces) attributes on your form:
 
     >>> class MyForm(AutoExtensibleForm, form.EditForm):
     ...     schema = IMySchema
-    ...     additional_schemata = (ISchemaOne, ISchemaTwo,)
+    ...     additionalSchemata = (ISchemaOne, ISchemaTwo,)
     ...     
     ...     # ...
 
-For dynamic forms, you could of course make 'schema' and 'additional_schemata' 
+For dynamic forms, you could of course make 'schema' and 'additionalSchemata' 
 into properties.
 
 To use the display form, create a view like:
@@ -48,7 +48,7 @@ To use the display form, create a view like:
     >>> from plone.autoform.view import WidgetsView
     >>> class MyView(WidgetsView):
     ...     schema = IMySchema
-    ...     additional_schemata = (ISchemaOne, ISchemaTwo,)
+    ...     additionalSchemata = (ISchemaOne, ISchemaTwo,)
     ...     
     ...     #
 

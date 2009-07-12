@@ -42,10 +42,10 @@ class IAutoExtensibleForm(Interface):
     schema = zope.schema.Object(title=u"Schema providing form fields",
                                 schema=IInterface)
                                 
-    additional_schemata = zope.schema.Tuple(title=u"Supplementary schemata providing additional form fields",
-                                            value_type=zope.schema.Object(title=u"Schema interface",
+    additionalSchemata = zope.schema.Tuple(title=u"Supplementary schemata providing additional form fields",
+                                           value_type=zope.schema.Object(title=u"Schema interface",
                                                                           schema=IInterface),
-                                            required=False)
+                                           required=False)
 
 class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     """A display form that supports setting up widgets based on schema

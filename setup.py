@@ -29,7 +29,7 @@ setup(name='plone.autoform',
           'zope.schema',
           'zope.security',
           'zope.dottedname',
-          'plone.supermodel',
+          'plone.supermodel>=1.0b2',
           'plone.z3cform',
           # 'AccessControl',
           # -*- Extra requirements: -*-

@@ -19,7 +19,7 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
         raise NotImplemented("The class deriving from AutoExtensibleForm must have a 'schema' property")
 
     @property
-    def additional_schemata(self):
+    def additionalSchemata(self):
         """Default to there being no additional schemata
         """
         return ()
