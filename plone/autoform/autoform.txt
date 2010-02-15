@@ -1,6 +1,6 @@
-====================
-Automatic form setup
-====================
+==================
+Form setup details
+==================
 
 This package provides tools to construct z3c.form forms out of hints stored
 in tagged values on schema interfaces. A special form base class is used to
@@ -23,13 +23,11 @@ which are also stored in tagged values, under the following constant:
 
 There are several ways to set the form data:
 
-    - Manually, by using setTaggedValue() on an interface.
-
-    - By loading the schema from a plone.supermodel XML file. This package
-      provides a schema handler for the 'form' prefix that can be used to
-      incorporate form hints. See supermodel.txt for details.
-      
-    - By using the grok directives in the plone.directives.form package.
+* Manually, by using setTaggedValue() on an interface.
+* By loading the schema from a plone.supermodel XML file. This package
+  provides a schema handler for the 'form' prefix that can be used to
+  incorporate form hints. See supermodel.txt for details.
+* By using the grok directives in the plone.directives.form package.
     
 For the purposes of this test, we'll set the form data manually.
 
@@ -73,8 +71,8 @@ We also need a few sample interfaces:
     ...     five = schema.TextLine(title=u"Five")
     ...     six = schema.TextLine(title=u"Six")
 
-And a test context and request, marked with the IFormLayer interface to make
-z3c.form happy:
+And a test context and request, marked with the ``IFormLayer`` interface to
+make z3c.form happy:
 
     >>> from zope.publisher.browser import TestRequest
     >>> from z3c.form.interfaces import IFormLayer
@@ -143,13 +141,13 @@ ordering information from additional schemata.
 The fieldName should never contain a prefix or a dot. However, the
 relative_to name under ORDER_KEY should contain a prefixed name. The default
 form schema will not have a prefix, but additional schemata will have a prefix
-constructed from their __identifier__ (full dotted name). To explicitly
+constructed from their ``__identifier__`` (full dotted name). To explicitly
 reference a field in the current schema (or a base schema), use a leading
 dot, e.g. ".title" would refer to the "title" field in the current schema,
 whereas "title" would refer to the "title" field in the form's base schema.
 
-Fieldset data is kept under the key defined in the constant FIELDSETS_KEY.
-This contains a list of plone.supermodel.model.Fieldset instances.
+Fieldset data is kept under the key defined in the constant ``FIELDSETS_KEY``.
+This contains a list of ``plone.supermodel.model.Fieldset`` instances.
 
 At this point, there is no form data. When the form is updated, the 'fields'
 and 'groups' properties will be set.
@@ -193,10 +191,10 @@ Fields can be moved like this:
     >>> ITestSchema.setTaggedValue(ORDER_KEY,          [('one', 'after', 'two')])
 
 Note how the second value of each tuple refers to the full name with a prefix,
-so the field 'two' from ISupplementarySchema is moved before the field 'one'
-from the default (un-prefixed) ITestSchema. However, we move IOtherSchema's
-field 'five' after the field 'six' in the same schema by using a shortcut:
-'.six' is equivalent to 'IOtherSchema.six' in this case.
+so the field 'two' from ``ISupplementarySchema`` is moved before the field
+'one' from the default (un-prefixed) ITestSchema. However, we move
+``IOtherSchema``'s field 'five' after the field 'six' in the same schema by
+using a shortcut: '.six' is equivalent to 'IOtherSchema.six' in this case.
 
 Field permissions can be set like this:
 
@@ -229,21 +227,21 @@ The results of all of this can be seen below:
      'IOtherSchema.six',
      'IOtherSchema.five']
 
-The field ISupplementarySchema['one'] was moved to the top of the form, but
-then IOtherSchema['four'] was moved before this one again. ITestSchema['one']
-was moved after ITestSchema['two']. ISupplementarySchema['two'] was then
-moved before ITestSchema['one'], coming between ITestSchema['one'] and
-ITestSchema['two'].
+The field ``ISupplementarySchema['one']`` was moved to the top of the form,
+but then ``IOtherSchema['four']`` was moved before this one again.
+``ITestSchema['one']`` was moved after ``ITestSchema['two']``.
+``ISupplementarySchema['two']`` was then moved before ``ITestSchema['one']``,
+coming between ``ITestSchema['one']`` and ``ITestSchema['two']``.
 
-ITestSchema['one'] was hidden and ITestSchema['two'] was put into display
-mode:
+``ITestSchema['one']`` was hidden and ``ITestSchema['two']`` was put into
+display mode:
 
     >>> test_form.widgets['one'].mode
     'hidden'
     >>> test_form.widgets['two'].mode
     'display'
 
-ITestSchema['two'] and IOtherSchema['five'] were both given a password
+``ITestSchema['two']`` and ``IOtherSchema['five']`` were both given a password
 widget - one by instance, the other by dotted name:
 
     >>> test_form.widgets['two']
@@ -267,16 +265,15 @@ has taken the label and description from the first definition.
 Pre-traversal
 -------------
 
-plone.z3cform installs a ++widget++ namespace to allow traversal to widgets.
-Unfortunately, traversal happens before authentication. Thus, all security
-checks (read/write permissions) will fail.
+plone.z3cform installs a ``++widget++`` namespace to allow traversal to
+widgets. Unfortunately, traversal happens before authentication. Thus, all
+security checks (read/write permissions) will fail.
 
 To work around this, we ignore security checks if no authenticated user is
 set in the request. Previously, we added one to the test request. If we
 run the same tests without an authenticated user, the field 'six' should
 return.
 
-    
     >>> request = TestRequest(skin=IFormLayer)
 
     >>> test_form = TestForm(context, request)
@@ -324,7 +321,7 @@ in full.
     ...     owner = schema.Date(title=u"The owner")
 
 We can make a form of these schemata. For the sake of this demo, we'll also
-set ignorePrefix to true, so that the form fields don't get a prefix. Note
+set ``ignorePrefix`` to true, so that the form fields don't get a prefix. Note
 that this may cause clashes if fields in different schemata share a name.
 
     >>> class CombiForm(AutoExtensibleForm, form.Form):

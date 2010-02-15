@@ -2,9 +2,9 @@
 Supermodel handlers
 ===================
 
-This package contains handlers for two plone.supermodel namespaces: 'form',
+This package contains handlers for two plone.supermodel namespaces: ``form``,
 which can be used to set widgets, omitted fields, field modes and field
-order, and 'security', which can be used to set field read and write
+order, and ``security``, which can be used to set field read and write
 permissions.
 
 Test setup
@@ -27,8 +27,8 @@ First, let's load this package's ZCML so that we can run the tests:
 XML sample
 ----------
 
-Next, let's define a sample model that exercises the various 'form' and
-'security' attributes.
+Next, let's define a sample model that exercises the various ``form`` and
+``security`` attributes.
 
     >>> schema = """\
     ... <?xml version="1.0" encoding="UTF-8"?>
@@ -56,21 +56,21 @@ Next, let's define a sample model that exercises the various 'form' and
     ... </model>
     ... """
 
-Note:
+Notes:
 
- o To omit a field from the form, use form:omitted="true".
- o To re-order fields, use form:after or form:before. The value should be
-   either '*', to put the field first/last in the form, or the name of a
-   another field. Use '.fieldname' to refer to field in the current schema (or
-   a base schema). Use a fully prefixed name (e.g. 'my.package.ISomeSchema) 
-   to refer to a field in another schema. Use an unprefixed name to refer to
-   a field in the default schema for the form.
- o To turn a field into a view mode or hidden field, use form:mode.
- o To set a custom widget for a field, use form:widget to give a fully
-   qualified name to the field widget factory.
- o To set a read or write permission, use security:read-permission or
-   security:write-permission. The value should be the name of a Zope 3-style
-   IPermission utility.
+* To omit a field from the form, use ``form:omitted="true"``.
+* To re-order fields, use ``form:after`` or ``form:before``. The value should
+  be either ``'*'``, to put the field first/last in the form, or the name of a
+  another field. Use ``'.fieldname'`` to refer to field in the current schema
+  (or a base schema). Use a fully prefixed name (e.g.
+  ``'my.package.ISomeSchema'``) to refer to a field in another schema. Use an
+  unprefixed name to refer to a field in the default schema for the form.
+* To turn a field into a view mode or hidden field, use ``form:mode``.
+* To set a custom widget for a field, use ``form:widget`` to give a fully
+  qualified name to the field widget factory.
+* To set a read or write permission, use ``security:read-permission`` or
+  ``security:write-permission``. The value should be the name of an 
+  ``IPermission`` utility.
 
 We can load this using plone.supermodel:
 

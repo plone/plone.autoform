@@ -40,9 +40,9 @@ secondary schema.
     >>> ISecondarySchema.setTaggedValue(FIELDSETS_KEY, [Fieldset('secondary', fields=['summary'])])
 
 A display form normally operates on a given context, although you could set
-ignoreContext = True and implement getContent() if applicable. The schema
-interfaces need to be provided by or adaptable from the context. For the
-purposes of this test, we'll just make them directly provided.
+``ignoreContext = True`` and/or implement ``getContent()`` if applicable. The
+schema interfaces need to be provided by or adaptable from the context. For
+the purposes of this test, we'll just make them directly provided.
 
     >>> from zope.interface import implements
     >>> class Context(object):
@@ -52,9 +52,9 @@ purposes of this test, we'll just make them directly provided.
     ...     summary = u""
 
 We can now define a display form view. This should sub class or mix in
-WidgetsView. It must define either an 'index' callable (usually a page
-template set by the <browser:page /> directive) or override the 'render'
-method. It should also set the 'schema' and 'additionalSchemata' properties
+WidgetsView. It must define either an ``index`` callable (usually a page
+template set by the ``<browser:page />`` directive) or override the ``render``
+method. It should also set the ``schema`` and ``additionalSchemata`` properties
 as required, using class variables, instance variables or properties.
 
     >>> from plone.autoform.view import WidgetsView

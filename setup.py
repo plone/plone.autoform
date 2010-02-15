@@ -7,6 +7,9 @@ setup(name='plone.autoform',
       version=version,
       description="",
       long_description=open("README.txt").read() + "\n" +
+                       open(os.path.join("plone", "autoform", "autoform.txt")).read() + "\n" +
+                       open(os.path.join("plone", "autoform", "view.txt")).read() + "\n" +
+                       open(os.path.join("plone", "autoform", "supermodel.txt")).read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
