@@ -29,7 +29,7 @@ There are several ways to set the form data:
 * By using the grok directives in the `plone.directives.form`_ package.
 
 To use the automatic form setup, mix in the following base class in your
-forms:
+forms::
 
     >>> from plone.autoform.form import AutoExtensibleForm
 
@@ -59,9 +59,22 @@ the ``render()`` method, set an ``index`` attribute to a page template or
 other callable, or use the ``template`` attribute of the ``<browser:page />``
 ZCML directive when registering the view.
 
-See `autoform.txt` for details on how to use the form generation, view.txt for
-details on the widgets view, and `supermodel.txt` for information on the
-``form`` XML namespace in a `plone.supermodel`_ schema file.
+In the template, you can use the following variables:
+
+* ``view/w`` is a dictionary of all widgets, including those from non-default
+  fieldsets (by contrast, the ``widgets`` variable contains only those
+  widgets in the default fieldset). The keys are the field names, and the
+  values are widget instances. To render a widget (in display mode), you can
+  do ``tal:replace="structure view/w/myfield/render" />``.
+* ``view/fieldsets`` is a dictionary of all fieldsets (not including the
+  default fieldset, i.e. those widgets not placed into a fieldset). They keys
+  are the fieldset names, and the values are the fieldset form instances,
+  which in turn have variables like ``widgets`` given a list of all widgets.
+
+See ```autoform.txt``` for details on how to use the form generation,
+``view.txt`` for details on the widgets view, and ``supermodel.txt`` for
+information on the ``form`` XML namespace in a `plone.supermodel`_ schema
+file.
 
 .. _z3c.form: http://pypi.python.org/pypi/z3c.form
 .. _plone.z3cform: http://pypi.python.org/pypi/plone.z3cform
