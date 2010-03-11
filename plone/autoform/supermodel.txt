@@ -49,7 +49,9 @@ Next, let's define a sample model that exercises the various ``form`` and
     ...         </field>
     ...         <field type="zope.schema.TextLine" name="three"
     ...                 form:before="two"
-    ...                 form:widget="z3c.form.browser.password.PasswordFieldWidget">
+    ...                 form:widget="z3c.form.browser.password.PasswordFieldWidget"
+    ...                 form:omitted="z3c.form.interfaces.IForm:true z3c.form.interfaces.IEditForm:false"
+    ...                 form:mode="z3c.form.interfaces.IEditForm:input">
     ...             <title>Three</title>
     ...         </field>
     ...     </schema>
@@ -58,14 +60,19 @@ Next, let's define a sample model that exercises the various ``form`` and
 
 Notes:
 
-* To omit a field from the form, use ``form:omitted="true"``.
+* To omit a field from all forms, use ``form:omitted="true"``.  To omit a field
+  only from some forms, specify a form interface like
+  ``form:omitted="z3c.form.interfaces.IForm:true"``. Multiple interface:value
+  settings may be specified, separated by spaces.
 * To re-order fields, use ``form:after`` or ``form:before``. The value should
   be either ``'*'``, to put the field first/last in the form, or the name of a
   another field. Use ``'.fieldname'`` to refer to field in the current schema
   (or a base schema). Use a fully prefixed name (e.g.
   ``'my.package.ISomeSchema'``) to refer to a field in another schema. Use an
   unprefixed name to refer to a field in the default schema for the form.
-* To turn a field into a view mode or hidden field, use ``form:mode``.
+* To turn a field into a view mode or hidden field, use ``form:mode``.  The
+  mode may be set for only some forms by specifying a form interface in the
+  same manner as for ``form:omitted``.
 * To set a custom widget for a field, use ``form:widget`` to give a fully
   qualified name to the field widget factory.
 * To set a read or write permission, use ``security:read-permission`` or
@@ -84,11 +91,11 @@ The interface defined in the model should now have the relevant form data:
     >>> model.schema.getTaggedValue(WIDGETS_KEY)
     {u'three': 'z3c.form.browser.password.PasswordFieldWidget'}
     >>> model.schema.getTaggedValue(OMITTED_KEY)
-    {u'one': 'true'}
+    [(<InterfaceClass zope.interface.Interface>, u'one', 'true'), (<InterfaceClass z3c.form.interfaces.IForm>, u'three', 'true'), (<InterfaceClass z3c.form.interfaces.IEditForm>, u'three', 'false')]
     >>> model.schema.getTaggedValue(ORDER_KEY)
     [(u'one', 'after', 'two'), (u'three', 'before', 'two')]
     >>> model.schema.getTaggedValue(MODES_KEY)
-    {u'two': 'hidden'}
+    [(<InterfaceClass z3c.form.interfaces.IEditForm>, u'three', 'input'), (<InterfaceClass zope.interface.Interface>, u'two', 'hidden')]
     >>> model.schema.getTaggedValue(READ_PERMISSIONS_KEY)
     {u'one': 'zope2.View'}
     >>> model.schema.getTaggedValue(WRITE_PERMISSIONS_KEY)

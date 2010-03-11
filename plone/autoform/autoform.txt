@@ -85,6 +85,7 @@ pre-traversal in the ++widget++ namespace in plone.z3cform.
 
 And finally, a form:
 
+    >>> from z3c.form.interfaces import IForm, IEditForm
     >>> from plone.autoform.form import AutoExtensibleForm
     >>> from z3c.form import form, button
     >>> class TestForm(AutoExtensibleForm, form.Form):
@@ -103,11 +104,14 @@ Adding form data
 
 Form data can be held under the following keys:
 
-    OMITTED_KEY -- A dict of fieldName => boolean. If the second value
-        evaluates to true, the given field name is omitted.
+    OMITTED_KEY -- A list of (interface, fieldName, boolean) triples. If the
+        third value evaluates to true, the field with the given fieldName will
+        be omitted from forms providing the given interface.
     
-    MODES_KEY -- A dict of fieldName => mode string, specifying z3c.form
-        widget modes, including 'hidden', 'input' and 'display'.
+    MODES_KEY -- A list of (interface, fieldName, mode string) triples. A mode
+        string may be one of the z3c.form widget modes, including 'hidden',
+        'input', and 'display'.  The field will be rendered using a widget in
+        the specified mode on forms providing the given interface.
     
     WIDGETS_KEY -- A dict of fieldName => widget. The widget can be
         the dotted name of a z3c.form field widget factory, or an actual
@@ -168,11 +172,21 @@ Let us now set up some form data.
 
 Omitted fields are listed like this:
 
-    >>> ITestSchema.setTaggedValue(OMITTED_KEY, {'four': True, 'five': True})
+    >>> ITestSchema.setTaggedValue(OMITTED_KEY,
+    ...                            ((IForm, 'four', True),
+    ...                             (Interface, 'four', False),
+    ...                             (Interface, 'five', False),
+    ...                             (Interface, 'five', True))
+    ...                           )
 
 Field modes can be set like this:
 
-    >>> ITestSchema.setTaggedValue(MODES_KEY, {'one': 'hidden', 'two': 'display'})
+    >>> ITestSchema.setTaggedValue(MODES_KEY,
+    ...                            ((Interface, 'one', 'display'),
+    ...                             (IEditForm, 'one', 'display'),
+    ...                             (IForm, 'one', 'hidden'),
+    ...                             (Interface, 'two', 'display'))
+    ...                           )
 
 Widgets can be specified either by a dotted name string or an actual instance:
 
@@ -224,6 +238,7 @@ The results of all of this can be seen below:
      'ISupplementarySchema.two',
      'two',
      'one',
+     'five',
      'IOtherSchema.six',
      'IOtherSchema.five']
 
@@ -284,6 +299,7 @@ return.
      'ISupplementarySchema.two',
      'two',
      'one',
+     'five',
      'six',
      'IOtherSchema.six',
      'IOtherSchema.five']
@@ -308,7 +324,7 @@ Let's change some field settings to ensure that they are still processed,
 and move the creation_date field to another fieldset, which we will define
 in full.
 
-    >>> Basics.setTaggedValue(MODES_KEY, {'hidden_secret': 'hidden'})
+    >>> Basics.setTaggedValue(MODES_KEY, [(Interface, 'hidden_secret', 'hidden')])
     >>> Basics.setTaggedValue(FIELDSETS_KEY, [Fieldset('Dates', label="Cool dates", fields=['creation_date'])])
     
     >>> class Dates(Interface):

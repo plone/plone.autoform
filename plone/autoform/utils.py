@@ -1,4 +1,5 @@
 from zope.component import queryUtility
+from zope.interface import providedBy
 
 from zope.security.interfaces import IPermission
 
@@ -55,6 +56,31 @@ def _getDisallowedFields(context, permissions, prefix):
             disallowed.append(_fn(prefix, fieldName))
     
     return disallowed
+
+def mergedTaggedValuesForForm(schema, name, form):
+    """Finds a list of (interface, fieldName, value) 3-ples from the tagged
+    value named 'name', on 'schema' and all of its bases.  Returns a dict of
+    fieldName => value, where the value is from the tuple for that fieldName
+    whose interface is highest in the interface resolution order, among the
+    interfaces actually provided by 'form'.
+    """
+    threeples = mergedTaggedValueList(schema, name)
+    # filter out settings irrelevant to this form
+    threeples = [t for t in mergedTaggedValueList(schema, name)
+                 if t[0].providedBy(form)]
+    # Sort by interface resolution order of the form interface,
+    # then by IRO of the interface the value came from
+    # (that is the input order, so we can rely on Python's stable sort)
+    form_iro = list(providedBy(form).flattened())
+    def by_form_iro(threeple):
+        interface = threeple[0]
+        return form_iro.index(interface)
+    threeples.sort(key=by_form_iro)
+    d = {}
+    # Now iterate through in the reverse order -- the values assigned last win.
+    for _, fieldName, value in reversed(threeples):
+        d[fieldName] = value
+    return d
 
 # Some helper functions
 
@@ -114,9 +140,9 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
     
     # Note: The names always refer to a field in the schema, and never contain a prefix.
     
-    omitted   = mergedTaggedValueDict(schema, OMITTED_KEY)   # name => e.g. 'true'
-    modes     = mergedTaggedValueDict(schema, MODES_KEY)     # name => e.g. 'hidden'
-    widgets   = mergedTaggedValueDict(schema, WIDGETS_KEY)   # name => widget/dotted name
+    omitted   = mergedTaggedValuesForForm(schema, OMITTED_KEY, form)   # { name => True }
+    modes     = mergedTaggedValuesForForm(schema, MODES_KEY, form)     # { name => e.g. 'hidden' }
+    widgets   = mergedTaggedValueDict(schema, WIDGETS_KEY)   # { name => widget/dotted name }
 
     fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY) # list of IFieldset instances
 
@@ -136,7 +162,8 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
     do_not_process.extend(_getDisallowedFields(form.context, permissions, prefix))
 
     for fieldName, status in omitted.items():
-        do_not_process.append(_fn(prefix, fieldName))
+        if status and status != 'false':
+            do_not_process.append(_fn(prefix, fieldName))
     
     for group in form.groups:
         do_not_process.extend(list(group.fields.keys()))

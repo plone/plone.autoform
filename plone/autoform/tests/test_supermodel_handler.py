@@ -2,6 +2,7 @@ import unittest
 
 from zope.interface import Interface
 import zope.schema
+from z3c.form.interfaces import IForm, IEditForm
 
 from plone.supermodel.utils import ns
 
@@ -29,8 +30,8 @@ class TestFormSchema(unittest.TestCase):
         handler.read(field_node, IDummy, IDummy['dummy'])
         
         self.assertEquals({'dummy': 'SomeWidget'}, IDummy.getTaggedValue(WIDGETS_KEY))
-        self.assertEquals({'dummy': 'true'}, IDummy.getTaggedValue(OMITTED_KEY))
-        self.assertEquals({'dummy': 'hidden'}, IDummy.getTaggedValue(MODES_KEY))
+        self.assertEquals([(Interface, 'dummy', 'true')], IDummy.getTaggedValue(OMITTED_KEY))
+        self.assertEquals([(Interface, 'dummy', 'hidden')], IDummy.getTaggedValue(MODES_KEY))
         self.assertEquals([('dummy', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
 
     def test_read_multiple(self):
@@ -53,8 +54,10 @@ class TestFormSchema(unittest.TestCase):
         handler.read(field_node2, IDummy, IDummy['dummy2'])
     
         self.assertEquals({'dummy1': 'SomeWidget'}, IDummy.getTaggedValue(WIDGETS_KEY))
-        self.assertEquals({'dummy1': 'true', 'dummy2': 'yes'}, IDummy.getTaggedValue(OMITTED_KEY))
-        self.assertEquals({'dummy1': 'hidden', 'dummy2': 'display'}, IDummy.getTaggedValue(MODES_KEY))
+        self.assertEquals([(Interface, 'dummy1', 'true'), (Interface, 'dummy2', 'yes')],
+                          IDummy.getTaggedValue(OMITTED_KEY))
+        self.assertEquals([(Interface, 'dummy1', 'hidden'), (Interface, 'dummy2', 'display')],
+                          IDummy.getTaggedValue(MODES_KEY))
         self.assertEquals([('dummy1', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
     
     def test_read_no_data(self):
@@ -70,7 +73,29 @@ class TestFormSchema(unittest.TestCase):
         self.assertEquals(None, IDummy.queryTaggedValue(OMITTED_KEY))
         self.assertEquals(None, IDummy.queryTaggedValue(MODES_KEY))
         self.assertEquals(None, IDummy.queryTaggedValue(ORDER_KEY))
+    
+    def test_read_values_with_interfaces(self):
+        field_node1 = ElementTree.Element('field')
+        field_node1.set(ns("mode", self.namespace), "z3c.form.interfaces.IForm:hidden")
+        field_node1.set(ns("omitted", self.namespace), "z3c.form.interfaces.IForm:true")
+
+        field_node2 = ElementTree.Element('field')
+        field_node2.set(ns("mode", self.namespace), "z3c.form.interfaces.IForm:hidden z3c.form.interfaces.IEditForm:display")
+        field_node2.set(ns("omitted", self.namespace), "z3c.form.interfaces.IForm:true z3c.form.interfaces.IEditForm:false")
         
+        class IDummy(Interface):
+            dummy1 = zope.schema.TextLine(title=u"dummy1")
+            dummy2 = zope.schema.TextLine(title=u"dummy2")
+
+        handler = FormSchema()
+        handler.read(field_node1, IDummy, IDummy['dummy1'])
+        handler.read(field_node2, IDummy, IDummy['dummy2'])
+
+        expected_modes = [(IForm, u'dummy1', 'hidden'), (IForm, u'dummy2', 'hidden'), (IEditForm, u'dummy2', 'display')]
+        self.assertEquals(expected_modes, IDummy.queryTaggedValue(MODES_KEY))
+        expected_omitted = [(IForm, u'dummy1', 'true'), (IForm, u'dummy2', 'true'), (IEditForm, u'dummy2', 'false')]
+        self.assertEquals(expected_omitted, IDummy.queryTaggedValue(OMITTED_KEY))
+    
     def test_write(self):
         field_node = ElementTree.Element('field')
         
@@ -78,8 +103,8 @@ class TestFormSchema(unittest.TestCase):
             dummy = zope.schema.TextLine(title=u"dummy1")
             
         IDummy.setTaggedValue(WIDGETS_KEY, {'dummy': 'SomeWidget'})
-        IDummy.setTaggedValue(OMITTED_KEY, {'dummy': 'true'})
-        IDummy.setTaggedValue(MODES_KEY, {'dummy': 'hidden'})
+        IDummy.setTaggedValue(OMITTED_KEY, [(Interface, 'dummy', 'true')])
+        IDummy.setTaggedValue(MODES_KEY, [(Interface, 'dummy', 'hidden')])
         IDummy.setTaggedValue(ORDER_KEY, [('dummy', 'before', 'somefield',)])
         
         handler = FormSchema()
@@ -97,8 +122,8 @@ class TestFormSchema(unittest.TestCase):
             dummy = zope.schema.TextLine(title=u"dummy1")
         
         IDummy.setTaggedValue(WIDGETS_KEY, {'dummy': 'SomeWidget'})
-        IDummy.setTaggedValue(OMITTED_KEY, {'dummy2': 'true'})
-        IDummy.setTaggedValue(MODES_KEY, {'dummy': 'display', 'dummy2': 'hidden'})
+        IDummy.setTaggedValue(OMITTED_KEY, [(Interface, 'dummy2', 'true')])
+        IDummy.setTaggedValue(MODES_KEY, [(Interface, 'dummy', 'display'), (Interface, 'dummy2', 'hidden')])
         IDummy.setTaggedValue(ORDER_KEY, [])
         
         handler = FormSchema()
@@ -122,6 +147,31 @@ class TestFormSchema(unittest.TestCase):
         self.assertEquals(None, field_node.get(ns("omitted", self.namespace)))
         self.assertEquals(None, field_node.get(ns("mode", self.namespace)))
         self.assertEquals(None, field_node.get(ns("before", self.namespace)))
+
+    def test_write_values_with_interfaces(self):
+        field_node1 = ElementTree.Element('field')
+        field_node2 = ElementTree.Element('field')
+
+        class IDummy(Interface):
+            dummy1 = zope.schema.TextLine(title=u"dummy1")
+            dummy2 = zope.schema.TextLine(title=u"dummy2")
+
+        modes_values = [(IForm, u'dummy1', 'hidden'), (IForm, u'dummy2', 'hidden'), (IEditForm, u'dummy2', 'display')]
+        IDummy.setTaggedValue(MODES_KEY, modes_values)
+        omitted_values = [(IForm, u'dummy1', 'true'), (IForm, u'dummy2', 'true'), (IEditForm, u'dummy2', 'false')]
+        IDummy.setTaggedValue(OMITTED_KEY, omitted_values)
+
+        handler = FormSchema()
+        handler.write(field_node1, IDummy, IDummy['dummy1'])
+        handler.write(field_node2, IDummy, IDummy['dummy2'])
+
+        self.assertEquals("z3c.form.interfaces.IForm:hidden", field_node1.get(ns("mode", self.namespace)))
+        self.assertEquals("z3c.form.interfaces.IForm:true", field_node1.get(ns("omitted", self.namespace)))
+
+        self.assertEquals("z3c.form.interfaces.IForm:hidden z3c.form.interfaces.IEditForm:display",
+                          field_node2.get(ns("mode", self.namespace)))
+        self.assertEquals("z3c.form.interfaces.IForm:true z3c.form.interfaces.IEditForm:false",
+                          field_node2.get(ns("omitted", self.namespace)))
 
 class TestSecuritySchema(unittest.TestCase):
     

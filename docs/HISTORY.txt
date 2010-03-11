@@ -1,6 +1,17 @@
 Changelog
 =========
 
+1.0b3 - unreleased
+------------------
+
+* Properly handle the 'omitted' tagged value when it is set to 'false' for a
+  field.
+  [davisagli]
+
+* Make it possible to set the 'omitted' and 'mode' settings only for particular
+  form interfaces.
+  [davisagli]
+
 1.0b2 - 2009-07-12
 ------------------
 
