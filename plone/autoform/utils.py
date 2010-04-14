@@ -172,7 +172,8 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
         groups[group_name] = group
 
     # Find all allowed fields so that we have something to select from
-    all_fields = field.Fields(schema, prefix=prefix, omitReadOnly=True).omit(*do_not_process)
+    omitReadOnly = form.mode != DISPLAY_MODE
+    all_fields = field.Fields(schema, prefix=prefix, omitReadOnly=omitReadOnly).omit(*do_not_process)
     
     # Keep track of which fields are in a fieldset, and, by elimination,
     # which ones are not 

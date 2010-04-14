@@ -12,6 +12,10 @@ Changelog
   form interfaces.
   [davisagli]
 
+* Do not omit read-only fields when rendering a form in DISPLAY mode.
+  http://code.google.com/p/dexterity/issues/detail?id=118
+  [mj]
+
 1.0b2 - 2009-07-12
 ------------------
 
