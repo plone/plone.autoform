@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b3 - unreleased
+1.0b3 - 2010-04-20
 ------------------
 
 * Properly handle the 'omitted' tagged value when it is set to 'false' for a
