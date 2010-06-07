@@ -4,6 +4,9 @@ Changelog
 1.0b4 - unreleased
 ------------------
 
+* Removed some dead code.
+  Fixes http://code.google.com/p/dexterity/issues/detail?id=132
+  [optilude, shywolf9982]
 
 1.0b3 - 2010-04-20
 ------------------

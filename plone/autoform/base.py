@@ -34,7 +34,7 @@ class AutoFields(object):
         # Copy groups to an instance variable and ensure that we have
         # the more mutable factories, rather than 'Group' subclasses
 
-        self.groups = []
+        groups = []
 
         for g in self.groups:
             group_name = getattr(g, '__name__', g.label)
@@ -42,7 +42,11 @@ class AutoFields(object):
                                           field.Fields(g.fields),
                                           g.label,
                                           getattr(g, 'description', None))
-            self.groups.append(fieldset_group)
+            groups.append(fieldset_group)
+        
+        # Copy to instance variable only after we have potentially read from
+        # the class
+        self.groups = groups
         
         prefixes = {}
         

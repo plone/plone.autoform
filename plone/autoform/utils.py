@@ -64,7 +64,6 @@ def mergedTaggedValuesForForm(schema, name, form):
     whose interface is highest in the interface resolution order, among the
     interfaces actually provided by 'form'.
     """
-    threeples = mergedTaggedValueList(schema, name)
     # filter out settings irrelevant to this form
     threeples = [t for t in mergedTaggedValueList(schema, name)
                  if t[0].providedBy(form)]
@@ -92,11 +91,11 @@ def _fn(prefix, fieldName):
     else:
         return fieldName
 
-def _bn(field):
+def _bn(fieldInstance):
     """Give base (non-prefixed) fieldname
     """
-    prefix = field.prefix
-    fieldName = field.__name__
+    prefix = fieldInstance.prefix
+    fieldName = fieldInstance.__name__
     if prefix:
         return fieldName[len(prefix) + 1:]
     else:
@@ -107,11 +106,11 @@ def _processWidgets(form, widgets, modes, newFields):
     """
 
     for fieldName in newFields:
-        field = newFields[fieldName]
-        base_name = _bn(field)
+        fieldInstance = newFields[fieldName]
+        base_name = _bn(fieldInstance)
         
         widget_name = widgets.get(base_name, None)
-        widget_mode = modes.get(base_name, field.mode) or form.mode or INPUT_MODE
+        widget_mode = modes.get(base_name, fieldInstance.mode) or form.mode or INPUT_MODE
         
         widget_factory = None
         if widget_name is not None:
@@ -121,7 +120,7 @@ def _processWidgets(form, widgets, modes, newFields):
                 widget_factory = widget_name
             
             if widget_factory is not None:
-                field.widgetFactory[widget_mode] = widget_factory
+                fieldInstance.widgetFactory[widget_mode] = widget_factory
         
         if base_name in modes:
             newFields[fieldName].mode = widget_mode
