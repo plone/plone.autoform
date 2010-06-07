@@ -33,30 +33,6 @@ def resolveDottedName(dottedName):
         _dottedCache[dottedName] = resolve(dottedName)
     return _dottedCache[dottedName]
 
-def _getDisallowedFields(context, permissions, prefix):
-    """Get a list of fields for which the user does not have the requisite
-    permission. 'permissions' is a dict with field names as keys and
-    permission names as values. The permission names will be looked up
-    as IPermission utilities.
-    """
-    
-    security_manager = getSecurityManager()
-    
-    disallowed = []
-    permission_cache = {} # name -> True/False
-    
-    for fieldName, permission_name in permissions.items():
-        if permission_name not in permission_cache:
-            permission = queryUtility(IPermission, name=permission_name)
-            if permission is None:
-                permission_cache[permission_name] = True
-            else:
-                permission_cache[permission_name] = security_manager.checkPermission(permission.title, context)
-        if not permission_cache[permission_name]:
-            disallowed.append(_fn(prefix, fieldName))
-    
-    return disallowed
-
 def mergedTaggedValuesForForm(schema, name, form):
     """Finds a list of (interface, fieldName, value) 3-ples from the tagged
     value named 'name', on 'schema' and all of its bases.  Returns a dict of
@@ -107,23 +83,23 @@ def _processWidgets(form, widgets, modes, newFields):
 
     for fieldName in newFields:
         fieldInstance = newFields[fieldName]
-        base_name = _bn(fieldInstance)
+        baseName = _bn(fieldInstance)
         
-        widget_name = widgets.get(base_name, None)
-        widget_mode = modes.get(base_name, fieldInstance.mode) or form.mode or INPUT_MODE
+        widgetName = widgets.get(baseName, None)
+        widgetMode = modes.get(baseName, fieldInstance.mode) or form.mode or INPUT_MODE
         
-        widget_factory = None
-        if widget_name is not None:
-            if isinstance(widget_name, basestring):
-                widget_factory = resolveDottedName(widget_name)
-            elif IFieldWidget.implementedBy(widget_name):
-                widget_factory = widget_name
+        widgetFactory = None
+        if widgetName is not None:
+            if isinstance(widgetName, basestring):
+                widgetFactory = resolveDottedName(widgetName)
+            elif IFieldWidget.implementedBy(widgetName):
+                widgetFactory = widgetName
             
-            if widget_factory is not None:
-                fieldInstance.widgetFactory[widget_mode] = widget_factory
+            if widgetFactory is not None:
+                fieldInstance.widgetFactory[widgetMode] = widgetFactory
         
-        if base_name in modes:
-            newFields[fieldName].mode = widget_mode
+        if baseName in modes:
+            newFields[fieldName].mode = widgetMode
 
 def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=True):
     """Add the fields from the schema to the from, taking into account
@@ -141,50 +117,77 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
     
     omitted   = mergedTaggedValuesForForm(schema, OMITTED_KEY, form)   # { name => True }
     modes     = mergedTaggedValuesForForm(schema, MODES_KEY, form)     # { name => e.g. 'hidden' }
-    widgets   = mergedTaggedValueDict(schema, WIDGETS_KEY)   # { name => widget/dotted name }
-
-    fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY) # list of IFieldset instances
-
-    # Get either read or write permissions depending on what type of form this is
-
-    permissions = {}
-    if permissionChecks:
-        if form.mode == DISPLAY_MODE:
-            permissions = mergedTaggedValueDict(schema, READ_PERMISSIONS_KEY)  # name => permission name
-        elif form.mode == INPUT_MODE:
-            permissions = mergedTaggedValueDict(schema, WRITE_PERMISSIONS_KEY) # name => permission name
+    widgets   = mergedTaggedValueDict(schema, WIDGETS_KEY)             # { name => widget/dotted name }
     
+    fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY)           # list of IFieldset instances
+    
+    # Get either read or write permissions depending on what type of form this is
+    
+    readPermissions  = {}  # field name -> permission name
+    writePermissions = {}  # field name -> permission name
+    permissionCache  = {}  # permission name -> allowed/disallowed
+    
+    if permissionChecks:
+        readPermissions  = mergedTaggedValueDict(schema, READ_PERMISSIONS_KEY)  # name => permission name
+        writePermissions = mergedTaggedValueDict(schema, WRITE_PERMISSIONS_KEY) # name => permission name
+        securityManager  = getSecurityManager()
+        
     # Find the fields we should not worry about
     
     groups = {}
-    do_not_process = list(form.fields.keys())
-    do_not_process.extend(_getDisallowedFields(form.context, permissions, prefix))
+    doNotProcess = list(form.fields.keys())
 
     for fieldName, status in omitted.items():
         if status and status != 'false':
-            do_not_process.append(_fn(prefix, fieldName))
+            doNotProcess.append(_fn(prefix, fieldName))
     
     for group in form.groups:
-        do_not_process.extend(list(group.fields.keys()))
+        doNotProcess.extend(list(group.fields.keys()))
         
-        group_name = getattr(group, '__name__', group.label)
-        groups[group_name] = group
+        groupName = getattr(group, '__name__', group.label)
+        groups[groupName] = group
 
     # Find all allowed fields so that we have something to select from
     omitReadOnly = form.mode != DISPLAY_MODE
-    all_fields = field.Fields(schema, prefix=prefix, omitReadOnly=omitReadOnly).omit(*do_not_process)
+    allFields = field.Fields(schema, prefix=prefix, omitReadOnly=omitReadOnly).omit(*doNotProcess)
+    
+    # Check permissions
+    if permissionChecks:
+        
+        disallowedFields = []
+        
+        for fieldName, fieldInstance in allFields.items():
+            fieldName = fieldInstance.__name__
+            fieldMode = fieldInstance.mode or form.mode
+            
+            permissionName = None
+            if fieldMode == DISPLAY_MODE:
+                permissionName = readPermissions.get(_fn(prefix, fieldName), None)
+            elif fieldMode == INPUT_MODE:
+                permissionName = writePermissions.get(_fn(prefix, fieldName), None)
+            if permissionName is not None:
+                if permissionName not in permissionCache:
+                    permission = queryUtility(IPermission, name=permissionName)
+                    if permission is None:
+                        permissionCache[permissionName] = True
+                    else:
+                        permissionCache[permissionName] = bool(securityManager.checkPermission(permission.title, form.context))
+                if not permissionCache.get(permissionName, True):
+                    disallowedFields.append(_fn(prefix, fieldName))
+        
+        allFields = allFields.omit(*disallowedFields)
     
     # Keep track of which fields are in a fieldset, and, by elimination,
     # which ones are not 
     
-    fieldset_fields = []
+    fieldsetFields = []
     for fieldset in fieldsets:
         for fieldName in fieldset.fields:
-            fieldset_fields.append(_fn(prefix, fieldName))
+            fieldsetFields.append(_fn(prefix, fieldName))
     
     # Set up the default fields, widget factories and widget modes
     
-    newFields = all_fields.omit(*fieldset_fields)
+    newFields = allFields.omit(*fieldsetFields)
     _processWidgets(form, widgets, modes, newFields)
     
     if not defaultGroup:
@@ -196,9 +199,9 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
     
     for fieldset in fieldsets:
         
-        newFields = all_fields.select(*[_fn(prefix, fieldName) 
+        newFields = allFields.select(*[_fn(prefix, fieldName) 
                                             for fieldName in fieldset.fields
-                                                if _fn(prefix, fieldName) in all_fields])
+                                                if _fn(prefix, fieldName) in allFields])
         
         if len(newFields) > 0:        
             _processWidgets(form, widgets, modes, newFields)
