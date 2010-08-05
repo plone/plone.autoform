@@ -1,11 +1,12 @@
 Changelog
 =========
 
-1.0b4 - unreleased
+1.0b4 - 2010-08-05
 ------------------
 
 * Make field permission checks use the field mode rather than the form mode.
   Fixes http://code.google.com/p/dexterity/issues/detail?id=110
+  [optilude]
 
 * Removed some dead code.
   Fixes http://code.google.com/p/dexterity/issues/detail?id=132
