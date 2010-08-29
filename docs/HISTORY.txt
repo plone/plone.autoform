@@ -4,6 +4,10 @@ Changelog
 1.0b4 - 2010-08-05
 ------------------
 
+* Fixed widget traversal for WidgetsView
+  http://groups.google.com/group/dexterity-development/browse_frm/thread/280016ece3ed1462
+  [29.08.2010, jbaumann]
+
 * Make field permission checks use the field mode rather than the form mode.
   Fixes http://code.google.com/p/dexterity/issues/detail?id=110
   [optilude]

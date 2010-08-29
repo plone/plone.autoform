@@ -115,3 +115,13 @@ you wish to flatten the namespace, you can set ignorePrefix to true:
     [('body', <TextAreaWidget 'form.widgets.body'>), 
      ('ISecondarySchema.summary', <TextAreaWidget 'form.widgets.ISecondarySchema.summary'>), 
      ('title', <TextWidget 'form.widgets.title'>)]
+
+For supporting widget traversal it is necessary that after updating
+the form the widgets are present:
+
+    >>> view2 = TestView(context, request)
+    >>> view2.update()
+    >>> view2.widgets
+    <z3c.form.field.FieldWidgets object at ...>
+    >>> view2.widgets.keys()
+    ['title', 'body']
