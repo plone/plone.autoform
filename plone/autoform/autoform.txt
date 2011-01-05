@@ -35,13 +35,12 @@ Test setup
 ----------
 
 First, let's load this package's ZCML so that we can run the tests:
-
     >>> configuration = """\
     ... <configure xmlns="http://namespaces.zope.org/zope">
     ...
     ...     <include package="Products.Five" file="configure.zcml" />
     ...     <include package="plone.autoform" />
-    ...     
+    ...
     ... </configure>
     ... """
     >>> from StringIO import StringIO
@@ -213,7 +212,7 @@ using a shortcut: '.six' is equivalent to 'IOtherSchema.six' in this case.
 Field permissions can be set like this:
 
     >>> ITestSchema.setTaggedValue(WRITE_PERMISSIONS_KEY, { 'five': u'dummy.PermissionOne',
-    ...                                                      'six': u'cmf.ManagePortal'})
+    ...                                                      'six': u'five.ManageSite'})
 
 Note that if a permission is not found, the field will be allowed.
 
