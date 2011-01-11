@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0b5 - 2011-01-11
+------------------
+
+* Use five.ManageSite permission to check field permissions. We'll avoid
+  sniffing for Five/CMFCore permissions.zcml difference between Zope 2.12 and
+  2.13.
+  [esteele]
+
 1.0b4 - 2010-08-05
 ------------------
 
