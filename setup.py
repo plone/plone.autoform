@@ -5,7 +5,7 @@ version = '1.0b6'
 
 setup(name='plone.autoform',
       version=version,
-      description="",
+      description="Tools to construct z3c.form forms",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("plone", "autoform", "autoform.txt")).read() + "\n" +
                        open(os.path.join("plone", "autoform", "view.txt")).read() + "\n" +
