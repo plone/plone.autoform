@@ -26,10 +26,13 @@ class WidgetsView(AutoFields, DisplayForm, Explicit):
     additionalSchemata = ()
     
     request_layer = IFormLayer
+    
+    w = None
+    fieldsets = None
 
     def update(self):
-        self.updateFieldsFromSchemata()
-        self.updateWidgets()
+        if self.w is None:
+            self._update()
 
     def render(self):
         if getattr(self, 'index', None) is not None:

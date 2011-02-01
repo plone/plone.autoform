@@ -98,8 +98,8 @@ name:
 
 You can also see fieldsets (groups) either in order:
 
-    >>> [g.__name__ for g in view.groups]
-    ['secondary']
+    >>> view.groups
+    (<plone.z3cform.fieldsets.group.Group object at ...>,)
 
 or looked up by name:
 
@@ -109,11 +109,12 @@ or looked up by name:
 Note how the schema name is used as a prefix to all additional schemata. If
 you wish to flatten the namespace, you can set ignorePrefix to true:
 
+    >>> view = TestView(context, request)
     >>> view.ignorePrefix = True
     >>> view.update()
     >>> view.w.items()
     [('body', <TextAreaWidget 'form.widgets.body'>), 
-     ('ISecondarySchema.summary', <TextAreaWidget 'form.widgets.ISecondarySchema.summary'>), 
+     ('summary', <TextAreaWidget 'form.widgets.summary'>), 
      ('title', <TextWidget 'form.widgets.title'>)]
 
 For supporting widget traversal it is necessary that after updating

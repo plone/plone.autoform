@@ -15,7 +15,7 @@ class AutoFields(object):
     additionalSchemata = ()
     
     fields = field.Fields()
-    groups = []
+    groups = ()
     
     ignorePrefix = False
     autoGroups = False
