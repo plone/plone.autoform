@@ -4,6 +4,12 @@ Changelog
 1.0b6 - Unreleased
 ------------------
 
+* Fix WidgetsView so that _update and update do not clash.
+  [elro]
+
+* Fix view.txt doctest to test actual behaviour, not artifacts from test setup.
+  [elro]
+
 1.0b5 - 2011-01-11
 ------------------
 
