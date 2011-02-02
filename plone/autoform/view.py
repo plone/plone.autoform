@@ -42,7 +42,6 @@ class WidgetsView(AutoFields, DisplayForm, Explicit):
     # Helper methods
     
     def __call__(self):
-        z2.switch_on(self)
         # support subclassed forms which do not call update on their superclass
         self._update()
         self.update()
@@ -52,6 +51,7 @@ class WidgetsView(AutoFields, DisplayForm, Explicit):
         if self.w is not None:
             return
         
+        z2.switch_on(self)
         self.updateFieldsFromSchemata()
         self.updateWidgets()
         
