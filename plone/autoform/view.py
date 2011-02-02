@@ -31,8 +31,8 @@ class WidgetsView(AutoFields, DisplayForm, Explicit):
     fieldsets = None
 
     def update(self):
-        if self.w is None:
-            self._update()
+        # The ++widget++ traverser only calls update, not __call__
+        self._update()
 
     def render(self):
         if getattr(self, 'index', None) is not None:
@@ -43,11 +43,15 @@ class WidgetsView(AutoFields, DisplayForm, Explicit):
     
     def __call__(self):
         z2.switch_on(self)
+        # support subclassed forms which do not call update on their superclass
         self._update()
         self.update()
         return self.render()
     
     def _update(self):
+        if self.w is not None:
+            return
+        
         self.updateFieldsFromSchemata()
         self.updateWidgets()
         
