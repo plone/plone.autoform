@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b6 - Unreleased
+1.0b6 - 2011-02-11
 ------------------
 
 * Fix WidgetsView so that _update and update do not clash.
