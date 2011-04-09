@@ -89,17 +89,17 @@ The interface defined in the model should now have the relevant form data:
     >>> from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, \
     ...     MODES_KEY, ORDER_KEY, READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
     >>> model.schema.getTaggedValue(WIDGETS_KEY)
-    {u'three': 'z3c.form.browser.password.PasswordFieldWidget'}
+    {'three': 'z3c.form.browser.password.PasswordFieldWidget'}
     >>> model.schema.getTaggedValue(OMITTED_KEY)
-    [(<InterfaceClass zope.interface.Interface>, u'one', 'true'), (<InterfaceClass z3c.form.interfaces.IForm>, u'three', 'true'), (<InterfaceClass z3c.form.interfaces.IEditForm>, u'three', 'false')]
+    [(<InterfaceClass zope.interface.Interface>, 'one', 'true'), (<InterfaceClass z3c.form.interfaces.IForm>, 'three', 'true'), (<InterfaceClass z3c.form.interfaces.IEditForm>, 'three', 'false')]
     >>> model.schema.getTaggedValue(ORDER_KEY)
-    [(u'one', 'after', 'two'), (u'three', 'before', 'two')]
+    [('one', 'after', 'two'), ('three', 'before', 'two')]
     >>> model.schema.getTaggedValue(MODES_KEY)
-    [(<InterfaceClass z3c.form.interfaces.IEditForm>, u'three', 'input'), (<InterfaceClass zope.interface.Interface>, u'two', 'hidden')]
+    [(<InterfaceClass z3c.form.interfaces.IEditForm>, 'three', 'input'), (<InterfaceClass zope.interface.Interface>, 'two', 'hidden')]
     >>> model.schema.getTaggedValue(READ_PERMISSIONS_KEY)
-    {u'one': 'zope2.View'}
+    {'one': 'zope2.View'}
     >>> model.schema.getTaggedValue(WRITE_PERMISSIONS_KEY)
-    {u'one': 'cmf.ModifyPortalContent'}
+    {'one': 'cmf.ModifyPortalContent'}
 
 See autoform.txt for details on how this form data is used to manipulate
 form layout.
