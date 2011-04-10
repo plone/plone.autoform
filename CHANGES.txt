@@ -1,71 +1,82 @@
 Changelog
 =========
 
+
+1.0b7 - Unreleased
+------------------
+
+- Add MANIFEST.in.
+  [WouterVH]
+
+
 1.0b6 - 2011-02-11
 ------------------
 
-* Fix WidgetsView so that _update and update do not clash.
+- Fix WidgetsView so that _update and update do not clash.
   [elro]
 
-* Fix view.txt doctest to test actual behaviour, not artifacts from test setup.
+- Fix view.txt doctest to test actual behaviour, not artifacts from test setup.
   [elro]
+
 
 1.0b5 - 2011-01-11
 ------------------
 
-* Use five.ManageSite permission to check field permissions. We'll avoid
-  sniffing for Five/CMFCore permissions.zcml difference between Zope 2.12 and
-  2.13.
+- Use five.ManageSite permission to check field permissions. We'll avoid sniffing
+  for Five/CMFCore permissions.zcml difference between Zope 2.12 and 2.13.
   [esteele]
+
 
 1.0b4 - 2010-08-05
 ------------------
 
-* Fixed widget traversal for WidgetsView
+- Fixed widget traversal for WidgetsView
   http://groups.google.com/group/dexterity-development/browse_frm/thread/280016ece3ed1462
   [29.08.2010, jbaumann]
 
-* Make field permission checks use the field mode rather than the form mode.
+- Make field permission checks use the field mode rather than the form mode.
   Fixes http://code.google.com/p/dexterity/issues/detail?id=110
   [optilude]
 
-* Removed some dead code.
+- Removed some dead code.
   Fixes http://code.google.com/p/dexterity/issues/detail?id=132
   [optilude, shywolf9982]
+
 
 1.0b3 - 2010-04-20
 ------------------
 
-* Properly handle the 'omitted' tagged value when it is set to 'false' for a
+- Properly handle the 'omitted' tagged value when it is set to 'false' for a
   field.
   [davisagli]
 
-* Make it possible to set the 'omitted' and 'mode' settings only for particular
+- Make it possible to set the 'omitted' and 'mode' settings only for particular
   form interfaces.
   [davisagli]
 
-* Do not omit read-only fields when rendering a form in DISPLAY mode.
+- Do not omit read-only fields when rendering a form in DISPLAY mode.
   http://code.google.com/p/dexterity/issues/detail?id=118
   [mj]
+
 
 1.0b2 - 2009-07-12
 ------------------
 
-* Changed API methods and arguments to mixedCase to be more consistent with
+- Changed API methods and arguments to mixedCase to be more consistent with
   the rest of Zope. This is a non-backwards-compatible change. Our profuse
   apologies, but it's now or never. :-/
 
   If you find that you get import errors or unknown keyword arguments in your
   code, please change names from foo_bar too fooBar, e.g. process_fields()
   becomes processFields().
-  
+
   Note in particular that the additional_schemata property is now called 
   additionalSchemata. If you have implemented this property yourself, you will
   need to rename it!
   [optilude]
 
+
 1.0b1 - 2009-04-17
 ------------------
 
-* Initial release
-
+- Initial release
