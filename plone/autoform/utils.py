@@ -102,7 +102,7 @@ def _processWidgets(form, widgets, modes, newFields):
             newFields[fieldName].mode = widgetMode
 
 def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=True):
-    """Add the fields from the schema to the from, taking into account
+    """Add the fields from the schema to the form, taking into account
     the hints in the various tagged values as well as fieldsets. If prefix
     is given, the fields will be prefixed with this prefix. If 
     defaultGroup is given (as a Fieldset instance), any field not explicitly
@@ -162,9 +162,9 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
             
             permissionName = None
             if fieldMode == DISPLAY_MODE:
-                permissionName = readPermissions.get(_fn(prefix, fieldName), None)
+                permissionName = readPermissions.get(_bn(fieldInstance), None)
             elif fieldMode == INPUT_MODE:
-                permissionName = writePermissions.get(_fn(prefix, fieldName), None)
+                permissionName = writePermissions.get(_bn(fieldInstance), None)
             if permissionName is not None:
                 if permissionName not in permissionCache:
                     permission = queryUtility(IPermission, name=permissionName)
@@ -173,7 +173,7 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
                     else:
                         permissionCache[permissionName] = bool(securityManager.checkPermission(permission.title, form.context))
                 if not permissionCache.get(permissionName, True):
-                    disallowedFields.append(_fn(prefix, fieldName))
+                    disallowedFields.append(fieldName)
         
         allFields = allFields.omit(*disallowedFields)
     

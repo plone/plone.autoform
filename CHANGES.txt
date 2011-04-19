@@ -5,6 +5,10 @@ Changelog
 1.0b7 - Unreleased
 ------------------
 
+- Fix issue where permission checks were not applied correctly to schemas being
+  added with prefixes.
+  [davisagli]
+
 - Add MANIFEST.in.
   [WouterVH]
 
