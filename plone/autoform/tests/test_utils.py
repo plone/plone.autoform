@@ -2,12 +2,19 @@ import unittest
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
 from zope.component import provideUtility
-from zope.interface import Interface
+from zope.interface import Interface, Invalid
 from z3c.form.form import Form
+from z3c.form.validator import SimpleFieldValidator
 import zope.schema
 import zope.component.testing
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.utils import processFields
+
+class TestValidator(SimpleFieldValidator):
+    
+    def validate(self, value):
+        super(TestValidator, self).validate(value)
+        raise Invalid("Test")
 
 
 class TestUtils(unittest.TestCase):

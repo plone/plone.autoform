@@ -1,8 +1,9 @@
 import unittest
 
+from zope.component import getMultiAdapter
 from zope.interface import Interface
 import zope.schema
-from z3c.form.interfaces import IForm, IEditForm
+from z3c.form.interfaces import IForm, IEditForm, IValidator
 
 from plone.supermodel.utils import ns
 
@@ -22,6 +23,7 @@ class TestFormSchema(unittest.TestCase):
         field_node.set(ns("mode", self.namespace), "hidden")
         field_node.set(ns("omitted", self.namespace), "true")
         field_node.set(ns("before", self.namespace), "somefield")
+        field_node.set(ns("validator", self.namespace), "plone.autoform.tests.test_utils.TestValidator")
         
         class IDummy(Interface):
             dummy = zope.schema.TextLine(title=u"dummy")
@@ -33,6 +35,7 @@ class TestFormSchema(unittest.TestCase):
         self.assertEquals([(Interface, 'dummy', 'true')], IDummy.getTaggedValue(OMITTED_KEY))
         self.assertEquals([(Interface, 'dummy', 'hidden')], IDummy.getTaggedValue(MODES_KEY))
         self.assertEquals([('dummy', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
+        adapter = getMultiAdapter((None, None, None, IDummy['dummy'], None), IValidator) # will raise if wrong
 
     def test_read_multiple(self):
         field_node1 = ElementTree.Element('field')
