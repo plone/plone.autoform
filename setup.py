@@ -48,6 +48,7 @@ setup(name='plone.autoform',
           'zope.dottedname',
           'plone.supermodel>=1.0b2',
           'plone.z3cform',
+          'z3c.form',
           # 'AccessControl',
           # -*- Extra requirements: -*-
       ],

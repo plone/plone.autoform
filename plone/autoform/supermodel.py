@@ -1,3 +1,7 @@
+from z3c.form.interfaces import IValidator
+from z3c.form.util import getSpecification
+from z3c.form.validator import WidgetValidatorDiscriminators
+from zope.component import provideAdapter
 from zope.interface import implements, Interface
 
 from plone.supermodel.utils import ns
@@ -41,14 +45,29 @@ class FormSchema(object):
             tagged_value.append((interface, name, value))
         schema.setTaggedValue(key, tagged_value)
     
+    def _add_validator(self, field, validator_dottedname):
+        try:
+            validator = resolveDottedName(validator_dottedname)
+            if not IValidator.implementedBy(validator):
+                raise ValueError(
+                    "z3c.form.interfaces.IValidator not implemented by %s."
+                    % validator_dottedname)
+            provideAdapter(validator,
+                (None, None, None, getSpecification(field), None),
+                )
+        except ValueError:
+            # XXX Need to do at least log these for 1.0
+            pass
+
     def read(self, fieldNode, schema, field):
         name = field.__name__
         
-        widget  = fieldNode.get( ns('widget',  self.namespace) )
-        mode    = fieldNode.get( ns('mode',    self.namespace) )
-        omitted = fieldNode.get( ns('omitted', self.namespace) )
-        before  = fieldNode.get( ns('before',  self.namespace) )
-        after   = fieldNode.get( ns('after',   self.namespace) )
+        widget    = fieldNode.get( ns('widget',    self.namespace) )
+        mode      = fieldNode.get( ns('mode',      self.namespace) )
+        omitted   = fieldNode.get( ns('omitted',   self.namespace) )
+        before    = fieldNode.get( ns('before',    self.namespace) )
+        after     = fieldNode.get( ns('after',     self.namespace) )
+        validator = fieldNode.get( ns('validator', self.namespace) )
 
         if widget:
             self._add(schema, WIDGETS_KEY, name, widget)
@@ -60,6 +79,8 @@ class FormSchema(object):
             self._add_order(schema, name, 'before', before)
         if after:
             self._add_order(schema, name, 'after', after)
+        if validator:
+            self._add_validator(field, validator)
 
     def write(self, fieldNode, schema, field):
         name = field.__name__

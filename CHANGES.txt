@@ -5,6 +5,9 @@ Changelog
 1.0b7 - Unreleased
 ------------------
 
+- Add form:validator support for supermodel.
+  [elro]
+
 - Fix issue where permission checks were not applied correctly to schemas being
   added with prefixes.
   [davisagli]
