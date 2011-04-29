@@ -62,6 +62,7 @@ class FormSchema(object):
                 % value)
         provideAdapter(validator,
             (None, None, None, getSpecification(field), None),
+            IValidator,
             )
 
     def read(self, fieldNode, schema, field):
