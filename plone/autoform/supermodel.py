@@ -3,6 +3,7 @@ from z3c.form.util import getSpecification
 from z3c.form.validator import WidgetValidatorDiscriminators
 from zope.component import provideAdapter
 from zope.interface import implements, Interface
+from zope.interface.interface import InterfaceClass
 
 from plone.supermodel.utils import ns
 from plone.supermodel.parser import IFieldMetadataHandler
@@ -40,6 +41,9 @@ class FormSchema(object):
             if ':' in value:
                 (interface_dotted_name, value) = value.split(':')
                 interface = resolveDottedName(interface_dotted_name)
+                if not isinstance(interface, InterfaceClass):
+                    raise ValueError(
+                        "%s is not an Interface."% interface_dotted_name)
             else:
                 interface = Interface
             tagged_value.append((interface, name, value))
