@@ -37,27 +37,23 @@ class FormSchema(object):
         tagged_value = schema.queryTaggedValue(key, [])
         values = values.split(' ')
         for value in values:
-            try:
+            if ':' in value:
                 (interface_dotted_name, value) = value.split(':')
                 interface = resolveDottedName(interface_dotted_name)
-            except ValueError:
+            else:
                 interface = Interface
             tagged_value.append((interface, name, value))
         schema.setTaggedValue(key, tagged_value)
     
     def _add_validator(self, field, validator_dottedname):
-        try:
-            validator = resolveDottedName(validator_dottedname)
-            if not IValidator.implementedBy(validator):
-                raise ValueError(
-                    "z3c.form.interfaces.IValidator not implemented by %s."
-                    % validator_dottedname)
-            provideAdapter(validator,
-                (None, None, None, getSpecification(field), None),
-                )
-        except ValueError:
-            # XXX Need to do at least log these for 1.0
-            pass
+        validator = resolveDottedName(validator_dottedname)
+        if not IValidator.implementedBy(validator):
+            raise ValueError(
+                "z3c.form.interfaces.IValidator not implemented by %s."
+                % validator_dottedname)
+        provideAdapter(validator,
+            (None, None, None, getSpecification(field), None),
+            )
 
     def read(self, fieldNode, schema, field):
         name = field.__name__
