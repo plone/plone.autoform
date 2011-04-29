@@ -50,6 +50,7 @@ Next, let's define a sample model that exercises the various ``form`` and
     ...         <field type="zope.schema.TextLine" name="three"
     ...                 form:before="two"
     ...                 form:widget="z3c.form.browser.password.PasswordFieldWidget"
+    ...                 form:validator="plone.autoform.tests.test_utils.TestValidator"
     ...                 form:omitted="z3c.form.interfaces.IForm:true z3c.form.interfaces.IEditForm:false"
     ...                 form:mode="z3c.form.interfaces.IEditForm:input">
     ...             <title>Three</title>
@@ -75,6 +76,8 @@ Notes:
   same manner as for ``form:omitted``.
 * To set a custom widget for a field, use ``form:widget`` to give a fully
   qualified name to the field widget factory.
+* To set a custom validator for a field, use ``form:validator`` to give a fully
+  qualified name to the field validator factory.
 * To set a read or write permission, use ``security:read-permission`` or
   ``security:write-permission``. The value should be the name of an 
   ``IPermission`` utility.
