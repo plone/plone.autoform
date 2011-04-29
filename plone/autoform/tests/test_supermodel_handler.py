@@ -35,7 +35,9 @@ class TestFormSchema(unittest.TestCase):
         self.assertEquals([(Interface, 'dummy', 'true')], IDummy.getTaggedValue(OMITTED_KEY))
         self.assertEquals([(Interface, 'dummy', 'hidden')], IDummy.getTaggedValue(MODES_KEY))
         self.assertEquals([('dummy', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
-        adapter = getMultiAdapter((None, None, None, IDummy['dummy'], None), IValidator) # will raise if wrong
+        validator = getMultiAdapter((None, None, None, IDummy['dummy'], None), IValidator)
+        from plone.autoform.tests.test_utils import TestValidator
+        assert isinstance(validator, TestValidator)
 
     def test_read_multiple(self):
         field_node1 = ElementTree.Element('field')
