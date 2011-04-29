@@ -5,6 +5,10 @@ Changelog
 1.0b7 - 2011-04-29
 ------------------
 
+- Check to make sure that interfaces and field widgets resolved by the
+  supermodel handler are of the correct type.
+  [elro]
+
 - Add form:validator support for supermodel.
   [elro]
 
