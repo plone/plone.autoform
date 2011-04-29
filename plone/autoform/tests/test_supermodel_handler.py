@@ -19,7 +19,7 @@ class TestFormSchema(unittest.TestCase):
     
     def test_read(self):
         field_node = ElementTree.Element('field')
-        field_node.set(ns("widget", self.namespace), "SomeWidget")
+        field_node.set(ns("widget", self.namespace), "z3c.form.browser.password.PasswordFieldWidget")
         field_node.set(ns("mode", self.namespace), "hidden")
         field_node.set(ns("omitted", self.namespace), "true")
         field_node.set(ns("before", self.namespace), "somefield")
@@ -31,7 +31,8 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
         
-        self.assertEquals({'dummy': 'SomeWidget'}, IDummy.getTaggedValue(WIDGETS_KEY))
+        self.assertEquals({'dummy': 'z3c.form.browser.password.PasswordFieldWidget'},
+            IDummy.getTaggedValue(WIDGETS_KEY))
         self.assertEquals([(Interface, 'dummy', 'true')], IDummy.getTaggedValue(OMITTED_KEY))
         self.assertEquals([(Interface, 'dummy', 'hidden')], IDummy.getTaggedValue(MODES_KEY))
         self.assertEquals([('dummy', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
@@ -41,7 +42,7 @@ class TestFormSchema(unittest.TestCase):
 
     def test_read_multiple(self):
         field_node1 = ElementTree.Element('field')
-        field_node1.set(ns("widget", self.namespace), "SomeWidget")
+        field_node1.set(ns("widget", self.namespace), "z3c.form.browser.password.PasswordFieldWidget")
         field_node1.set(ns("mode", self.namespace), "hidden")
         field_node1.set(ns("omitted", self.namespace), "true")
         field_node1.set(ns("before", self.namespace), "somefield")
@@ -58,7 +59,8 @@ class TestFormSchema(unittest.TestCase):
         handler.read(field_node1, IDummy, IDummy['dummy1'])
         handler.read(field_node2, IDummy, IDummy['dummy2'])
     
-        self.assertEquals({'dummy1': 'SomeWidget'}, IDummy.getTaggedValue(WIDGETS_KEY))
+        self.assertEquals({'dummy1': 'z3c.form.browser.password.PasswordFieldWidget'},
+            IDummy.getTaggedValue(WIDGETS_KEY))
         self.assertEquals([(Interface, 'dummy1', 'true'), (Interface, 'dummy2', 'yes')],
                           IDummy.getTaggedValue(OMITTED_KEY))
         self.assertEquals([(Interface, 'dummy1', 'hidden'), (Interface, 'dummy2', 'display')],

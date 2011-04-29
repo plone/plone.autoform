@@ -1,4 +1,4 @@
-from z3c.form.interfaces import IValidator
+from z3c.form.interfaces import IFieldWidget, IValidator
 from z3c.form.util import getSpecification
 from z3c.form.validator import WidgetValidatorDiscriminators
 from zope.component import provideAdapter
@@ -24,7 +24,12 @@ class FormSchema(object):
     namespace = FORM_NAMESPACE
     prefix = FORM_PREFIX
     
-    def _add(self, schema, key, name, value):
+    def _add(self, schema, key, name, value, expected=None):
+        if expected is not None:
+            obj = resolveDottedName(value)
+            if not expected.implementedBy(obj):
+                raise ValueError("%s not implemented by %s"
+                    % (expected.__identifier__, value))
         tagged_value = schema.queryTaggedValue(key, {})
         tagged_value[name] = value
         schema.setTaggedValue(key, tagged_value)
@@ -43,18 +48,18 @@ class FormSchema(object):
                 interface = resolveDottedName(interface_dotted_name)
                 if not isinstance(interface, InterfaceClass):
                     raise ValueError(
-                        "%s is not an Interface."% interface_dotted_name)
+                        "%s not an Interface."% interface_dotted_name)
             else:
                 interface = Interface
             tagged_value.append((interface, name, value))
         schema.setTaggedValue(key, tagged_value)
     
-    def _add_validator(self, field, validator_dottedname):
-        validator = resolveDottedName(validator_dottedname)
+    def _add_validator(self, field, value):
+        validator = resolveDottedName(value)
         if not IValidator.implementedBy(validator):
             raise ValueError(
                 "z3c.form.interfaces.IValidator not implemented by %s."
-                % validator_dottedname)
+                % value)
         provideAdapter(validator,
             (None, None, None, getSpecification(field), None),
             )
@@ -70,7 +75,7 @@ class FormSchema(object):
         validator = fieldNode.get( ns('validator', self.namespace) )
 
         if widget:
-            self._add(schema, WIDGETS_KEY, name, widget)
+            self._add(schema, WIDGETS_KEY, name, widget, IFieldWidget)
         if mode:
             self._add_interface_values(schema, MODES_KEY, name, mode)
         if omitted:
