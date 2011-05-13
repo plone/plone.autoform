@@ -2,6 +2,14 @@ Changelog
 =========
 
 
+1.0b8 - unreleased
+------------------
+
+- Raise a NotImplementedError instead of NotImplemented as that is not
+  an exception but meant for comparisons and is not callable.
+  [maurits]
+
+
 1.0b7 - 2011-04-29
 ------------------
 

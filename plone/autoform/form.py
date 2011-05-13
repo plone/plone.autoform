@@ -16,7 +16,7 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
     
     @property
     def schema(self):
-        raise NotImplemented("The class deriving from AutoExtensibleForm must have a 'schema' property")
+        raise NotImplementedError("The class deriving from AutoExtensibleForm must have a 'schema' property")
 
     @property
     def additionalSchemata(self):

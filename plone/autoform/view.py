@@ -37,7 +37,7 @@ class WidgetsView(AutoFields, DisplayForm, Explicit):
     def render(self):
         if getattr(self, 'index', None) is not None:
             return self.index()
-        raise NotImplemented("You must implement the 'render' method")
+        raise NotImplementedError("You must implement the 'render' method")
     
     # Helper methods
     
