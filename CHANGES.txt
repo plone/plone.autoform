@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-1.0b8 - unreleased
-------------------
+1.0 - 2011-05-13
+----------------
 
 - Raise a NotImplementedError instead of NotImplemented as that is not
   an exception but meant for comparisons and is not callable.
@@ -41,9 +41,9 @@ Changelog
 1.0b5 - 2011-01-11
 ------------------
 
-- Use five.ManageSite permission to check field permissions. We'll avoid sniffing
-  for Five/CMFCore permissions.zcml difference between Zope 2.12 and 2.13.
-  [esteele]
+- Use five.ManageSite permission to check field permissions. We'll avoid
+  sniffing for Five/CMFCore permissions.zcml difference between Zope 2.12 and
+  2.13. [esteele]
 
 
 1.0b4 - 2010-08-05
