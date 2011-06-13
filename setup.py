@@ -6,7 +6,7 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
-version = '2.0dev'
+version = '1.0.1'
 
 long_description = (
     read('README.txt')
@@ -16,8 +16,6 @@ long_description = (
     read('plone', 'autoform', 'view.txt')
     + '\n' +
     read('plone', 'autoform', 'supermodel.txt')
-    + '\n' +
-    read('plone', 'autoform', 'directives.txt')
     + '\n' +
     read('CHANGES.txt')
     + '\n'
@@ -48,7 +46,7 @@ setup(name='plone.autoform',
           'zope.schema',
           'zope.security',
           'zope.dottedname',
-          'plone.supermodel>=2.0dev',
+          'plone.supermodel>=1.0b2',
           'plone.z3cform',
           'z3c.form',
           # 'AccessControl',
