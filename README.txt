@@ -26,7 +26,8 @@ There are several ways to set the form data:
 * Manually, by using ``setTaggedValue()`` on an interface.
 * By loading the schema from a `plone.supermodel`_ XML file and using the 
   ``form:`` prefix
-* By using the grok directives in the `plone.directives.form`_ package.
+* By using the directives from ``plone.autoform.directives`` while defining
+  a schema in Python.
 
 To use the automatic form setup, mix in the following base class in your
 forms::

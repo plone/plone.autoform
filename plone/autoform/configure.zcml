@@ -14,5 +14,35 @@
         factory=".supermodel.SecuritySchema"
         name="plone.autoform.security"
         />
+    
+    <adapter
+        factory=".directives.OmittedPlugin"
+        name="plone.autoform.omitted"
+        />
+
+    <adapter
+        factory=".directives.ModePlugin"
+        name="plone.autoform.mode"
+        />
+    
+    <adapter
+        factory=".directives.WidgetPlugin"
+        name="plone.autoform.widget"
+        />
+    
+    <adapter
+        factory=".directives.OrderPlugin"
+        name="plone.autoform.order"
+        />
+    
+    <adapter
+        factory=".directives.ReadPermissionsPlugin"
+        name="plone.autoform.read_permissions"
+        />
+
+    <adapter
+        factory=".directives.WritePermissionsPlugin"
+        name="plone.autoform.write_permissions"
+        />
 
 </configure>
