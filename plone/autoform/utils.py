@@ -33,7 +33,8 @@ def resolveDottedName(dottedName):
         _dottedCache[dottedName] = resolve(dottedName)
     return _dottedCache[dottedName]
 
-def mergedTaggedValuesForForm(schema, name, form):
+
+def mergedTaggedValuesForIRO(schema, name, iro):
     """Finds a list of (interface, fieldName, value) 3-ples from the tagged
     value named 'name', on 'schema' and all of its bases.  Returns a dict of
     fieldName => value, where the value is from the tuple for that fieldName
@@ -42,20 +43,26 @@ def mergedTaggedValuesForForm(schema, name, form):
     """
     # filter out settings irrelevant to this form
     threeples = [t for t in mergedTaggedValueList(schema, name)
-                 if t[0].providedBy(form)]
+                 if t[0] in iro]
+
     # Sort by interface resolution order of the form interface,
     # then by IRO of the interface the value came from
     # (that is the input order, so we can rely on Python's stable sort)
-    form_iro = list(providedBy(form).flattened())
-    def by_form_iro(threeple):
+    def by_iro(threeple):
         interface = threeple[0]
-        return form_iro.index(interface)
-    threeples.sort(key=by_form_iro)
+        return iro.index(interface)
+    threeples.sort(key=by_iro)
     d = {}
     # Now iterate through in the reverse order -- the values assigned last win.
     for _, fieldName, value in reversed(threeples):
         d[fieldName] = value
     return d
+
+
+def mergedTaggedValuesForForm(schema, name, form):
+    form_iro = list(providedBy(form).flattened())
+    return mergedTaggedValuesForIRO(schema, name, form_iro)
+
 
 # Some helper functions
 
