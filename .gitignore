@@ -1,0 +1,3 @@
+*.py?
+
+plone.autoform.egg-info/
