@@ -148,11 +148,12 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
         if status and status != 'false':
             doNotProcess.append(_fn(prefix, fieldName))
     
-    for group in form.groups:
-        doNotProcess.extend(list(group.fields.keys()))
+    if getattr(form, 'groups', ()):
+        for group in form.groups:
+            doNotProcess.extend(list(group.fields.keys()))
         
-        groupName = getattr(group, '__name__', group.label)
-        groups[groupName] = group
+            groupName = getattr(group, '__name__', group.label)
+            groups[groupName] = group
 
     # Find all allowed fields so that we have something to select from
     omitReadOnly = form.mode != DISPLAY_MODE
