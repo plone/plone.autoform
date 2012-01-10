@@ -8,6 +8,7 @@ from z3c.form.validator import SimpleFieldValidator
 import zope.schema
 import zope.component.testing
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
+from plone.autoform.interfaces import WIDGETS_KEY
 from plone.autoform.utils import processFields
 
 class TestValidator(SimpleFieldValidator):
@@ -56,3 +57,37 @@ class TestUtils(unittest.TestCase):
         
         self.assertEqual('foo', self.secman.checks.pop())
         self.assertFalse('prefix.title' in form.fields)
+
+    def test_processFields_widget_dottedpath(self):
+        form = Form(None, None)
+        class schema(Interface):
+            swallow_type = zope.schema.Choice(values = ('African', 'European'))
+        schema.setTaggedValue(WIDGETS_KEY, {'swallow_type': 'z3c.form.browser.radio.RadioFieldWidget'})
+        processFields(form, schema)
+        
+        from z3c.form.browser.radio import RadioFieldWidget
+        self.assertTrue(form.fields['swallow_type'].widgetFactory['input'] is RadioFieldWidget)
+    
+    def test_processFields_widget_factory(self):
+        from z3c.form.browser.radio import RadioFieldWidget
+
+        form = Form(None, None)
+        class schema(Interface):
+            swallow_type = zope.schema.Choice(values = ('African', 'European'))
+        schema.setTaggedValue(WIDGETS_KEY, {'swallow_type': RadioFieldWidget})
+        processFields(form, schema)
+        
+        self.assertTrue(form.fields['swallow_type'].widgetFactory['input'] is RadioFieldWidget)
+    
+    def test_processFields_widget(self):
+        from z3c.form.browser.radio import RadioWidget
+
+        form = Form(None, None)
+        class schema(Interface):
+            swallow_type = zope.schema.Choice(title = u'Swallow', values = ('African', 'European'))
+        schema.setTaggedValue(WIDGETS_KEY, {'swallow_type': RadioWidget})
+        processFields(form, schema)
+        
+        form_field = form.fields['swallow_type']
+        widget = form_field.widgetFactory['input'](form_field.field, None)
+        self.assertTrue(isinstance(widget, RadioWidget))

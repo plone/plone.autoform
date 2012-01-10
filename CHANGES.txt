@@ -4,6 +4,11 @@ Changelog
 1.1 - Unreleased
 ----------------
 
+- Support widget classes in addition to widget factories in widget tagged
+  values. Widget tagged values are also now checked more strictly, and must be
+  one of the above or a dotted path to one of the above.
+  [davisagli]
+
 - Don't break when processing forms that lack a ``groups`` attribute.
   [davisagli]
 

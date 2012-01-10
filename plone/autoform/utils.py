@@ -1,3 +1,4 @@
+import logging
 from zope.component import queryUtility
 from zope.interface import providedBy
 
@@ -7,7 +8,9 @@ from zope.dottedname.resolve import resolve
 
 from z3c.form import field
 from z3c.form.util import expandPrefix
-from z3c.form.interfaces import IFieldWidget, INPUT_MODE, DISPLAY_MODE
+from z3c.form.interfaces import IWidget, IFieldWidget
+from z3c.form.interfaces import INPUT_MODE, DISPLAY_MODE
+from z3c.form.widget import FieldWidget
 
 from plone.supermodel.utils import mergedTaggedValueDict
 from plone.supermodel.utils import mergedTaggedValueList
@@ -22,6 +25,9 @@ from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
 
 from AccessControl import getSecurityManager
+
+
+logger = logging.getLogger('plone.autoform')
 
 _dottedCache = {}
 
@@ -92,21 +98,29 @@ def _processWidgets(form, widgets, modes, newFields):
         fieldInstance = newFields[fieldName]
         baseName = _bn(fieldInstance)
         
-        widgetName = widgets.get(baseName, None)
+        widgetValue = widgets.get(baseName, None)
         widgetMode = modes.get(baseName, fieldInstance.mode) or form.mode or INPUT_MODE
         
-        widgetFactory = None
-        if widgetName is not None:
-            if isinstance(widgetName, basestring):
-                widgetFactory = resolveDottedName(widgetName)
-            elif IFieldWidget.implementedBy(widgetName):
-                widgetFactory = widgetName
+        if widgetValue is not None:
+            if isinstance(widgetValue, basestring):
+                widgetValue = resolveDottedName(widgetValue)
             
-            if widgetFactory is not None:
-                fieldInstance.widgetFactory[widgetMode] = widgetFactory
+            if IFieldWidget.implementedBy(widgetValue):
+                # we can use the widgetValue as is
+                widgetFactory = widgetValue
+            elif IWidget.implementedBy(widgetValue):
+                def widgetFactory(field, request):
+                    return FieldWidget(field, widgetValue(request))
+            else:
+                schemaName = getattr(getattr(fieldInstance, 'interface', None), '__identifier__', None)
+                logger.warn('Expected widget or widget factory, but got %s. Schema: %s, Field: %s.',
+                    widgetValue, schemaName, fieldInstance.__name__)
+            
+            fieldInstance.widgetFactory[widgetMode] = widgetFactory
         
         if baseName in modes:
             newFields[fieldName].mode = widgetMode
+
 
 def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=True):
     """Add the fields from the schema to the form, taking into account
