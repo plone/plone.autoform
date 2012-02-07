@@ -1,0 +1,124 @@
+======================
+Sub-form setup details
+======================
+
+In addition to constructing normal z3c.form Forms, we can also generate
+z3c.form.object.ObjectSubForm forms. For this use-case, the special base class
+AutoObjectSubForm is required, to set up the 'fields' property on the subform
+instance.
+
+As with normal forms, the tagged values are stored under keys represented 
+by the following constants:
+
+    >>> from plone.autoform.interfaces import OMITTED_KEY
+    >>> from plone.autoform.interfaces import WIDGETS_KEY
+    >>> from plone.autoform.interfaces import MODES_KEY
+    >>> from plone.autoform.interfaces import ORDER_KEY
+    >>> from plone.autoform.interfaces import READ_PERMISSIONS_KEY
+    >>> from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
+
+In addition, field groups are constructed from plone.supermodel fieldsets,
+which are also stored in tagged values, under the following constant:
+
+    >>> from plone.supermodel.interfaces import FIELDSETS_KEY
+
+For the purposes of this test, we'll set the form data manually.
+
+Test setup
+----------
+
+First, let's load this package's ZCML so that we can run the tests:
+    >>> configuration = """\
+    ... <configure xmlns="http://namespaces.zope.org/zope">
+    ...
+    ...     <include package="Products.Five" file="configure.zcml" />
+    ...     <include package="plone.autoform" />
+    ...
+    ... </configure>
+    ... """
+    >>> from StringIO import StringIO
+    >>> from zope.configuration import xmlconfig
+    >>> xmlconfig.xmlconfig(StringIO(configuration))
+
+We also need a sample schema with an Object field with its own schema,
+IMySubObject, which will be the schema for the sub-form.
+
+    >>> from zope.interface import Interface
+    >>> import zope.schema
+
+    >>> from z3c.form.testing import IMySubObject
+
+    >>> class ITestSchema(Interface):
+    ...     one = zope.schema.TextLine(title=u"One")
+    ...     two = zope.schema.TextLine(title=u"Two")
+    ...     three = zope.schema.Object(
+    ...                     title=u'my object widget',
+    ...                     schema=IMySubObject)
+
+And a test context and request, marked with the ``IFormLayer`` interface to
+make z3c.form happy:
+
+    >>> from zope.publisher.browser import TestRequest
+    >>> from z3c.form import interfaces
+    >>> context = object()
+    >>> request = TestRequest(environ={'AUTHENTICATED_USER': 'user1'}, skin=interfaces.IFormLayer)
+
+Note that we need to pretend that we have authenticated a user. Without this,
+the permission checks will be turned off. This is to support setting up a form
+pre-traversal in the ++widget++ namespace in plone.z3cform.
+
+Now we define the sub-form:
+
+    >>> from plone.autoform.form import AutoExtensibleForm
+    >>> from plone.autoform.form import AutoObjectSubForm
+    >>> from z3c.form import form, button
+    >>> from z3c.form.interfaces import IForm, IEditForm
+
+    >>> class TestForm(AutoExtensibleForm, form.Form):
+    ...     schema = ITestSchema
+    ...     additionalSchemata = ()
+    ...     ignoreContext = True
+
+    >>> class TestSubForm(AutoObjectSubForm):
+    ...     pass
+
+This form is in input mode:
+
+    >>> TestForm.mode
+    'input'
+
+And finally a subform factory adapter:
+
+    >>> from z3c.form.browser.object import ObjectWidget
+    >>> from z3c.form.object import SubformAdapter
+    >>> import zope.component 
+
+    >>> class TestSubformAdapter(SubformAdapter):
+    ...     """ """
+    ...     zope.interface.implements(interfaces.ISubformFactory)
+    ...     zope.component.adapts(zope.interface.Interface,  # widget value
+    ...                         interfaces.IFormLayer,       # request
+    ...                         zope.interface.Interface,    # widget context
+    ...                         zope.interface.Interface,    # form
+    ...                         ObjectWidget,                # widget
+    ...                         zope.interface.Interface,    # field
+    ...                         zope.interface.Interface)    # field.schema
+    ...
+    ...     factory = TestSubForm
+
+    >>> zope.component.provideAdapter(TestSubformAdapter)
+
+    >>> test_form = TestForm(context, request)
+    >>> test_form.update()
+
+    >>> widget = test_form.widgets.get('three')
+    >>> field = widget.field
+
+    >>> from z3c.form.object import makeDummyObject
+
+    >>> test_subform = zope.component.getMultiAdapter(
+    ...     (None, request, context, test_form, widget, field, makeDummyObject(IMySubObject)), 
+    ...     interfaces.ISubformFactory)()
+
+
+

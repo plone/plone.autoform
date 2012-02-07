@@ -1,4 +1,5 @@
 from zope.interface import implements
+from z3c.form.object import ObjectSubForm
 
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 
@@ -27,3 +28,15 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
     def updateFields(self):
         self.updateFieldsFromSchemata()
         super(AutoExtensibleForm, self).updateFields()
+
+
+class AutoObjectSubForm(AutoFields, ObjectSubForm):
+    """ """
+
+    @property
+    def schema(self):
+        return self.__parent__.field.schema
+
+    def setupFields(self):
+        self.updateFieldsFromSchemata()
+
