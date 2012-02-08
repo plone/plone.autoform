@@ -141,6 +141,9 @@ Field modes can be set like this:
     ...                             (IForm, 'barfield', 'hidden'))
     ...                           )
 
+The ObjectSubForm is not a GroupForm, so it doesn't support Fieldsets. Fieldset
+hints would thus be ignored.
+
 Lets test this now. 
 -------------------
 
@@ -175,5 +178,7 @@ Now the modes, barfield was hidden and foofield was set to display:
     'hidden'
     >>> test_subform.widgets['foofield'].mode
     'display'
+
+
 
 
