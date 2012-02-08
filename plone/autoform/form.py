@@ -1,5 +1,4 @@
 from zope.interface import implements
-from z3c.form.object import ObjectSubForm
 
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 
@@ -31,8 +30,8 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
         super(AutoExtensibleForm, self).updateFields()
 
 
-class AutoObjectSubForm(AutoFields, ObjectSubForm):
-    """A class for z3c.form.object.ObjectSubForm that supports fields being
+class AutoObjectSubForm(AutoFields):
+    """A Mixin class for z3c.form.object.ObjectSubForm forms that supports fields being
     updated from hints in a schema.
     """
 

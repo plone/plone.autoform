@@ -76,6 +76,7 @@ the permission checks will be turned off.
 Now we define a TestForm, and a TestObjectSubForm. The object subform must
 subclass from AutoObjectSubForm for the form hints to be generated.
 
+    >>> from z3c.form.object import ObjectSubForm
     >>> from plone.autoform.form import AutoExtensibleForm
     >>> from plone.autoform.form import AutoObjectSubForm
     >>> from z3c.form import form
@@ -89,7 +90,7 @@ subclass from AutoObjectSubForm for the form hints to be generated.
     >>> TestForm.mode
     'input'
 
-    >>> class TestObjectSubForm(AutoObjectSubForm):
+    >>> class TestObjectSubForm(AutoObjectSubForm, ObjectSubForm):
     ...     pass
 
 
