@@ -47,6 +47,15 @@ class IAutoExtensibleForm(Interface):
                                                                           schema=IInterface),
                                            required=False)
 
+class IAutoObjectSubForm(Interface):
+    """This class enables the z3c.form.object.ObjectSubForm form to also be
+    updated with form hints. See subform.txt
+    """
+
+    schema = zope.schema.Object(title=u"Schema providing form fields",
+                                schema=IInterface)
+
+
 class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     """A display form that supports setting up widgets based on schema
     interfaces.

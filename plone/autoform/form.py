@@ -4,6 +4,7 @@ from z3c.form.object import ObjectSubForm
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 
 from plone.autoform.interfaces import IAutoExtensibleForm
+from plone.autoform.interfaces import IAutoObjectSubForm
 from plone.autoform.base import AutoFields
 
 _marker = object()
@@ -31,7 +32,11 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
 
 
 class AutoObjectSubForm(AutoFields, ObjectSubForm):
-    """ """
+    """A class for z3c.form.object.ObjectSubForm that supports fields being
+    updated from hints in a schema.
+    """
+
+    implements(IAutoObjectSubForm)
 
     @property
     def schema(self):
