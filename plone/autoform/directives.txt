@@ -1,0 +1,84 @@
+Form directives
+---------------
+
+In addition to using XML, the tagged values used to control autoform's behavior
+can instead be set up using "directives" called while defining a schema in
+Python.
+
+Below is an example that exercises the various directives::
+
+    from z3c.form.interfaces import IEditForm
+    from plone.supermodel import model
+    from plone.autoform import directives as form
+    from plone.app.z3cform.wysiwyg import WysiwygFieldWidget
+
+    class IMySchema(model.Schema):
+    
+        # Add a new fieldset and put the 'footer' and 'dummy' fields in it.
+        # If the same fieldset is defined multiple times, the definitions
+        # will be merged, with the label from the first fieldset taking
+        # precedence.
+        
+        model.fieldset('extra', 
+                label=u"Extra info",
+                fields=['footer', 'dummy']
+            )
+        
+        title = schema.TextLine(
+                title=u"Title"
+            )
+        
+        summary = schema.Text(
+                title=u"Summary",
+                description=u"Summary of the body",
+                readonly=True
+            )
+        
+        form.widget(body='plone.app.z3cform.wysiwyg.WysiwygFieldWidget')
+        model.primary('body')
+        body = schema.Text(
+                title=u"Body text",
+                required=False,
+                default=u"Body text goes here"
+            )
+        
+        
+        form.widget(footer=WysiwygFieldWidget)
+        footer = schema.Text(
+                title=u"Footer text",
+                required=False
+            )
+        
+        form.omitted('dummy')
+        dummy = schema.Text(
+                title=u"Dummy"
+            )
+        
+        form.omitted('edit_only')
+        form.no_omit(IEditForm, 'edit_only')
+        edit_only = schema.TextLine(
+                title = u'Only included on edit forms',
+            )
+        
+        form.mode(secret='hidden')
+        form.mode(IEditForm, secret='input')
+        secret = schema.TextLine(
+                title=u"Secret",
+                default=u"Secret stuff (except on edit forms)"
+            )
+        
+        form.order_before(not_last='summary')
+        not_last = schema.TextLine(
+                title=u"Not last",
+            )
+        
+
+Here, we have placed the directives immediately before the fields they
+affect, but they could be placed anywhere in the interface body. All the
+directives can take multiple values, usually in the form
+``fieldname='value'``.
+
+The ``omitted()``, ``no_omit``, and ``primary()`` directives take a list of
+field names instead. The ``widget()`` directive allows widgets to be set either
+as a dotted name, or using an imported field widget factory. The
+``order_before()`` directive has a  corresponding ``order_after()`` directive.

@@ -1,8 +1,14 @@
 Changelog
 =========
 
-1.0.1 - Unreleased
-------------------
+1.1 - Unreleased
+----------------
+
+- Moved form schema directives here from plone.directives.form, and
+  reimplemented them as plone.supermodel directives to avoid depending on
+  grok.  Included directives: omitted, no_omit, mode, widget, order_before,
+  order_after, read_permission, write_permission
+  [davisagli]
 
 
 1.0 - 2011-05-13
