@@ -48,8 +48,8 @@ class IAutoExtensibleForm(Interface):
                                            required=False)
 
 class IAutoObjectSubForm(Interface):
-    """This class enables the z3c.form.object.ObjectSubForm form to also be
-    updated with form hints. See subform.txt
+    """This mixin class enables a form based on z3c.form.object.ObjectSubForm
+    to also have its fields updated with form hints. See subform.txt
     """
 
     schema = zope.schema.Object(title=u"Schema providing form fields",
