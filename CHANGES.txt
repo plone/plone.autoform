@@ -1,9 +1,12 @@
 Changelog
 =========
 
-1.0.1 - Unreleased
-------------------
+1.1 - 2012-02-20
+----------------
 
+- Added the AutoObjectSubForm class to support form hints for
+  object widget subforms.
+  [jcbrand]
 
 1.0 - 2011-05-13
 ----------------
