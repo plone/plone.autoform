@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.2dev - unreleased
--------------------
+1.2 (2012-04-15)
+----------------
 
 - Moved form schema directives here from plone.directives.form, and
   reimplemented them as plone.supermodel directives to avoid depending on
