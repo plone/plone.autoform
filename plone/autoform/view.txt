@@ -64,12 +64,16 @@ as required, using class variables, instance variables or properties.
     ...     def render(self):
     ...         return u"<div>My title widget says %s</div>" % self.w['title'].render()
 
+We need a test context and request, marked with the ``IFormLayer`` interface to
+make z3c.form happy:
+
+    >>> from zope.publisher.browser import TestRequest
+    >>> from z3c.form import interfaces
+    >>> context = Context()
+    >>> request = TestRequest(environ={'AUTHENTICATED_USER': 'user1'}, skin=interfaces.IFormLayer)
+
 Let us try to render this, to demonstrate that the widgets will be properly
 set up.
-
-    >>> from z3c.form.testing import TestRequest
-    >>> context = Context()
-    >>> request = TestRequest()
 
     >>> context.title = u"Test title"
     >>> context.body = u"Body"
