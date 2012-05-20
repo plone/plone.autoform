@@ -7,7 +7,10 @@ from z3c.form.interfaces import IForm, IEditForm, IValidator
 
 from plone.supermodel.utils import ns
 
-from elementtree import ElementTree
+try:
+    from xml.etree import ElementTree
+except ImportError:
+    from elementtree import ElementTree
 
 from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
