@@ -101,6 +101,8 @@ def _processWidgets(form, widgets, modes, newFields):
                 widgetFactory = resolveDottedName(widgetName)
             elif IFieldWidget.implementedBy(widgetName):
                 widgetFactory = widgetName
+            elif isinstance(widgetName, ParameterizedWidget):
+                widgetFactory = widgetName
             
             if widgetFactory is not None:
                 fieldInstance.widgetFactory[widgetMode] = widgetFactory

@@ -1,3 +1,5 @@
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IWidget
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
 
@@ -9,6 +11,7 @@ from plone.supermodel.directives import DictCheckerPlugin
 from plone.autoform.interfaces import OMITTED_KEY, MODES_KEY, WIDGETS_KEY
 from plone.autoform.interfaces import ORDER_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
+from plone.autoform.widgets import ParameterizedWidget
 
 
 class omitted(MetadataListDirective):
@@ -63,16 +66,56 @@ class ModePlugin(OmittedPlugin):
 
 
 class widget(MetadataDictDirective):
-    """Directive used to set the widget for one or more fields
+    """Schema directive used to set the widget for one or more fields.
+
+    Option 1: widget(field1='z3c.form.browser.text.TextWidget', field2=TextWidget)
+
+      The directive is passed keyword arguments mapping field names to widgets.
+      The widget can be specified as either a widget class, or as a string
+      with the dotted path to a widget class. It cannot be a widget instance, because
+      a new widget instance needs to be constructed for each request.
+        
+      (For backwards-compatibility, the widget can also be specified as a field widget factory.
+      A ``field widget factory`` is a callable that returns a widget instance
+      when passed a field and a request.)
+
+    Option 2: widget('field1', TextWidget, label=u'My label')
+
+      This option makes it possible to configure a custom widget _and_ customize its attributes.
+
+      * The first positional arg is a string giving the name of a single field.
+      * The second positional arg is a widget class, again specified as either a direct reference
+        or a dotted path.
+      * The remaining args are keyword arguments mapping arbitrary names to arbitrary values.
+        These will be set as attributes of the widget when it is constructed.
+
+    Option 3: widget('field1', label=u'My label')
+
+      This option makes it possible to _customize_ the field's default widget without naming it
+      explicitly.
+      
+      * The first and only positional arg is a string giving the name of a single field.
+      * The remaining args are keyword arguments mapping arbitrary names to arbitrary values.
+        These will be set as attributes of the widget when it is constructed.
     """
+
     key = WIDGETS_KEY
 
-    def factory(self, **kw):
+    def factory(self, field_name=None, widget_class=None, **kw):
         widgets = {}
-        for field_name, widget in kw.items():
-            if not isinstance(widget, basestring):
-                widget = "%s.%s" % (widget.__module__, widget.__name__)
-            widgets[field_name] = widget
+
+        if field_name is None:  # Usage 3           
+            for field_name, widget in kw.items():
+                if not isinstance(widget, basestring):
+                    widget = "%s.%s" % (widget.__module__, widget.__name__)
+                widgets[field_name] = widget
+        else:
+            if widget_class is not None \
+            and not IFieldWidget.implementedBy(widget_class) \
+            and not IWidget.implementedBy(widget_class):
+                raise TypeError('widget_class must implement IWidget or IFieldWidget')
+            widgets[field_name] = ParameterizedWidget(widget_class, **kw)
+
         return widgets
 
 

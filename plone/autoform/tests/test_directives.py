@@ -85,6 +85,47 @@ class TestSchemaDirectives(unittest.TestCase):
         self.assertEquals({'foo': 'plone.autoform.tests.test_directives.DummyWidget'},
                   IDummy.queryTaggedValue(WIDGETS_KEY))
         
+    def test_widget_parameterized(self):
+        from zope.interface import implementer
+        from z3c.form.interfaces import IWidget
+        from plone.autoform.widgets import ParameterizedWidget
+
+        @implementer(IWidget)
+        class DummyWidget(object):
+            def __init__(self, request):
+                pass
+        class IDummy(model.Schema):
+            form.widget('foo', DummyWidget, foo='bar')
+            foo = zope.schema.TextLine(title=u"Foo")
+
+        tv = IDummy.queryTaggedValue(WIDGETS_KEY)
+        self.assertIsInstance(tv['foo'], ParameterizedWidget)
+        self.assertIs(DummyWidget, tv['foo'].widget_factory)
+        self.assertEquals('bar', tv['foo'].params['foo'])
+
+    def test_widget_parameterized_default_widget_factory(self):
+        from zope.interface import implementer
+        from z3c.form.interfaces import IWidget
+        from plone.autoform.widgets import ParameterizedWidget
+
+        @implementer(IWidget)
+        class DummyWidget(object):
+            def __init__(self, request):
+                pass
+        class IDummy(model.Schema):
+            form.widget('foo', foo='bar')
+            foo = zope.schema.TextLine(title=u"Foo")
+
+        tv = IDummy.queryTaggedValue(WIDGETS_KEY)
+        self.assertIsInstance(tv['foo'], ParameterizedWidget)
+        self.assertIsNone(tv['foo'].widget_factory)
+        self.assertEquals('bar', tv['foo'].params['foo'])
+
+    def test_widget_parameterized_wrong_type(self):
+        with self.assertRaises(TypeError):
+            class IDummy(model.Schema):
+                form.widget('foo', object())
+
     def test_multiple_invocations(self):
         
         class IDummy(model.Schema):
