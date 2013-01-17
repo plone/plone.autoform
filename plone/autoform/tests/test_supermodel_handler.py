@@ -1,4 +1,4 @@
-import unittest
+import unittest2 as unittest
 
 from zope.component import getMultiAdapter
 from zope.interface import Interface
@@ -15,8 +15,12 @@ except ImportError:
 from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
 from plone.autoform.supermodel import FormSchema, SecuritySchema
+from plone.autoform.testing import AUTOFORM_INTEGRATION_TESTING
+
 
 class TestFormSchema(unittest.TestCase):
+
+    layer = AUTOFORM_INTEGRATION_TESTING
     
     namespace = 'http://namespaces.plone.org/supermodel/form'
     
@@ -120,7 +124,8 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
         
-        self.assertEquals("SomeWidget", field_node.get(ns("widget", self.namespace)))
+        widget_node = field_node.find(ns('widget', self.namespace))
+        self.assertEquals("SomeWidget", widget_node.get(ns('type', self.namespace)))
         self.assertEquals("true", field_node.get(ns("omitted", self.namespace)))
         self.assertEquals("hidden", field_node.get(ns("mode", self.namespace)))
         self.assertEquals("somefield", field_node.get(ns("before", self.namespace)))
@@ -139,7 +144,8 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
         
-        self.assertEquals("SomeWidget", field_node.get(ns("widget", self.namespace)))
+        widget_node = field_node.find(ns('widget', self.namespace))
+        self.assertEquals("SomeWidget", widget_node.get(ns('type', self.namespace)))
         self.assertEquals(None, field_node.get(ns("omitted", self.namespace)))
         self.assertEquals("display", field_node.get(ns("mode", self.namespace)))
         self.assertEquals(None, field_node.get(ns("before", self.namespace)))
@@ -153,7 +159,7 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
         
-        self.assertEquals(None, field_node.get(ns("widget", self.namespace)))
+        self.assertEquals(None, field_node.find(ns("widget", self.namespace)))
         self.assertEquals(None, field_node.get(ns("omitted", self.namespace)))
         self.assertEquals(None, field_node.get(ns("mode", self.namespace)))
         self.assertEquals(None, field_node.get(ns("before", self.namespace)))
@@ -182,6 +188,80 @@ class TestFormSchema(unittest.TestCase):
                           field_node2.get(ns("mode", self.namespace)))
         self.assertEquals("z3c.form.interfaces.IForm:true z3c.form.interfaces.IEditForm:false",
                           field_node2.get(ns("omitted", self.namespace)))
+
+    def test_write_parameterized_widget_string(self):
+        from plone.autoform.widgets import ParameterizedWidget
+        pw = ParameterizedWidget('foo')
+
+        class IDummy(Interface):
+            dummy1 = zope.schema.Text(title=u'dummy1')
+        IDummy.setTaggedValue(WIDGETS_KEY, {'dummy1': pw})
+
+        fieldNode = ElementTree.Element('field')
+        handler = FormSchema()
+        handler.write(fieldNode, IDummy, IDummy['dummy1'])
+
+        self.assertEquals(ElementTree.tostring(fieldNode),
+            '<field xmlns:ns0="http://namespaces.plone.org/supermodel/form"><ns0:widget ns0:type="foo" /></field>')
+
+    def test_write_parameterized_widget_default(self):
+        from plone.autoform.widgets import ParameterizedWidget
+        pw = ParameterizedWidget(None)
+
+        class IDummy(Interface):
+            dummy1 = zope.schema.Text(title=u'dummy1')
+        IDummy.setTaggedValue(WIDGETS_KEY, {'dummy1': pw})
+
+        fieldNode = ElementTree.Element('field')
+        handler = FormSchema()
+        handler.write(fieldNode, IDummy, IDummy['dummy1'])
+
+        self.assertEquals(ElementTree.tostring(fieldNode),
+            '<field xmlns:ns0="http://namespaces.plone.org/supermodel/form"><ns0:widget /></field>')
+
+    def test_write_parameterized_widget_with_handler(self):
+        from z3c.form.interfaces import IWidget
+        from zope.interface import implementer
+        from plone.autoform.widgets import ParameterizedWidget
+
+        @implementer(IWidget)
+        class DummyWidget(object):
+            def __init__(self, request):
+                pass
+
+        pw = ParameterizedWidget(DummyWidget, klass='custom')
+
+        class IDummy(Interface):
+            dummy1 = zope.schema.Text(title=u'dummy1')
+        IDummy.setTaggedValue(WIDGETS_KEY, {'dummy1': pw})
+
+        fieldNode = ElementTree.Element('field')
+        handler = FormSchema()
+        handler.write(fieldNode, IDummy, IDummy['dummy1'])
+
+        self.assertEquals(ElementTree.tostring(fieldNode),
+            '<field xmlns:ns0="http://namespaces.plone.org/supermodel/form">'
+            '<ns0:widget ns0:type="plone.autoform.tests.test_supermodel_handler.DummyWidget">'
+            '<klass>custom</klass>'
+            '</ns0:widget></field>')
+
+    def test_write_parameterized_widget_default_with_handler(self):
+        from plone.autoform.widgets import ParameterizedWidget
+
+        pw = ParameterizedWidget(None, klass='custom')
+
+        class IDummy(Interface):
+            dummy1 = zope.schema.Text(title=u'dummy1')
+        IDummy.setTaggedValue(WIDGETS_KEY, {'dummy1': pw})
+
+        fieldNode = ElementTree.Element('field')
+        handler = FormSchema()
+        handler.write(fieldNode, IDummy, IDummy['dummy1'])
+
+        self.assertEquals(ElementTree.tostring(fieldNode),
+            '<field xmlns:ns0="http://namespaces.plone.org/supermodel/form">'
+            '<ns0:widget><klass>custom</klass></ns0:widget></field>')
+
 
 class TestSecuritySchema(unittest.TestCase):
     

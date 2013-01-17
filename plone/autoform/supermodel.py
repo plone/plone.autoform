@@ -1,20 +1,28 @@
+from lxml import etree
+
 from z3c.form.interfaces import IFieldWidget, IValidator
+from z3c.form.browser.interfaces import IHTMLFormElement
 from z3c.form.util import getSpecification
 from z3c.form.validator import WidgetValidatorDiscriminators
 from zope.component import provideAdapter
+from zope.component import queryUtility
 from zope.interface import implements, Interface
 from zope.interface.interface import InterfaceClass
+from zope.publisher.browser import BrowserRequest
 
 from plone.supermodel.utils import ns
 from plone.supermodel.parser import IFieldMetadataHandler
 
 from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
-
 from plone.autoform.interfaces import FORM_NAMESPACE, FORM_PREFIX
 from plone.autoform.interfaces import SECURITY_NAMESPACE, SECURITY_PREFIX
+from plone.autoform.interfaces import IWidgetExportImportHandler
 
 from plone.autoform.utils import resolveDottedName
+from plone.autoform.widgets import ParameterizedWidget
+from plone.autoform.widgets import WidgetExportImportHandler
+
 
 class FormSchema(object):
     """Support the form: namespace in model definitions.
@@ -97,9 +105,27 @@ class FormSchema(object):
         order   = [(d,v) for n,d,v in schema.queryTaggedValue(ORDER_KEY,  []) if n == name]
         
         if widget is not None:
-            if not isinstance(widget, basestring):
+            params = {}
+            defaultWidget = False
+            if isinstance(widget, ParameterizedWidget):
+                params = widget.params
+                widget = widget.widget_factory
+            if widget is None:
+                defaultWidget = True
+                # look up
+            elif not isinstance(widget, basestring):
                 widget = "%s.%s" % (widget.__module__, widget.__name__)
-            fieldNode.set(ns('widget', self.namespace), str(widget))
+
+            widgetHandler = queryUtility(IWidgetExportImportHandler, name=widget)
+            if widgetHandler is None:
+                widgetHandler = WidgetExportImportHandler(IHTMLFormElement)
+            
+            widgetNode = etree.Element(ns('widget', self.namespace))
+            if not defaultWidget:
+                widgetNode.set(ns('type', self.namespace), widget)
+            
+            widgetHandler.write(widgetNode, params)
+            fieldNode.append(widgetNode)
         
         mode_values = []
         for interface, value in mode:

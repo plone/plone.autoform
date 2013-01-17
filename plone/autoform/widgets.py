@@ -4,7 +4,12 @@ from z3c.form.interfaces import IWidget
 from zope.component import getMultiAdapter
 from zope.interface import implementer
 from zope.interface import Interface
+from zope.schema import getFields
+from plone.autoform.interfaces import FORM_NAMESPACE
 from plone.autoform.utils import resolveDottedName
+from plone.supermodel.exportimport import BaseHandler
+from plone.supermodel.utils import ns
+from plone.supermodel.utils import valueToElement
 
 
 @implementer(IFieldWidget)
@@ -31,7 +36,8 @@ class ParameterizedWidget(object):
     def __init__(self, widget_factory=None, **params):
         if widget_factory is not None:
             if not IFieldWidget.implementedBy(widget_factory) \
-            and not IWidget.implementedBy(widget_factory):
+            and not IWidget.implementedBy(widget_factory) \
+            and not isinstance(widget_factory, basestring):
                 raise TypeError('widget_factory must be an IFieldWidget or an IWidget')
         self.widget_factory = widget_factory
         self.params = params
@@ -50,3 +56,19 @@ class ParameterizedWidget(object):
         for k, v in self.params.items():
             setattr(widget, k, v)
         return widget
+
+
+class WidgetExportImportHandler(object):
+
+    def __init__(self, widget_schema):
+        self.fieldAttributes = getFields(widget_schema)
+
+    def write(self, widgetNode, params):
+
+        for attributeName, attributeField in self.fieldAttributes.items():
+            elementName = attributeField.__name__
+            value = params.get(elementName, attributeField.default)
+            if value != attributeField.default:
+                child = valueToElement(attributeField, value, name=elementName)
+                widgetNode.append(child)
+

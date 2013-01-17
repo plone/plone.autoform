@@ -70,3 +70,7 @@ class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     fieldsets = zope.schema.Dict(title=u"Lookup fieldset (group) by name",
                               key_type=zope.schema.ASCIILine(title=u"Fieldset name"),
                               value_type=zope.schema.Object(title=u"Fieldset", schema=IFieldset))
+
+
+class IWidgetExportImportHandler(Interface):
+    """Supermodel export/import handler for widgets."""
