@@ -1,14 +1,12 @@
 from lxml import etree
 
 from z3c.form.interfaces import IFieldWidget, IValidator
-from z3c.form.browser.interfaces import IHTMLFormElement
 from z3c.form.util import getSpecification
 from z3c.form.validator import WidgetValidatorDiscriminators
 from zope.component import provideAdapter
 from zope.component import queryUtility
 from zope.interface import implements, Interface
 from zope.interface.interface import InterfaceClass
-from zope.publisher.browser import BrowserRequest
 
 from plone.supermodel.utils import ns
 from plone.supermodel.parser import IFieldMetadataHandler
@@ -17,11 +15,9 @@ from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
 from plone.autoform.interfaces import FORM_NAMESPACE, FORM_PREFIX
 from plone.autoform.interfaces import SECURITY_NAMESPACE, SECURITY_PREFIX
-from plone.autoform.interfaces import IWidgetExportImportHandler
 
 from plone.autoform.utils import resolveDottedName
 from plone.autoform.widgets import ParameterizedWidget
-from plone.autoform.widgets import WidgetExportImportHandler
 
 
 class FormSchema(object):
@@ -32,12 +28,7 @@ class FormSchema(object):
     namespace = FORM_NAMESPACE
     prefix = FORM_PREFIX
     
-    def _add(self, schema, key, name, value, expected=None):
-        if expected is not None:
-            obj = resolveDottedName(value)
-            if not expected.implementedBy(obj):
-                raise ValueError("%s not implemented by %s"
-                    % (expected.__identifier__, value))
+    def _add(self, schema, key, name, value):
         tagged_value = schema.queryTaggedValue(key, {})
         tagged_value[name] = value
         schema.setTaggedValue(key, tagged_value)
@@ -76,15 +67,13 @@ class FormSchema(object):
     def read(self, fieldNode, schema, field):
         name = field.__name__
         
-        widget    = fieldNode.get( ns('widget',    self.namespace) )
+        widgetAttr    = fieldNode.get( ns('widget',    self.namespace) )
         mode      = fieldNode.get( ns('mode',      self.namespace) )
         omitted   = fieldNode.get( ns('omitted',   self.namespace) )
         before    = fieldNode.get( ns('before',    self.namespace) )
         after     = fieldNode.get( ns('after',     self.namespace) )
         validator = fieldNode.get( ns('validator', self.namespace) )
 
-        if widget:
-            self._add(schema, WIDGETS_KEY, name, widget, IFieldWidget)
         if mode:
             self._add_interface_values(schema, MODES_KEY, name, mode)
         if omitted:
@@ -96,6 +85,25 @@ class FormSchema(object):
         if validator:
             self._add_validator(field, validator)
 
+        widgetNode = fieldNode.find(ns('widget', self.namespace))
+        widget = None
+        if widgetNode is not None:  # form:widget element
+            widgetFactory = widgetNode.get(ns('type', self.namespace))
+            if widgetFactory is not None:
+                # resolve immediately so we don't have to each time
+                # form is rendered
+                widgetFactory = resolveDottedName(widgetFactory)
+            widget = ParameterizedWidget(widgetFactory)
+            widgetHandler = widget.getExportImportHandler(field)
+            widgetHandler.read(widgetNode, widget.params)
+        elif widgetAttr is not None:  # BBB for old form:widget attributes
+            obj = resolveDottedName(widgetAttr)
+            if not IFieldWidget.implementedBy(obj):
+                raise ValueError("IFieldWidget not implemented by %s" % obj)
+            widget = widgetAttr
+        if widget is not None:
+            self._add(schema, WIDGETS_KEY, name, widget)            
+
     def write(self, fieldNode, schema, field):
         name = field.__name__
         
@@ -105,27 +113,18 @@ class FormSchema(object):
         order   = [(d,v) for n,d,v in schema.queryTaggedValue(ORDER_KEY,  []) if n == name]
         
         if widget is not None:
-            params = {}
-            defaultWidget = False
-            if isinstance(widget, ParameterizedWidget):
-                params = widget.params
-                widget = widget.widget_factory
-            if widget is None:
-                defaultWidget = True
-                # look up
-            elif not isinstance(widget, basestring):
-                widget = "%s.%s" % (widget.__module__, widget.__name__)
-
-            widgetHandler = queryUtility(IWidgetExportImportHandler, name=widget)
-            if widgetHandler is None:
-                widgetHandler = WidgetExportImportHandler(IHTMLFormElement)
+            if not isinstance(widget, ParameterizedWidget):
+                widget = ParameterizedWidget(widget)
             
-            widgetNode = etree.Element(ns('widget', self.namespace))
-            if not defaultWidget:
-                widgetNode.set(ns('type', self.namespace), widget)
-            
-            widgetHandler.write(widgetNode, params)
-            fieldNode.append(widgetNode)
+            if widget.widget_factory or widget.params:
+                widgetNode = etree.Element(ns('widget', self.namespace))
+                widgetName = widget.getWidgetFactoryName()
+                if widgetName is not None:
+                    widgetNode.set(ns('type', self.namespace), widgetName)
+                
+                widgetHandler = widget.getExportImportHandler(field)
+                widgetHandler.write(widgetNode, widget.params)
+                fieldNode.append(widgetNode)
         
         mode_values = []
         for interface, value in mode:

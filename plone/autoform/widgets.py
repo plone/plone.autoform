@@ -1,15 +1,22 @@
 from z3c.form.widget import FieldWidget
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IWidget
+from z3c.form.browser.interfaces import IHTMLFormElement
+from zope.component import getSiteManager
 from zope.component import getMultiAdapter
+from zope.component import queryUtility
 from zope.interface import implementer
 from zope.interface import Interface
+from zope.interface import providedBy
+from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.schema import getFields
 from plone.autoform.interfaces import FORM_NAMESPACE
+from plone.autoform.interfaces import IWidgetExportImportHandler
 from plone.autoform.utils import resolveDottedName
 from plone.supermodel.exportimport import BaseHandler
 from plone.supermodel.utils import ns
 from plone.supermodel.utils import valueToElement
+from plone.supermodel.utils import elementToValue
 
 
 @implementer(IFieldWidget)
@@ -57,11 +64,51 @@ class ParameterizedWidget(object):
             setattr(widget, k, v)
         return widget
 
+    def __repr__(self):
+        return '%s(%s, %s)' % (self.__class__.__name__, self.widget_factory, self.params)
+
+    def getWidgetFactoryName(self):
+        """Returns the dotted path of the widget factory, suitable for serialization.
+
+        Or None, if widget_factory is None.
+        """
+        widget = self.widget_factory
+        if widget is None:
+            return
+        if not isinstance(widget, basestring):
+            widget = "%s.%s" % (widget.__module__, widget.__name__)
+        return widget
+
+    def getExportImportHandler(self, field):
+        """Returns an IWidgetExportImportHandler suitable for this widget."""
+        widgetName = self.getWidgetFactoryName()
+        if widgetName is None:
+            # Find default widget factory for this field.
+            # We use lookup instead of getAdapter b/c we don't want to
+            # instantiate the widget.
+            sm = getSiteManager()
+            widgetFactory = sm.adapters.lookup((providedBy(field),), IBrowserRequest, IFieldWidget)
+            if widgetFactory is not None:
+                widgetName = "%s.%s" % (widgetFactory.__module__, widgetFactory.__name__)
+            else:
+                widgetName = u''
+
+        widgetHandler = queryUtility(IWidgetExportImportHandler, name=widgetName)
+        if widgetHandler is None:
+            widgetHandler = WidgetExportImportHandler(IHTMLFormElement)
+        return widgetHandler
+
 
 class WidgetExportImportHandler(object):
 
     def __init__(self, widget_schema):
         self.fieldAttributes = getFields(widget_schema)
+
+    def read(self, widgetNode, params):
+        for attributeName, attributeField in self.fieldAttributes.items():
+            node = widgetNode.find(attributeName)
+            if node is not None:
+                params[attributeName] = elementToValue(attributeField, node)
 
     def write(self, widgetNode, params):
 
@@ -71,4 +118,3 @@ class WidgetExportImportHandler(object):
             if value != attributeField.default:
                 child = valueToElement(attributeField, value, name=elementName)
                 widgetNode.append(child)
-
