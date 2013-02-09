@@ -2,9 +2,7 @@ from lxml import etree
 
 from z3c.form.interfaces import IFieldWidget, IValidator
 from z3c.form.util import getSpecification
-from z3c.form.validator import WidgetValidatorDiscriminators
 from zope.component import provideAdapter
-from zope.component import queryUtility
 from zope.interface import implements, Interface
 from zope.interface.interface import InterfaceClass
 

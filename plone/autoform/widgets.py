@@ -1,25 +1,24 @@
 from z3c.form.widget import FieldWidget
-from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IWidget
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IFormLayer
 from z3c.form.browser.interfaces import IHTMLFormElement
+from z3c.form.browser.interfaces import IHTMLTextAreaWidget
 from zope.component import getSiteManager
 from zope.component import getMultiAdapter
 from zope.component import queryUtility
 from zope.interface import implementer
-from zope.interface import Interface
 from zope.interface import providedBy
-from zope.publisher.interfaces.browser import IBrowserRequest
 from zope.schema import getFields
-from plone.autoform.interfaces import FORM_NAMESPACE
+from plone.autoform.interfaces import IParameterizedWidget
 from plone.autoform.interfaces import IWidgetExportImportHandler
 from plone.autoform.utils import resolveDottedName
-from plone.supermodel.exportimport import BaseHandler
-from plone.supermodel.utils import ns
 from plone.supermodel.utils import valueToElement
 from plone.supermodel.utils import elementToValue
+from plone.supermodel.utils import noNS
 
 
-@implementer(IFieldWidget)
+@implementer(IParameterizedWidget)
 class ParameterizedWidget(object):
     """A factory for deferred construction of widgets with parameters.
 
@@ -39,13 +38,14 @@ class ParameterizedWidget(object):
     in model XML, or the TTW UI to configure their parameterized widget.
     Those all use ParameterizedWidget internally.
     """
-    
+
     def __init__(self, widget_factory=None, **params):
         if widget_factory is not None:
             if not IFieldWidget.implementedBy(widget_factory) \
-            and not IWidget.implementedBy(widget_factory) \
-            and not isinstance(widget_factory, basestring):
-                raise TypeError('widget_factory must be an IFieldWidget or an IWidget')
+                    and not IWidget.implementedBy(widget_factory) \
+                    and not isinstance(widget_factory, basestring):
+                raise TypeError('widget_factory must be an IFieldWidget '
+                                'or an IWidget')
         self.widget_factory = widget_factory
         self.params = params
 
@@ -65,10 +65,11 @@ class ParameterizedWidget(object):
         return widget
 
     def __repr__(self):
-        return '%s(%s, %s)' % (self.__class__.__name__, self.widget_factory, self.params)
+        return '%s(%s, %s)' % (self.__class__.__name__,
+                               self.widget_factory, self.params)
 
     def getWidgetFactoryName(self):
-        """Returns the dotted path of the widget factory, suitable for serialization.
+        """Returns the dotted path of the widget factory for serialization.
 
         Or None, if widget_factory is None.
         """
@@ -87,18 +88,22 @@ class ParameterizedWidget(object):
             # We use lookup instead of getAdapter b/c we don't want to
             # instantiate the widget.
             sm = getSiteManager()
-            widgetFactory = sm.adapters.lookup((providedBy(field),), IBrowserRequest, IFieldWidget)
+            widgetFactory = sm.adapters.lookup(
+                (providedBy(field), IFormLayer), IFieldWidget)
             if widgetFactory is not None:
-                widgetName = "%s.%s" % (widgetFactory.__module__, widgetFactory.__name__)
+                widgetName = "%s.%s" % (widgetFactory.__module__,
+                                        widgetFactory.__name__)
             else:
                 widgetName = u''
 
-        widgetHandler = queryUtility(IWidgetExportImportHandler, name=widgetName)
+        widgetHandler = queryUtility(IWidgetExportImportHandler,
+                                     name=widgetName)
         if widgetHandler is None:
             widgetHandler = WidgetExportImportHandler(IHTMLFormElement)
         return widgetHandler
 
 
+@implementer(IWidgetExportImportHandler)
 class WidgetExportImportHandler(object):
 
     def __init__(self, widget_schema):
@@ -106,9 +111,9 @@ class WidgetExportImportHandler(object):
 
     def read(self, widgetNode, params):
         for attributeName, attributeField in self.fieldAttributes.items():
-            node = widgetNode.find(attributeName)
-            if node is not None:
-                params[attributeName] = elementToValue(attributeField, node)
+            for node in widgetNode.iterchildren():
+                if noNS(node.tag) == attributeName:
+                    params[attributeName] = elementToValue(attributeField, node)
 
     def write(self, widgetNode, params):
 
@@ -118,3 +123,6 @@ class WidgetExportImportHandler(object):
             if value != attributeField.default:
                 child = valueToElement(attributeField, value, name=elementName)
                 widgetNode.append(child)
+
+
+TextAreaWidgetExportImportHandler = WidgetExportImportHandler(IHTMLTextAreaWidget)

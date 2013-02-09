@@ -4,6 +4,7 @@ from zope.interface.interfaces import IInterface
 import zope.schema
 
 from z3c.form.interfaces import IFieldsForm, IDisplayForm, IWidget
+from z3c.form.interfaces import IFieldWidget
 from plone.supermodel.interfaces import IFieldset
 
 # Schema interface tagged value keys
@@ -70,6 +71,10 @@ class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     fieldsets = zope.schema.Dict(title=u"Lookup fieldset (group) by name",
                               key_type=zope.schema.ASCIILine(title=u"Fieldset name"),
                               value_type=zope.schema.Object(title=u"Fieldset", schema=IFieldset))
+
+
+class IParameterizedWidget(IFieldWidget):
+    """A widget factory that can create a widget with parameters."""
 
 
 class IWidgetExportImportHandler(Interface):

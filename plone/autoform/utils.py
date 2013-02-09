@@ -20,10 +20,12 @@ from plone.supermodel.interfaces import FIELDSETS_KEY
 
 from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
+from plone.autoform.interfaces import IParameterizedWidget
 
 from AccessControl import getSecurityManager
 
 _dottedCache = {}
+
 
 def resolveDottedName(dottedName):
     """Resolve a dotted name to a real object
@@ -84,6 +86,7 @@ def _bn(fieldInstance):
     else:
         return fieldName
 
+
 def _processWidgets(form, widgets, modes, newFields):
     """Update the fields list with widgets
     """
@@ -101,7 +104,7 @@ def _processWidgets(form, widgets, modes, newFields):
                 widgetFactory = resolveDottedName(widgetName)
             elif IFieldWidget.implementedBy(widgetName):
                 widgetFactory = widgetName
-            elif isinstance(widgetName, ParameterizedWidget):
+            elif IParameterizedWidget.providedBy(widgetName):
                 widgetFactory = widgetName
             
             if widgetFactory is not None:
@@ -109,6 +112,7 @@ def _processWidgets(form, widgets, modes, newFields):
         
         if baseName in modes:
             newFields[fieldName].mode = widgetMode
+
 
 def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=True):
     """Add the fields from the schema to the form, taking into account

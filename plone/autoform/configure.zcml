@@ -45,4 +45,11 @@
         name="plone.autoform.write_permissions"
         />
 
+    <!-- widget import/export -->
+    <utility
+        provides=".interfaces.IWidgetExportImportHandler"
+        component=".widgets.TextAreaWidgetExportImportHandler"
+        name="z3c.form.browser.textarea.TextAreaFieldWidget"
+        />
+
 </configure>
