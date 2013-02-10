@@ -9,12 +9,12 @@
         factory=".supermodel.FormSchema"
         name="plone.autoform.form"
         />
-        
+
     <utility
         factory=".supermodel.SecuritySchema"
         name="plone.autoform.security"
         />
-    
+
     <adapter
         factory=".directives.OmittedPlugin"
         name="plone.autoform.omitted"
@@ -24,17 +24,17 @@
         factory=".directives.ModePlugin"
         name="plone.autoform.mode"
         />
-    
+
     <adapter
         factory=".directives.WidgetPlugin"
         name="plone.autoform.widget"
         />
-    
+
     <adapter
         factory=".directives.OrderPlugin"
         name="plone.autoform.order"
         />
-    
+
     <adapter
         factory=".directives.ReadPermissionsPlugin"
         name="plone.autoform.read_permissions"
@@ -50,6 +50,12 @@
         provides=".interfaces.IWidgetExportImportHandler"
         component=".widgets.TextAreaWidgetExportImportHandler"
         name="z3c.form.browser.textarea.TextAreaFieldWidget"
+        />
+
+    <utility
+        provides=".interfaces.IWidgetExportImportHandler"
+        component=".widgets.SelectWidgetExportImportHandler"
+        name="z3c.form.browser.select.CollectionSelectFieldWidget"
         />
 
 </configure>

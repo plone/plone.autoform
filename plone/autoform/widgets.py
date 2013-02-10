@@ -3,7 +3,7 @@ from z3c.form.interfaces import IWidget
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IFormLayer
 from z3c.form.browser.interfaces import IHTMLFormElement
-from z3c.form.browser.interfaces import IHTMLTextAreaWidget
+import z3c.form.browser.interfaces
 from zope.component import getSiteManager
 from zope.component import getMultiAdapter
 from zope.component import queryUtility
@@ -125,4 +125,5 @@ class WidgetExportImportHandler(object):
                 widgetNode.append(child)
 
 
-TextAreaWidgetExportImportHandler = WidgetExportImportHandler(IHTMLTextAreaWidget)
+TextAreaWidgetExportImportHandler = WidgetExportImportHandler(z3c.form.browser.interfaces.IHTMLTextAreaWidget)
+SelectWidgetExportImportHandler = WidgetExportImportHandler(z3c.form.browser.interfaces.IHTMLSelectWidget)
