@@ -51,11 +51,4 @@
         component=".widgets.TextAreaWidgetExportImportHandler"
         name="z3c.form.browser.textarea.TextAreaFieldWidget"
         />
-
-    <utility
-        provides=".interfaces.IWidgetExportImportHandler"
-        component=".widgets.SelectWidgetExportImportHandler"
-        name="z3c.form.browser.select.CollectionSelectFieldWidget"
-        />
-
 </configure>

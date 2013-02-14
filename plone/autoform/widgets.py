@@ -9,6 +9,7 @@ from zope.component import getMultiAdapter
 from zope.component import queryUtility
 from zope.interface import implementer
 from zope.interface import providedBy
+import zope.schema
 from zope.schema import getFields
 from plone.autoform.interfaces import IParameterizedWidget
 from plone.autoform.interfaces import IWidgetExportImportHandler
@@ -116,7 +117,6 @@ class WidgetExportImportHandler(object):
                     params[attributeName] = elementToValue(attributeField, node)
 
     def write(self, widgetNode, params):
-
         for attributeName, attributeField in self.fieldAttributes.items():
             elementName = attributeField.__name__
             value = params.get(elementName, attributeField.default)
@@ -126,4 +126,3 @@ class WidgetExportImportHandler(object):
 
 
 TextAreaWidgetExportImportHandler = WidgetExportImportHandler(z3c.form.browser.interfaces.IHTMLTextAreaWidget)
-SelectWidgetExportImportHandler = WidgetExportImportHandler(z3c.form.browser.interfaces.IHTMLSelectWidget)
