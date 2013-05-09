@@ -4,12 +4,23 @@ plone.autoform
 
 .. contents:: Contents
 
+Introduction
+----------------
+
+``plone.autoform`` allows you to place hints on your ``zope.schema`` based
+model (schema) what widgets and options each field should provide when used in HTML forms.
+
 This package provides tools to construct `z3c.form`_ forms out of hints stored
 in tagged values on schema interfaces. A special form base class is used to
 set up the ``fields`` and ``groups`` properties on form instances. It also
 contains a "display form" implementation that is compatible with Zope 2
 page templates, and with some convenience features for rendering widgets in
 view mode.
+
+For full documentation and examples `see plone.autoform package on PyPi <https://pypi.python.org/pypi/plone.autoform>`_.
+
+What plone.autoform does?
+-----------------------------
 
 The tagged values are stored under a various keys. These can be found in
 the ``plone.autoform.interfaces`` module. They support:
@@ -24,7 +35,7 @@ the ``plone.autoform.interfaces`` module. They support:
 There are several ways to set the form data:
 
 * Manually, by using ``setTaggedValue()`` on an interface.
-* By loading the schema from a `plone.supermodel`_ XML file and using the 
+* By loading the schema from a `plone.supermodel`_ XML file and using the
   ``form:`` prefix
 * By using the directives from ``plone.autoform.directives`` while defining
   a schema in Python.
@@ -40,10 +51,10 @@ and then provide the ``schema``` (a schema interface) and optionally the
     >>> class MyForm(AutoExtensibleForm, form.EditForm):
     ...     schema = IMySchema
     ...     additionalSchemata = (ISchemaOne, ISchemaTwo,)
-    ...     
+    ...
     ...     # ...
 
-For dynamic forms, you could of course make ``schema`` and 
+For dynamic forms, you could of course make ``schema`` and
 ``additionalSchemata`` into properties.
 
 To use the display form, create a view like:
@@ -52,7 +63,7 @@ To use the display form, create a view like:
     >>> class MyView(WidgetsView):
     ...     schema = IMySchema
     ...     additionalSchemata = (ISchemaOne, ISchemaTwo,)
-    ...     
+    ...
     ...     # ...
 
 To render the form, do not override ``__call__()``. Instead, either implement
