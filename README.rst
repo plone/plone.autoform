@@ -24,11 +24,10 @@ forms::
 and then provide the ``schema`` (a schema interface) and optionally the
 ``additionalSchemata`` (a list of schema interfaces) attributes on your form::
 
-    >>> class MyForm(AutoExtensibleForm, form.EditForm):
-    ...     schema = IMySchema
-    ...     additionalSchemata = (ISchemaOne, ISchemaTwo,)
-    ...
-    ...     # ...
+    class MyForm(AutoExtensibleForm, form.EditForm):
+        schema = IMySchema
+        additionalSchemata = (ISchemaOne, ISchemaTwo,)
+        # ...
 
 For dynamic forms, you could of course make ``schema`` and
 ``additionalSchemata`` into properties. For example, `plone.dexterity`_ extends the
