@@ -4,7 +4,17 @@ Changelog
 1.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Enhance the widget directive to allow for specifying widget parameters
+  within the schema.
+  [davisagli]
+
+- Support passing widget classes in the widget directive in addition to
+  IFieldWidgets.
+  [davisagli]
+
+- Support serializing widget parameters to XML. This requires implementing
+  a IWidgetExportImportHandler utility for the widget type.
+  [davisagli]
 
 
 1.3 (2012-08-30)
