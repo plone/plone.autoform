@@ -6,9 +6,9 @@ plone.autoform
 Introduction
 ------------
 
-``plone.autoform`` builds custom `z3c.form_` forms based on a model (schema)
+``plone.autoform`` builds custom `z3c.form`_ forms based on a model (schema)
 of what fields to include and what widgets and options should be used for each
-field. This model is defined as a ``zope.schema_``-based schema, but additional
+field. This model is defined as a `zope.schema`_-based schema, but additional
 hints can be supplied to control aspects of form display not normally specified
 in a Zope schema.
 
@@ -21,7 +21,7 @@ forms::
 
     >>> from plone.autoform.form import AutoExtensibleForm
 
-and then provide the ``schema``` (a schema interface) and optionally the
+and then provide the ``schema`` (a schema interface) and optionally the
 ``additionalSchemata`` (a list of schema interfaces) attributes on your form::
 
     >>> class MyForm(AutoExtensibleForm, form.EditForm):
