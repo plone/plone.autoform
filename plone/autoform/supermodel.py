@@ -86,7 +86,7 @@ class FormSchema(object):
         widgetNode = fieldNode.find(ns('widget', self.namespace))
         widget = None
         if widgetNode is not None:  # form:widget element
-            widgetFactory = widgetNode.get(ns('type', self.namespace))
+            widgetFactory = widgetNode.get('type')
             if widgetFactory is not None:
                 # resolve immediately so we don't have to each time
                 # form is rendered
@@ -100,7 +100,7 @@ class FormSchema(object):
                 raise ValueError("IFieldWidget not implemented by %s" % obj)
             widget = widgetAttr
         if widget is not None:
-            self._add(schema, WIDGETS_KEY, name, widget)            
+            self._add(schema, WIDGETS_KEY, name, widget)
 
     def write(self, fieldNode, schema, field):
         name = field.__name__
@@ -118,7 +118,7 @@ class FormSchema(object):
                 widgetNode = etree.Element(ns('widget', self.namespace))
                 widgetName = widget.getWidgetFactoryName()
                 if widgetName is not None:
-                    widgetNode.set(ns('type', self.namespace), widgetName)
+                    widgetNode.set('type', widgetName)
                 
                 widgetHandler = widget.getExportImportHandler(field)
                 widgetHandler.write(widgetNode, widget.params)

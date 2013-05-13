@@ -1,5 +1,5 @@
 Form directives
----------------
+===============
 
 In addition to using XML, the tagged values used to control autoform's behavior
 can instead be set up using "directives" called while defining a schema in

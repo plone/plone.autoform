@@ -10,7 +10,7 @@ def test_suite():
             setUp=zope.component.testing.setUp,
             tearDown=zope.component.testing.tearDown,
             optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,),
-        doctest.DocFileSuite('../subform.txt',
+        doctest.DocFileSuite('subform.txt',
             setUp=zope.component.testing.setUp,
             tearDown=zope.component.testing.tearDown,
             optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,),

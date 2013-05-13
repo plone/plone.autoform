@@ -11,14 +11,6 @@ version = '1.4.dev0'
 long_description = (
     read('README.rst')
     + '\n' +
-    read('plone', 'autoform', 'autoform.txt')
-    + '\n' +
-    read('plone', 'autoform', 'view.txt')
-    + '\n' +
-    read('plone', 'autoform', 'supermodel.txt')
-    + '\n' +
-    read('plone', 'autoform', 'directives.txt')
-    + '\n' +
     read('CHANGES.txt')
     + '\n'
     )
