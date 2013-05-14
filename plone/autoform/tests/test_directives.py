@@ -99,7 +99,7 @@ class TestSchemaDirectives(unittest.TestCase):
             foo = zope.schema.TextLine(title=u"Foo")
 
         tv = IDummy.queryTaggedValue(WIDGETS_KEY)
-        self.assertIsInstance(tv['foo'], ParameterizedWidget)
+        self.assertTrue(instance(tv['foo'], ParameterizedWidget))
         self.assertIs(DummyWidget, tv['foo'].widget_factory)
         self.assertEquals('bar', tv['foo'].params['foo'])
 
@@ -117,7 +117,7 @@ class TestSchemaDirectives(unittest.TestCase):
             foo = zope.schema.TextLine(title=u"Foo")
 
         tv = IDummy.queryTaggedValue(WIDGETS_KEY)
-        self.assertIsInstance(tv['foo'], ParameterizedWidget)
+        self.assertTrue(isinstance(tv['foo'], ParameterizedWidget))
         self.assertIsNone(tv['foo'].widget_factory)
         self.assertEquals('bar', tv['foo'].params['foo'])
 

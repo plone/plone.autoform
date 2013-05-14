@@ -134,7 +134,7 @@ class TestFormSchema(unittest.TestCase):
         handler.read(field_node, IDummy, IDummy['foo'])
 
         widgets = IDummy.queryTaggedValue(WIDGETS_KEY)
-        self.assertIsInstance(widgets['foo'], ParameterizedWidget)
+        self.assertTrue(isinstance(widgets['foo'], ParameterizedWidget))
         self.assertIs(widgets['foo'].widget_factory, DummyWidget)
         self.assertEqual(widgets['foo'].params, {'klass': 'custom'})
 
@@ -155,7 +155,7 @@ class TestFormSchema(unittest.TestCase):
         handler.read(field_node, IDummy, IDummy['foo'])
 
         widgets = IDummy.queryTaggedValue(WIDGETS_KEY)
-        self.assertIsInstance(widgets['foo'], ParameterizedWidget)
+        self.assertTrue(isinstance(widgets['foo'], ParameterizedWidget))
         self.assertIsNone(widgets['foo'].widget_factory)
         self.assertEqual(widgets['foo'].params, {'klass': 'custom'})
 

@@ -26,7 +26,7 @@ class TestParameterizedWidget(unittest.TestCase):
         request = object()
         widget = ParameterizedWidget(DummyWidget, foo='bar')(field, request)
 
-        self.assertIsInstance(widget, DummyWidget)
+        self.assertTrue(isinstance(widget, DummyWidget))
         self.assertEqual('bar', widget.foo)
 
     def test_default_widget_instantiated(self):
@@ -51,8 +51,8 @@ class TestParameterizedWidget(unittest.TestCase):
         request = object()
         widget = ParameterizedWidget(foo='bar')(field, request)
 
-        self.assertIsInstance(widget, DummyWidget)
-        self.assertEqual('bar', widget.foo)        
+        self.assertTrue(isinstance(widget, DummyWidget))
+        self.assertEqual('bar', widget.foo)
 
     def test_validates_for_field_widget(self):
         from plone.autoform.widgets import ParameterizedWidget
