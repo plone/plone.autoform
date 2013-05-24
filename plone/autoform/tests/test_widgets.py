@@ -60,5 +60,9 @@ class TestParameterizedWidget(unittest.TestCase):
         class NotAWidget(object):
             pass
 
-        with self.assertRaises(TypeError):
+        try:
             x = ParameterizedWidget(NotAWidget)
+        except TypeError:
+            pass
+        else:
+            self.fail('Expected TypeError')

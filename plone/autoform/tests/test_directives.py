@@ -100,7 +100,7 @@ class TestSchemaDirectives(unittest.TestCase):
 
         tv = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(tv['foo'], ParameterizedWidget))
-        self.assertIs(DummyWidget, tv['foo'].widget_factory)
+        self.assertTrue(tv['foo'].widget_factory is DummyWidget)
         self.assertEquals('bar', tv['foo'].params['foo'])
 
     def test_widget_parameterized_default_widget_factory(self):
@@ -118,13 +118,17 @@ class TestSchemaDirectives(unittest.TestCase):
 
         tv = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(tv['foo'], ParameterizedWidget))
-        self.assertIsNone(tv['foo'].widget_factory)
+        self.assertTrue(tv['foo'].widget_factory is None)
         self.assertEquals('bar', tv['foo'].params['foo'])
 
     def test_widget_parameterized_wrong_type(self):
-        with self.assertRaises(TypeError):
+        try:
             class IDummy(model.Schema):
                 form.widget('foo', object())
+        except TypeError:
+            pass
+        else:
+            self.fail('Expected TypeError')
 
     def test_multiple_invocations(self):
         

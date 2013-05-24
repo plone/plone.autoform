@@ -135,7 +135,7 @@ class TestFormSchema(unittest.TestCase):
 
         widgets = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(widgets['foo'], ParameterizedWidget))
-        self.assertIs(widgets['foo'].widget_factory, DummyWidget)
+        self.assertTrue(widgets['foo'].widget_factory is DummyWidget)
         self.assertEqual(widgets['foo'].params, {'klass': 'custom'})
 
     def test_read_parameterized_widget_default(self):
@@ -156,7 +156,7 @@ class TestFormSchema(unittest.TestCase):
 
         widgets = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(widgets['foo'], ParameterizedWidget))
-        self.assertIsNone(widgets['foo'].widget_factory)
+        self.assertTrue(widgets['foo'].widget_factory is None)
         self.assertEqual(widgets['foo'].params, {'klass': 'custom'})
 
     def test_write(self):
