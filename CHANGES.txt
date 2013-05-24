@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.4 (unreleased)
+1.4 (2013-05-23)
 ----------------
 
 - Enhance the widget directive to allow for specifying widget parameters
