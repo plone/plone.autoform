@@ -4,7 +4,8 @@ Changelog
 1.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- fix tests
+  [vangheem]
 
 
 1.4 (2013-05-23)

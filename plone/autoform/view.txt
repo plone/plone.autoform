@@ -80,8 +80,10 @@ set up.
 
     >>> view = TestView(context, request)
     >>> print view()
-    <div>My title widget says <span id="form-widgets-title"
-          class="text-widget textline-field">Test title</span>
+    <div>My title widget says 
+        <span id="form-widgets-title"
+              class="text-widget required textline-field">Test title</span>
+    <BLANKLINE>
     </div>
 
 More generally, the view supports the contract of display forms. After being
