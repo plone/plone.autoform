@@ -82,7 +82,7 @@ set up.
     >>> print view()
     <div>My title widget says 
         <span id="form-widgets-title"
-              class="text-widget required textline-field">Test title</span>
+              class="text-widget...textline-field">Test title</span>
     <BLANKLINE>
     </div>
 
