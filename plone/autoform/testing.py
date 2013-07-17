@@ -5,11 +5,11 @@ import plone.autoform
 
 
 AUTOFORM_FIXTURE = zca.ZCMLSandbox(
-	bases=(z2.STARTUP,),
-	filename='configure.zcml',
-	package=plone.autoform,
-	name="plone.autoform:Fixture")
+    bases=(z2.STARTUP,),
+    filename='configure.zcml',
+    package=plone.autoform,
+    name="plone.autoform:Fixture")
 
 AUTOFORM_INTEGRATION_TESTING = z2.IntegrationTesting(
-	bases=(AUTOFORM_FIXTURE,),
-	name="plone.autoform:Integration")
+    bases=(AUTOFORM_FIXTURE,),
+    name="plone.autoform:Integration")

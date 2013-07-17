@@ -46,7 +46,7 @@ class TestParameterizedWidget(unittest.TestCase):
             return DummyWidget(request)
 
         provideAdapter(DummyFieldWidget, (Interface, Interface), IFieldWidget)
-        
+
         field = Field()
         request = object()
         widget = ParameterizedWidget(foo='bar')(field, request)
@@ -62,6 +62,7 @@ class TestParameterizedWidget(unittest.TestCase):
 
         try:
             x = ParameterizedWidget(NotAWidget)
+            x  # PEP8
         except TypeError:
             pass
         else:

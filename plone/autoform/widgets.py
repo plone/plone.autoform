@@ -9,7 +9,6 @@ from zope.component import getMultiAdapter
 from zope.component import queryUtility
 from zope.interface import implementer
 from zope.interface import providedBy
-import zope.schema
 from zope.schema import getFields
 from plone.autoform.interfaces import IParameterizedWidget
 from plone.autoform.interfaces import IWidgetExportImportHandler

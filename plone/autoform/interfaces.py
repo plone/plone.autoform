@@ -25,9 +25,11 @@ FORM_PREFIX = 'form'
 SECURITY_NAMESPACE = 'http://namespaces.plone.org/supermodel/security'
 SECURITY_PREFIX = 'security'
 
+
 class IFormFieldProvider(Interface):
     """Marker interface for schemata that provide form fields.
     """
+
 
 class IAutoExtensibleForm(Interface):
     """The mixin class plone.autoform.form.AutoExtensibleForm can be
@@ -36,17 +38,18 @@ class IAutoExtensibleForm(Interface):
     should be supplied with the properties defined below. See autoform.txt
     for details.
     """
-    
+
     ignorePrefix = zope.schema.Bool(title=u"Do not set a prefix for additional schemata",
                                     default=False)
-    
+
     schema = zope.schema.Object(title=u"Schema providing form fields",
                                 schema=IInterface)
-                                
+
     additionalSchemata = zope.schema.Tuple(title=u"Supplementary schemata providing additional form fields",
                                            value_type=zope.schema.Object(title=u"Schema interface",
                                                                           schema=IInterface),
                                            required=False)
+
 
 class IAutoObjectSubForm(Interface):
     """This mixin class enables a form based on z3c.form.object.ObjectSubForm
@@ -61,7 +64,7 @@ class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     """A display form that supports setting up widgets based on schema
     interfaces.
     """
-    
+
     w = zope.schema.Dict(title=u"Shortcut lookup for all widgets",
                          description=u"Contains all widgets, including "
                                       "those from groups within this form",

@@ -74,7 +74,7 @@ class widget(MetadataDictDirective):
       The widget can be specified as either a widget class, or as a string
       with the dotted path to a widget class. It cannot be a widget instance, because
       a new widget instance needs to be constructed for each request.
-        
+
       (For backwards-compatibility, the widget can also be specified as a field widget factory.
       A ``field widget factory`` is a callable that returns a widget instance
       when passed a field and a request.)
@@ -93,7 +93,7 @@ class widget(MetadataDictDirective):
 
       This option makes it possible to _customize_ the field's default widget without naming it
       explicitly.
-      
+
       * The first and only positional arg is a string giving the name of a single field.
       * The remaining args are keyword arguments mapping arbitrary names to arbitrary values.
         These will be set as attributes of the widget when it is constructed.
@@ -104,7 +104,7 @@ class widget(MetadataDictDirective):
     def factory(self, field_name=None, widget_class=None, **kw):
         widgets = {}
 
-        if field_name is None:  # Usage 3           
+        if field_name is None:  # Usage 3
             for field_name, widget in kw.items():
                 if not isinstance(widget, basestring):
                     widget = "%s.%s" % (widget.__module__, widget.__name__)

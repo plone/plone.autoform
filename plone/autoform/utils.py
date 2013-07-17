@@ -76,6 +76,7 @@ def _fn(prefix, fieldName):
     else:
         return fieldName
 
+
 def _bn(fieldInstance):
     """Give base (non-prefixed) fieldname
     """
@@ -94,10 +95,10 @@ def _processWidgets(form, widgets, modes, newFields):
     for fieldName in newFields:
         fieldInstance = newFields[fieldName]
         baseName = _bn(fieldInstance)
-        
+
         widgetName = widgets.get(baseName, None)
         widgetMode = modes.get(baseName, fieldInstance.mode) or form.mode or INPUT_MODE
-        
+
         widgetFactory = None
         if widgetName is not None:
             if isinstance(widgetName, basestring):
@@ -106,10 +107,10 @@ def _processWidgets(form, widgets, modes, newFields):
                 widgetFactory = widgetName
             elif IParameterizedWidget.providedBy(widgetName):
                 widgetFactory = widgetName
-            
+
             if widgetFactory is not None:
                 fieldInstance.widgetFactory[widgetMode] = widgetFactory
-        
+
         if baseName in modes:
             newFields[fieldName].mode = widgetMode
 
@@ -117,7 +118,7 @@ def _processWidgets(form, widgets, modes, newFields):
 def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=True):
     """Add the fields from the schema to the form, taking into account
     the hints in the various tagged values as well as fieldsets. If prefix
-    is given, the fields will be prefixed with this prefix. If 
+    is given, the fields will be prefixed with this prefix. If
     defaultGroup is given (as a Fieldset instance), any field not explicitly
     placed into a particular fieldset, will be added to the given group,
     which must exist already. If permissionChecks is false,
@@ -125,54 +126,54 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
     """
 
     # Get data from tagged values, flattening data from super-interfaces
-    
+
     # Note: The names always refer to a field in the schema, and never contain a prefix.
-    
-    omitted   = mergedTaggedValuesForForm(schema, OMITTED_KEY, form)   # { name => True }
-    modes     = mergedTaggedValuesForForm(schema, MODES_KEY, form)     # { name => e.g. 'hidden' }
-    widgets   = mergedTaggedValueDict(schema, WIDGETS_KEY)             # { name => widget/dotted name }
-    
-    fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY)           # list of IFieldset instances
-    
+
+    omitted = mergedTaggedValuesForForm(schema, OMITTED_KEY, form)   # { name => True }
+    modes = mergedTaggedValuesForForm(schema, MODES_KEY, form)       # { name => e.g. 'hidden' }
+    widgets = mergedTaggedValueDict(schema, WIDGETS_KEY)             # { name => widget/dotted name }
+
+    fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY)         # list of IFieldset instances
+
     # Get either read or write permissions depending on what type of form this is
-    
-    readPermissions  = {}  # field name -> permission name
+
+    readPermissions = {}  # field name -> permission name
     writePermissions = {}  # field name -> permission name
-    permissionCache  = {}  # permission name -> allowed/disallowed
-    
+    permissionCache = {}  # permission name -> allowed/disallowed
+
     if permissionChecks:
-        readPermissions  = mergedTaggedValueDict(schema, READ_PERMISSIONS_KEY)  # name => permission name
-        writePermissions = mergedTaggedValueDict(schema, WRITE_PERMISSIONS_KEY) # name => permission name
-        securityManager  = getSecurityManager()
-        
+        readPermissions = mergedTaggedValueDict(schema, READ_PERMISSIONS_KEY)  # name => permission name
+        writePermissions = mergedTaggedValueDict(schema, WRITE_PERMISSIONS_KEY)  # name => permission name
+        securityManager = getSecurityManager()
+
     # Find the fields we should not worry about
-    
+
     groups = {}
     doNotProcess = list(form.fields.keys())
 
     for fieldName, status in omitted.items():
         if status and status != 'false':
             doNotProcess.append(_fn(prefix, fieldName))
-    
+
     for group in form.groups:
         doNotProcess.extend(list(group.fields.keys()))
-        
+
         groupName = getattr(group, '__name__', group.label)
         groups[groupName] = group
 
     # Find all allowed fields so that we have something to select from
     omitReadOnly = form.mode != DISPLAY_MODE
     allFields = field.Fields(schema, prefix=prefix, omitReadOnly=omitReadOnly).omit(*doNotProcess)
-    
+
     # Check permissions
     if permissionChecks:
-        
+
         disallowedFields = []
-        
+
         for fieldName, fieldInstance in allFields.items():
             fieldName = fieldInstance.__name__
             fieldMode = fieldInstance.mode or form.mode
-            
+
             permissionName = None
             if fieldMode == DISPLAY_MODE:
                 permissionName = readPermissions.get(_bn(fieldInstance), None)
@@ -187,38 +188,38 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
                         permissionCache[permissionName] = bool(securityManager.checkPermission(permission.title, form.context))
                 if not permissionCache.get(permissionName, True):
                     disallowedFields.append(fieldName)
-        
+
         allFields = allFields.omit(*disallowedFields)
-    
+
     # Keep track of which fields are in a fieldset, and, by elimination,
-    # which ones are not 
-    
+    # which ones are not
+
     fieldsetFields = []
     for fieldset in fieldsets:
         for fieldName in fieldset.fields:
             fieldsetFields.append(_fn(prefix, fieldName))
-    
+
     # Set up the default fields, widget factories and widget modes
-    
+
     newFields = allFields.omit(*fieldsetFields)
     _processWidgets(form, widgets, modes, newFields)
-    
+
     if not defaultGroup:
         form.fields += newFields
     else:
         groups[defaultGroup].fields += newFields
-    
+
     # Set up fields for fieldsets
-    
+
     for fieldset in fieldsets:
-        
-        newFields = allFields.select(*[_fn(prefix, fieldName) 
+
+        newFields = allFields.select(*[_fn(prefix, fieldName)
                                             for fieldName in fieldset.fields
                                                 if _fn(prefix, fieldName) in allFields])
-        
-        if len(newFields) > 0:        
+
+        if len(newFields) > 0:
             _processWidgets(form, widgets, modes, newFields)
-        
+
             if fieldset.__name__ not in groups:
                 form.groups.append(GroupFactory(fieldset.__name__,
                                                 label=fieldset.label,
@@ -226,18 +227,18 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
                                                 fields=newFields))
             else:
                 groups[fieldset.__name__].fields += newFields
-    
-    
+
+
 def processFieldMoves(form, schema, prefix=''):
     """Process all field moves stored under ORDER_KEY in the schema tagged
     value. This should be run after all schemata have been processed with
     processFields().
     """
-    
+
     order = mergedTaggedValueList(schema, ORDER_KEY)      # (name, 'before'/'after', other name)
-            
+
     for fieldName, direction, relative_to in order:
-        
+
         # Handle shortcut: leading . means "in this form". May be useful
         # if you want to move a field relative to one in the current
         # schema or (more likely) a base schema of the current schema, without
@@ -247,7 +248,7 @@ def processFieldMoves(form, schema, prefix=''):
             relative_to = relative_to[1:]
             if prefix:
                 relative_to = expandPrefix(prefix) + relative_to
-        
+
         try:
             if direction == 'before':
                 move(form, fieldName, before=relative_to, prefix=prefix)

@@ -8,13 +8,14 @@ from plone.autoform.base import AutoFields
 
 _marker = object()
 
+
 class AutoExtensibleForm(AutoFields, ExtensibleForm):
     """Mixin class for z3c.form forms that support fields extracted from
     a schema
     """
 
     implements(IAutoExtensibleForm)
-    
+
     @property
     def schema(self):
         raise NotImplementedError("The class deriving from AutoExtensibleForm must have a 'schema' property")
@@ -24,7 +25,7 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
         """Default to there being no additional schemata
         """
         return ()
-    
+
     def updateFields(self):
         self.updateFieldsFromSchemata()
         super(AutoExtensibleForm, self).updateFields()
