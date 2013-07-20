@@ -16,8 +16,12 @@ def regExValidatorFactory(params):
         def validate(self, value):
             super(RegExValidator, self).validate(value)
             errmsg = params.get('errmsg', u"Invalid input")
-            ignore = params.get('ignore', u'')
-            regex = re.compile(params.get('regex', u".+"))
+            ignore_case = params.get('ignore_case', True)
+            options = 0
+            if ignore_case:
+                options = re.IGNORECASE
+            ignore = re.compile(params.get('ignore', u''), options)
+            regex = re.compile(params.get('regex', u".+"), options)
             if ignore:
                 tvalue = ignore.sub(u'', value)
             else:
@@ -32,9 +36,13 @@ def regExValidatorFactory(params):
 class IRegExParamValidator(IParameterizedWidget):
     """ test parameterized validator schema """
 
-    ignore = zope.schema.TextLine(title=u"ignore", required=False)
-    regex = zope.schema.TextLine(title=u"regex")
-    errmsg = zope.schema.TextLine(title=u"errmsg")
+    ignore = zope.schema.TextLine(title=u"Ignore Expression", required=False)
+    regex = zope.schema.TextLine(title=u"Match Expression")
+    errmsg = zope.schema.TextLine(title=u"Error Message", required=False)
+    ignore_case = zope.schema.Bool(
+        title=u"Ignore Case",
+        default=True,
+        required=False)
 
 
 @zope.interface.implementer(IRegExParamValidator)

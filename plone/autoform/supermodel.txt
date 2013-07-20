@@ -65,8 +65,8 @@ Next, let's define a sample model that exercises the various ``form`` and
     ...             <title>Four</title>
     ...             <form:validator type="plone.autoform.validators.RegExValidator">
     ...                 <ignore>-</ignore>
-    ...                 <regex>something</regex>
-    ...                 <errmsg>Nasty!</errmsg>
+    ...                 <regex>.*foobar.*</regex>
+    ...                 <errmsg>Nope, not it</errmsg>
     ...             </form:validator>
     ...         </field>
     ...         <field type="zope.schema.TextLine" name="six">
@@ -121,11 +121,35 @@ The interface defined in the model should now have the relevant form data:
     [('one', 'after', 'two'), ('three', 'before', 'two')]
     >>> model.schema.getTaggedValue(MODES_KEY)
     [(<InterfaceClass z3c.form.interfaces.IEditForm>, 'three', 'input'), (<InterfaceClass zope.interface.Interface>, 'two', 'hidden')]
-
     >>> model.schema.getTaggedValue(READ_PERMISSIONS_KEY)
     {'one': 'zope2.View'}
     >>> model.schema.getTaggedValue(WRITE_PERMISSIONS_KEY)
     {'one': 'cmf.ModifyPortalContent'}
+
+Validators are a bit different. They're strictly z3c.form and thus don't
+get written to the schema. To check a validator specification, we have
+to look for an adapter that takes the field and returns a validator.
+
+    >>> import zope.component
+    >>> import z3c.form.interfaces
+    >>> validator = zope.component.queryMultiAdapter(
+    ...     (None, None, None, model.schema['four'], None),
+    ...     z3c.form.interfaces.IValidator)
+    >>> validator
+    <RegExValidator for ['four']>
+
+With that validator, we can try out validation. Since
+we specified ignore-case, this should validate OK
+by returning nothing::
+
+    >>> validator.validate(u'this is a Foo-bar validator')
+
+Failing validation raises an exception with our specified message::
+
+    >>> validator.validate(u'junkmail')
+    Traceback (most recent call last):
+    ...
+    Invalid: Nope, not it
 
 See autoform.txt for details on how this form data is used to manipulate
 form layout.
