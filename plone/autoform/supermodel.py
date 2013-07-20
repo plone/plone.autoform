@@ -2,7 +2,7 @@ from lxml import etree
 
 from z3c.form.interfaces import IFieldWidget, IValidator
 from z3c.form.util import getSpecification
-from zope.component import provideAdapter, getAdapter, getUtility
+from zope.component import provideAdapter, getUtility
 from zope.interface import implements, Interface
 from zope.interface.interface import InterfaceClass
 
@@ -133,7 +133,8 @@ class FormSchema(object):
                             IValidator,
                             )
                     else:
-                        raise ValueError("IParameterizedWidget not implemented by %s" % obj)
+                        raise ValueError(
+                            "%s must implement IParameterizedWidget or IValidator" % obj)
 
     def write(self, fieldNode, schema, field):
         name = field.__name__
