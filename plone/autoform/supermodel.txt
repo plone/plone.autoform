@@ -16,12 +16,13 @@ First, let's load this package's ZCML so that we can run the tests:
     ...
     ...     <include package="Products.Five" file="configure.zcml" />
     ...     <include package="plone.autoform" />
-    ...     
+    ...
     ... </configure>
     ... """
     >>> from StringIO import StringIO
     >>> from zope.configuration import xmlconfig
     >>> xmlconfig.xmlconfig(StringIO(configuration))
+
 
 XML sample
 ----------
@@ -54,6 +55,26 @@ Next, let's define a sample model that exercises the various ``form`` and
     ...                 form:mode="z3c.form.interfaces.IEditForm:input">
     ...             <title>Three</title>
     ...         </field>
+    ...         <field type="zope.schema.TextLine" name="four">
+    ...             <title>Four</title>
+    ...             <form:validator
+    ...                 type="plone.autoform.tests.test_utils.TestValidator"
+    ...             />
+    ...         </field>
+    ...         <field type="zope.schema.TextLine" name="four">
+    ...             <title>Four</title>
+    ...             <form:validator type="plone.autoform.validators.RegExValidator">
+    ...                 <ignore>-</ignore>
+    ...                 <regex>something</regex>
+    ...                 <errmsg>Nasty!</errmsg>
+    ...             </form:validator>
+    ...         </field>
+    ...         <field type="zope.schema.TextLine" name="six">
+    ...             <title>Six</title>
+    ...             <form:widget type="z3c.form.browser.radio.RadioWidget">
+    ...                 <klass>annoying</klass>
+    ...             </form:widget>
+    ...         </field>
     ...     </schema>
     ... </model>
     ... """
@@ -78,7 +99,7 @@ Notes:
 * To set a custom validator for a field, use ``form:validator`` to give a fully
   qualified name to the field validator factory.
 * To set a read or write permission, use ``security:read-permission`` or
-  ``security:write-permission``. The value should be the name of an 
+  ``security:write-permission``. The value should be the name of an
   ``IPermission`` utility.
 
 We can load this using plone.supermodel:
@@ -90,14 +111,17 @@ The interface defined in the model should now have the relevant form data:
 
     >>> from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, \
     ...     MODES_KEY, ORDER_KEY, READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
-    >>> model.schema.getTaggedValue(WIDGETS_KEY)
-    {'three': 'z3c.form.browser.password.PasswordFieldWidget'}
+    >>> model.schema.getTaggedValue(WIDGETS_KEY)['three']
+    'z3c.form.browser.password.PasswordFieldWidget'
+    >>> model.schema.getTaggedValue(WIDGETS_KEY)['six']
+    ParameterizedWidget(<class 'z3c.form.browser.radio.RadioWidget'>, {'klass': u'annoying'})
     >>> model.schema.getTaggedValue(OMITTED_KEY)
     [(<InterfaceClass zope.interface.Interface>, 'one', 'true'), (<InterfaceClass z3c.form.interfaces.IForm>, 'three', 'true'), (<InterfaceClass z3c.form.interfaces.IEditForm>, 'three', 'false')]
     >>> model.schema.getTaggedValue(ORDER_KEY)
     [('one', 'after', 'two'), ('three', 'before', 'two')]
     >>> model.schema.getTaggedValue(MODES_KEY)
     [(<InterfaceClass z3c.form.interfaces.IEditForm>, 'three', 'input'), (<InterfaceClass zope.interface.Interface>, 'two', 'hidden')]
+
     >>> model.schema.getTaggedValue(READ_PERMISSIONS_KEY)
     {'one': 'zope2.View'}
     >>> model.schema.getTaggedValue(WRITE_PERMISSIONS_KEY)

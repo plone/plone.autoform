@@ -1,13 +1,15 @@
 import unittest2 as unittest
 from plone.testing.zca import UNIT_TESTING
 
+import zope.schema
+from zope.interface import implementer
+
 
 class TestParameterizedWidget(unittest.TestCase):
 
     layer = UNIT_TESTING
 
     def test_widget_instantiated_with_parameters(self):
-        from zope.interface import implementer
         from zope.schema import Field
         from z3c.form.interfaces import IFieldWidget
         from z3c.form.interfaces import IWidget
@@ -67,3 +69,5 @@ class TestParameterizedWidget(unittest.TestCase):
             pass
         else:
             self.fail('Expected TypeError')
+
+

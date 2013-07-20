@@ -51,4 +51,18 @@
         component=".widgets.TextAreaWidgetExportImportHandler"
         name="z3c.form.browser.textarea.TextAreaFieldWidget"
         />
+
+    <!-- validator import/export -->
+    <utility
+        provides=".interfaces.IWidgetExportImportHandler"
+        component=".validators.RegExParamValidatorExportImportHandler"
+        name="plone.autoform.validators.RegExValidator"
+        />
+
+    <utility
+        provides=".interfaces.IParameterizedValidatorFactory"
+        component=".validators.regExValidatorFactory"
+        name="plone.autoform.validators.RegExValidator"
+        />
+
 </configure>

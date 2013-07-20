@@ -11,6 +11,7 @@ from plone.supermodel.interfaces import IFieldset
 
 OMITTED_KEY   = u"plone.autoform.omitted"
 WIDGETS_KEY   = u"plone.autoform.widgets"
+VALIDATOR_KEY = u"plone.autoform.validators"
 MODES_KEY     = u"plone.autoform.modes"
 ORDER_KEY     = u"plone.autoform.order"
 
@@ -82,3 +83,8 @@ class IParameterizedWidget(IFieldWidget):
 
 class IWidgetExportImportHandler(Interface):
     """Supermodel export/import handler for widgets."""
+
+
+class IParameterizedValidatorFactory(Interface):
+    """a factory taking a parameter argument and
+       returning a class implementing IValidator"""

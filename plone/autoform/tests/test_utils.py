@@ -2,7 +2,7 @@ import unittest
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
 from zope.component import provideUtility
-from zope.interface import Interface, Invalid
+from zope.interface import Interface, Invalid, implementer
 from z3c.form.form import Form
 from z3c.form.validator import SimpleFieldValidator
 import zope.schema

@@ -2,7 +2,7 @@ from lxml import etree
 
 from z3c.form.interfaces import IFieldWidget, IValidator
 from z3c.form.util import getSpecification
-from zope.component import provideAdapter
+from zope.component import provideAdapter, getAdapter, getUtility
 from zope.interface import implements, Interface
 from zope.interface.interface import InterfaceClass
 
@@ -13,6 +13,8 @@ from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
 from plone.autoform.interfaces import FORM_NAMESPACE, FORM_PREFIX
 from plone.autoform.interfaces import SECURITY_NAMESPACE, SECURITY_PREFIX
+from plone.autoform.interfaces import IParameterizedValidatorFactory
+from plone.autoform.interfaces import IParameterizedWidget
 
 from plone.autoform.utils import resolveDottedName
 from plone.autoform.widgets import ParameterizedWidget
@@ -101,6 +103,37 @@ class FormSchema(object):
             widget = widgetAttr
         if widget is not None:
             self._add(schema, WIDGETS_KEY, name, widget)
+
+        validatorNode = fieldNode.find(ns('validator', self.namespace))
+        if validatorNode is not None:  # form:validator element
+            validatorType = validatorNode.get('type')
+            if validatorType is not None:
+                validatorFactory = resolveDottedName(validatorType)
+                if IValidator.implementedBy(validatorFactory):
+                    self._add_validator(field, validatorType)
+                else:
+                    if IParameterizedWidget.implementedBy(validatorFactory):
+                        # Use the parameterized widget machinery to get
+                        # the parameters needed to construct the validator.
+                        validatorWidget = ParameterizedWidget(validatorFactory)
+                        eximHandler = validatorWidget.getExportImportHandler(field)
+                        eximHandler.read(validatorNode, validatorWidget.params)
+                        # Now, we have our parameters.
+                        # Get a factory that accepts
+                        # params and returns a validator class closure around
+                        # the params. Then using it to provide the validation
+                        # adapter.
+                        validatorFactory = getUtility(
+                            IParameterizedValidatorFactory,
+                            validatorType
+                            )
+                        validatorClass = validatorFactory(validatorWidget.params)
+                        provideAdapter(validatorClass,
+                            (None, None, None, getSpecification(field), None),
+                            IValidator,
+                            )
+                    else:
+                        raise ValueError("IParameterizedWidget not implemented by %s" % obj)
 
     def write(self, fieldNode, schema, field):
         name = field.__name__
