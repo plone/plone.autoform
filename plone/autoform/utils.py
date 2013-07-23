@@ -217,7 +217,7 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
                                             for fieldName in fieldset.fields
                                                 if _fn(prefix, fieldName) in allFields])
 
-        if len(newFields) > 0:
+        if getattr(form, 'showEmptyGroups', False) or (len(newFields) > 0):
             _processWidgets(form, widgets, modes, newFields)
 
             if fieldset.__name__ not in groups:

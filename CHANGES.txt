@@ -4,6 +4,9 @@ Changelog
 1.5 (unreleased)
 ----------------
 
+- Added an option on form to allow display of empty fieldsets.
+  [thomasdesvenain]
+
 - fix tests
   [vangheem]
 
@@ -133,7 +136,7 @@ Changelog
   code, please change names from foo_bar too fooBar, e.g. process_fields()
   becomes processFields().
 
-  Note in particular that the additional_schemata property is now called 
+  Note in particular that the additional_schemata property is now called
   additionalSchemata. If you have implemented this property yourself, you will
   need to rename it!
   [optilude]

@@ -15,6 +15,7 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
     """
 
     implements(IAutoExtensibleForm)
+    showEmptyGroups = False
 
     @property
     def schema(self):
