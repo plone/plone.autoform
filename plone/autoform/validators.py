@@ -8,7 +8,7 @@ Parameterized validators need 4 parts::
 
 1) A factory function that accepts a parameter dictionary
    and returns a SimpleFieldValidator class. One way to do this
-   with a class closure around the parameters.
+   is with a closure around the parameters.
 
 2) That factory must be configured as a named utility providing
    IParameterizedValidatorFactory and having the dotted name
@@ -44,7 +44,7 @@ from plone.autoform.widgets import WidgetExportImportHandler
 
 # Implement a parameterized regular-expression validator
 
-# This factory returns an class descended from IValidator
+# This factory returns a class descended from IValidator
 # with a closure around a parameter dictionary.
 # This will be registered via zcml as a utility with
 # the same dotted name as our our parameter widget class.
@@ -67,7 +67,9 @@ def regExValidatorFactory(params):
             else:
                 tvalue = value
             if not regex.match(tvalue):
-                # XXX Need a message factory
+                # XXX: Need a message factory; the problem is that
+                # plone.autoform doesn't have access to the plone
+                # message factory.
                 raise zope.interface.Invalid(errmsg)
 
     return RegExValidator
