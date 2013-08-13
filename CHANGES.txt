@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.5 (unreleased)
+1.5 (2013-08-14)
 ----------------
 
 - Added an option on form to allow display of empty fieldsets.
