@@ -71,7 +71,8 @@ class AutoFields(object):
                 # group
 
                 if self.autoGroups:
-                    group_name = schema.__name__
+                    # use interface name, or prefix for anonymous schema
+                    group_name = schema.__name__ or prefix or None
 
                     # Look for group - note that previous processFields
                     # may have changed the groups list, so we can't easily
