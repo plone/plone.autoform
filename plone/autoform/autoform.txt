@@ -365,3 +365,56 @@ label to the automatically created group for the Dates schema.
     >>> [(g.__name__, g.label, g.description, g.fields.keys(),) for g in combi_form.groups]
     [('Dates', 'Cool dates', None, ['creation_date', 'start_date', 'end_date']),
      ('Ownership', 'Ownership', 'Ownership information', ['owner'])]
+
+
+It is possible to have interfaces/schema that have an empty __name__
+attribute, specifically in some cases where a schema is dynamically
+created.  In such cases, it is possible to have a subclass of
+AutoExtensibleForm implement a getPrefix() function as a sufficient
+condition for group naming when autoGroups is True.
+
+    Define some unnamed schema:
+
+    >>> class IUnknownName(Interface):
+    ...     this = schema.TextLine()
+    ... 
+    >>> IUnknownName.__name__ = ''  # dynamic schema, empty __name__
+    
+    >>> class IAnotherAnonymousSchema(Interface):
+    ...     that = schema.TextLine()
+    ... 
+    >>> IAnotherAnonymousSchema.__name__ = ''
+
+    Create an extrinsicly stored name mapping:
+
+    >>> nameToSchema = {
+    ...     'groucho': IUnknownName,
+    ...     'harpo': IAnotherAnonymousSchema,
+    ... }
+    ...
+    >>> schemaToName = dict(reversed(t) for t in nameToSchema.items())
+
+    And a form implementation that emits prefixes using above mapping:
+
+    >>> class GroupNamingForm(AutoExtensibleForm, form.Form):
+    ...     autoGroups = True
+    ...     ignoreContext = True
+    ... 
+    ...     schema = Interface
+    ...     additionalSchemata = (IUnknownName, IAnotherAnonymousSchema)
+    ... 
+    ...     def getPrefix(self, schema):
+    ...         if schema in schemaToName:
+    ...             return schemaToName.get(schema)
+    ...         return super(GroupNamingForm, self).getPrefix(schema)
+    ... 
+
+    >>> naming_form = GroupNamingForm(context, request)
+    >>> naming_form.updateFieldsFromSchemata()
+    >>> _getGroup = lambda factory: factory(context, request, None)
+    >>> groups = [_getGroup(group) for group in naming_form.groups]
+    >>> groups = dict((g.__name__, g) for g in groups)
+    >>> names = tuple(group.__name__ for group in groups.values())
+    >>> assert names == ('groucho', 'harpo')
+    >>> assert 'groucho.this' in groups['groucho'].fields
+    >>> assert 'harpo.that' in groups['harpo'].fields
