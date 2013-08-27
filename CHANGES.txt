@@ -4,7 +4,12 @@ Changelog
 1.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Support anonymous schema (dynamic interfaces with and empty
+  __name__ attribute) in autoGroups, opting to use prefix as
+  group name for such cases.  This allows subclasses of
+  AutoExtensibleForm to implement getPrefix() method as
+  a sufficient condition to support an unnamed schema.
+  [seanupton]
 
 
 1.5 (2013-08-14)
