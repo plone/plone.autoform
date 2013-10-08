@@ -6,9 +6,9 @@ from zope.interface import Interface, Invalid
 from z3c.form.form import Form
 from z3c.form.validator import SimpleFieldValidator
 import zope.schema
-import zope.component.testing
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.utils import processFields
+from plone.testing.zca import UNIT_TESTING
 
 
 class TestValidator(SimpleFieldValidator):
@@ -19,6 +19,8 @@ class TestValidator(SimpleFieldValidator):
 
 
 class TestUtils(unittest.TestCase):
+
+    layer = UNIT_TESTING
 
     def setUp(self):
         from zope.security.permission import Permission
@@ -36,7 +38,6 @@ class TestUtils(unittest.TestCase):
 
     def tearDown(self):
         noSecurityManager()
-        zope.component.testing.tearDown()
 
     def test_processFields_permissionChecks_no_prefix(self):
         form = Form(None, None)

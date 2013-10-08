@@ -1,25 +1,26 @@
 import unittest
 import doctest
 
-import zope.component.testing
+from plone.testing import layered
+from plone.testing.zca import UNIT_TESTING
 
 
 def test_suite():
     return unittest.TestSuite((
-        doctest.DocFileSuite('../autoform.txt',
-            setUp=zope.component.testing.setUp,
-            tearDown=zope.component.testing.tearDown,
-            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
-        doctest.DocFileSuite('subform.txt',
-            setUp=zope.component.testing.setUp,
-            tearDown=zope.component.testing.tearDown,
-            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
-        doctest.DocFileSuite('../view.txt',
-            setUp=zope.component.testing.setUp,
-            tearDown=zope.component.testing.tearDown,
-            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
-        doctest.DocFileSuite('../supermodel.txt',
-            setUp=zope.component.testing.setUp,
-            tearDown=zope.component.testing.tearDown,
-            optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
+        layered(
+            doctest.DocFileSuite('../autoform.txt',
+                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
+            layer=UNIT_TESTING),
+        layered(
+            doctest.DocFileSuite('subform.txt',
+                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
+            layer=UNIT_TESTING),
+        layered(
+            doctest.DocFileSuite('../view.txt',
+                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
+            layer=UNIT_TESTING),
+        layered(
+            doctest.DocFileSuite('../supermodel.txt',
+                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
+            layer=UNIT_TESTING),
         ))

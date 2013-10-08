@@ -1,14 +1,14 @@
 import unittest
 
 from zope.interface import Interface
-
-import zope.component.testing
+import zope.schema
 
 from plone.autoform import directives as form
 from plone.supermodel import model
 
 from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
+from plone.autoform.testing import AUTOFORM_INTEGRATION_TESTING
 
 
 class DummyWidget(object):
@@ -17,21 +17,7 @@ class DummyWidget(object):
 
 class TestSchemaDirectives(unittest.TestCase):
 
-    def setUp(self):
-        configuration = """\
-        <configure xmlns="http://namespaces.zope.org/zope">
-
-            <include package="Products.Five" file="configure.zcml" />
-            <include package="plone.autoform" />
-
-        </configure>
-        """
-        from StringIO import StringIO
-        from zope.configuration import xmlconfig
-        xmlconfig.xmlconfig(StringIO(configuration))
-
-    def tearDown(self):
-        zope.component.testing.tearDown()
+    layer = AUTOFORM_INTEGRATION_TESTING
 
     def test_schema_directives_store_tagged_values(self):
 
