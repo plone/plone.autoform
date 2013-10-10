@@ -4,6 +4,9 @@ Changelog
 1.6 (unreleased)
 ----------------
 
+- Replace deprecated test assert statements.
+  [timo]
+
 - Support anonymous schema (dynamic interfaces with and empty
   __name__ attribute) in autoGroups, opting to use prefix as
   group name for such cases.  This allows subclasses of

@@ -43,11 +43,11 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
 
-        self.assertEquals({'dummy': 'z3c.form.browser.password.PasswordFieldWidget'},
+        self.assertEqual({'dummy': 'z3c.form.browser.password.PasswordFieldWidget'},
             IDummy.getTaggedValue(WIDGETS_KEY))
-        self.assertEquals([(Interface, 'dummy', 'true')], IDummy.getTaggedValue(OMITTED_KEY))
-        self.assertEquals([(Interface, 'dummy', 'hidden')], IDummy.getTaggedValue(MODES_KEY))
-        self.assertEquals([('dummy', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
+        self.assertEqual([(Interface, 'dummy', 'true')], IDummy.getTaggedValue(OMITTED_KEY))
+        self.assertEqual([(Interface, 'dummy', 'hidden')], IDummy.getTaggedValue(MODES_KEY))
+        self.assertEqual([('dummy', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
         validator = getMultiAdapter((None, None, None, IDummy['dummy'], None), IValidator)
         from plone.autoform.tests.test_utils import TestValidator
         assert isinstance(validator, TestValidator)
@@ -71,13 +71,13 @@ class TestFormSchema(unittest.TestCase):
         handler.read(field_node1, IDummy, IDummy['dummy1'])
         handler.read(field_node2, IDummy, IDummy['dummy2'])
 
-        self.assertEquals({'dummy1': 'z3c.form.browser.password.PasswordFieldWidget'},
+        self.assertEqual({'dummy1': 'z3c.form.browser.password.PasswordFieldWidget'},
             IDummy.getTaggedValue(WIDGETS_KEY))
-        self.assertEquals([(Interface, 'dummy1', 'true'), (Interface, 'dummy2', 'yes')],
+        self.assertEqual([(Interface, 'dummy1', 'true'), (Interface, 'dummy2', 'yes')],
                           IDummy.getTaggedValue(OMITTED_KEY))
-        self.assertEquals([(Interface, 'dummy1', 'hidden'), (Interface, 'dummy2', 'display')],
+        self.assertEqual([(Interface, 'dummy1', 'hidden'), (Interface, 'dummy2', 'display')],
                           IDummy.getTaggedValue(MODES_KEY))
-        self.assertEquals([('dummy1', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
+        self.assertEqual([('dummy1', 'before', 'somefield',)], IDummy.getTaggedValue(ORDER_KEY))
 
     def test_read_no_data(self):
         field_node = etree.Element('field')
@@ -88,10 +88,10 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
 
-        self.assertEquals(None, IDummy.queryTaggedValue(WIDGETS_KEY))
-        self.assertEquals(None, IDummy.queryTaggedValue(OMITTED_KEY))
-        self.assertEquals(None, IDummy.queryTaggedValue(MODES_KEY))
-        self.assertEquals(None, IDummy.queryTaggedValue(ORDER_KEY))
+        self.assertEqual(None, IDummy.queryTaggedValue(WIDGETS_KEY))
+        self.assertEqual(None, IDummy.queryTaggedValue(OMITTED_KEY))
+        self.assertEqual(None, IDummy.queryTaggedValue(MODES_KEY))
+        self.assertEqual(None, IDummy.queryTaggedValue(ORDER_KEY))
 
     def test_read_values_with_interfaces(self):
         field_node1 = etree.Element('field')
@@ -111,9 +111,9 @@ class TestFormSchema(unittest.TestCase):
         handler.read(field_node2, IDummy, IDummy['dummy2'])
 
         expected_modes = [(IForm, u'dummy1', 'hidden'), (IForm, u'dummy2', 'hidden'), (IEditForm, u'dummy2', 'display')]
-        self.assertEquals(expected_modes, IDummy.queryTaggedValue(MODES_KEY))
+        self.assertEqual(expected_modes, IDummy.queryTaggedValue(MODES_KEY))
         expected_omitted = [(IForm, u'dummy1', 'true'), (IForm, u'dummy2', 'true'), (IEditForm, u'dummy2', 'false')]
-        self.assertEquals(expected_omitted, IDummy.queryTaggedValue(OMITTED_KEY))
+        self.assertEqual(expected_omitted, IDummy.queryTaggedValue(OMITTED_KEY))
 
     def test_read_parameterized_widget(self):
         from plone.autoform.widgets import ParameterizedWidget
@@ -174,10 +174,10 @@ class TestFormSchema(unittest.TestCase):
         handler.write(field_node, IDummy, IDummy['dummy'])
 
         widget_node = field_node.find(ns('widget', self.namespace))
-        self.assertEquals("SomeWidget", widget_node.get('type'))
-        self.assertEquals("true", field_node.get(ns("omitted", self.namespace)))
-        self.assertEquals("hidden", field_node.get(ns("mode", self.namespace)))
-        self.assertEquals("somefield", field_node.get(ns("before", self.namespace)))
+        self.assertEqual("SomeWidget", widget_node.get('type'))
+        self.assertEqual("true", field_node.get(ns("omitted", self.namespace)))
+        self.assertEqual("hidden", field_node.get(ns("mode", self.namespace)))
+        self.assertEqual("somefield", field_node.get(ns("before", self.namespace)))
 
     def test_write_partial(self):
         field_node = etree.Element('field')
@@ -194,10 +194,10 @@ class TestFormSchema(unittest.TestCase):
         handler.write(field_node, IDummy, IDummy['dummy'])
 
         widget_node = field_node.find(ns('widget', self.namespace))
-        self.assertEquals("SomeWidget", widget_node.get('type'))
-        self.assertEquals(None, field_node.get(ns("omitted", self.namespace)))
-        self.assertEquals("display", field_node.get(ns("mode", self.namespace)))
-        self.assertEquals(None, field_node.get(ns("before", self.namespace)))
+        self.assertEqual("SomeWidget", widget_node.get('type'))
+        self.assertEqual(None, field_node.get(ns("omitted", self.namespace)))
+        self.assertEqual("display", field_node.get(ns("mode", self.namespace)))
+        self.assertEqual(None, field_node.get(ns("before", self.namespace)))
 
     def test_write_no_data(self):
         field_node = etree.Element('field')
@@ -208,10 +208,10 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
 
-        self.assertEquals(None, field_node.find(ns("widget", self.namespace)))
-        self.assertEquals(None, field_node.get(ns("omitted", self.namespace)))
-        self.assertEquals(None, field_node.get(ns("mode", self.namespace)))
-        self.assertEquals(None, field_node.get(ns("before", self.namespace)))
+        self.assertEqual(None, field_node.find(ns("widget", self.namespace)))
+        self.assertEqual(None, field_node.get(ns("omitted", self.namespace)))
+        self.assertEqual(None, field_node.get(ns("mode", self.namespace)))
+        self.assertEqual(None, field_node.get(ns("before", self.namespace)))
 
     def test_write_values_with_interfaces(self):
         field_node1 = etree.Element('field')
@@ -230,12 +230,12 @@ class TestFormSchema(unittest.TestCase):
         handler.write(field_node1, IDummy, IDummy['dummy1'])
         handler.write(field_node2, IDummy, IDummy['dummy2'])
 
-        self.assertEquals("z3c.form.interfaces.IForm:hidden", field_node1.get(ns("mode", self.namespace)))
-        self.assertEquals("z3c.form.interfaces.IForm:true", field_node1.get(ns("omitted", self.namespace)))
+        self.assertEqual("z3c.form.interfaces.IForm:hidden", field_node1.get(ns("mode", self.namespace)))
+        self.assertEqual("z3c.form.interfaces.IForm:true", field_node1.get(ns("omitted", self.namespace)))
 
-        self.assertEquals("z3c.form.interfaces.IForm:hidden z3c.form.interfaces.IEditForm:display",
+        self.assertEqual("z3c.form.interfaces.IForm:hidden z3c.form.interfaces.IEditForm:display",
                           field_node2.get(ns("mode", self.namespace)))
-        self.assertEquals("z3c.form.interfaces.IForm:true z3c.form.interfaces.IEditForm:false",
+        self.assertEqual("z3c.form.interfaces.IForm:true z3c.form.interfaces.IEditForm:false",
                           field_node2.get(ns("omitted", self.namespace)))
 
     def test_write_parameterized_widget_string(self):
@@ -250,7 +250,7 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.write(fieldNode, IDummy, IDummy['dummy1'])
 
-        self.assertEquals(etree.tostring(fieldNode),
+        self.assertEqual(etree.tostring(fieldNode),
             '<field><ns0:widget xmlns:ns0="http://namespaces.plone.org/supermodel/form"'
             ' type="foo"/></field>')
 
@@ -266,7 +266,7 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.write(fieldNode, IDummy, IDummy['dummy1'])
 
-        self.assertEquals(etree.tostring(fieldNode),
+        self.assertEqual(etree.tostring(fieldNode),
             '<field/>')
 
     def test_write_parameterized_widget_with_handler(self):
@@ -281,7 +281,7 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.write(fieldNode, IDummy, IDummy['dummy1'])
 
-        self.assertEquals(etree.tostring(fieldNode),
+        self.assertEqual(etree.tostring(fieldNode),
             '<field><ns0:widget xmlns:ns0="http://namespaces.plone.org/supermodel/form"'
             ' type="plone.autoform.tests.test_supermodel_handler.DummyWidget">'
             '<klass>custom</klass>'
@@ -299,7 +299,7 @@ class TestFormSchema(unittest.TestCase):
         handler = FormSchema()
         handler.write(fieldNode, IDummy, IDummy['dummy1'])
 
-        self.assertEquals(etree.tostring(fieldNode),
+        self.assertEqual(etree.tostring(fieldNode),
             '<field><ns0:widget xmlns:ns0="http://namespaces.plone.org/supermodel/form">'
             '<klass>custom</klass></ns0:widget></field>')
 
@@ -319,8 +319,8 @@ class TestSecuritySchema(unittest.TestCase):
         handler = SecuritySchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
 
-        self.assertEquals({u'dummy': 'dummy.Read'}, IDummy.getTaggedValue(READ_PERMISSIONS_KEY))
-        self.assertEquals({u'dummy': 'dummy.Write'}, IDummy.getTaggedValue(WRITE_PERMISSIONS_KEY))
+        self.assertEqual({u'dummy': 'dummy.Read'}, IDummy.getTaggedValue(READ_PERMISSIONS_KEY))
+        self.assertEqual({u'dummy': 'dummy.Write'}, IDummy.getTaggedValue(WRITE_PERMISSIONS_KEY))
 
     def test_read_no_permissions(self):
         field_node = etree.Element('field')
@@ -331,8 +331,8 @@ class TestSecuritySchema(unittest.TestCase):
         handler = SecuritySchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
 
-        self.failIf(READ_PERMISSIONS_KEY in IDummy.getTaggedValueTags())
-        self.failIf(WRITE_PERMISSIONS_KEY in IDummy.getTaggedValueTags())
+        self.assertFalse(READ_PERMISSIONS_KEY in IDummy.getTaggedValueTags())
+        self.assertFalse(WRITE_PERMISSIONS_KEY in IDummy.getTaggedValueTags())
 
     def test_write(self):
         field_node = etree.Element('field')
@@ -346,8 +346,8 @@ class TestSecuritySchema(unittest.TestCase):
         handler = SecuritySchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
 
-        self.assertEquals("dummy.Read", field_node.get(ns("read-permission", self.namespace)))
-        self.assertEquals("dummy.Write", field_node.get(ns("write-permission", self.namespace)))
+        self.assertEqual("dummy.Read", field_node.get(ns("read-permission", self.namespace)))
+        self.assertEqual("dummy.Write", field_node.get(ns("write-permission", self.namespace)))
 
     def test_write_no_permissions(self):
         field_node = etree.Element('field')
@@ -360,8 +360,8 @@ class TestSecuritySchema(unittest.TestCase):
         handler = SecuritySchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
 
-        self.assertEquals(None, field_node.get(ns("read-permission", self.namespace)))
-        self.assertEquals(None, field_node.get(ns("write-permission", self.namespace)))
+        self.assertEqual(None, field_node.get(ns("read-permission", self.namespace)))
+        self.assertEqual(None, field_node.get(ns("write-permission", self.namespace)))
 
     def test_write_no_metadata(self):
         field_node = etree.Element('field')
@@ -372,8 +372,8 @@ class TestSecuritySchema(unittest.TestCase):
         handler = SecuritySchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
 
-        self.assertEquals(None, field_node.get(ns("read-permission", self.namespace)))
-        self.assertEquals(None, field_node.get(ns("write-permission", self.namespace)))
+        self.assertEqual(None, field_node.get(ns("read-permission", self.namespace)))
+        self.assertEqual(None, field_node.get(ns("write-permission", self.namespace)))
 
 
 def test_suite():
