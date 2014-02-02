@@ -1,6 +1,7 @@
 from z3c.form import field
 
 from plone.z3cform.fieldsets.group import GroupFactory
+from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup, IGroupFactory
 
 from plone.autoform.utils import processFieldMoves, processFields
 
@@ -38,12 +39,18 @@ class AutoFields(object):
         groups = []
 
         for g in self.groups:
-            group_name = getattr(g, '__name__', g.label)
-            fieldset_group = GroupFactory(group_name,
-                                          field.Fields(g.fields),
-                                          g.label,
-                                          getattr(g, 'description', None))
-            groups.append(fieldset_group)
+            if not (IDescriptiveGroup.implementedBy(g) or IGroupFactory.providedBy(g)):
+                # only create a new group if g is not already a class implementing
+                # IDescriptiveGroup or a group factory
+                group_name = getattr(g, '__name__', g.label)
+                fieldset_group = GroupFactory(group_name,
+                                              field.Fields(g.fields),
+                                              g.groups,
+                                              g.label,
+                                              getattr(g, 'description', None))
+                groups.append(fieldset_group)
+            else:
+                groups.append(g)
 
         # Copy to instance variable only after we have potentially read from
         # the class
@@ -86,6 +93,7 @@ class AutoFields(object):
                     if not found:
                         fieldset_group = GroupFactory(group_name,
                                                       field.Fields(),
+                                                      (),
                                                       group_name,
                                                       schema.__doc__)
                         self.groups.append(fieldset_group)
