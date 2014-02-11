@@ -277,8 +277,8 @@ only be included in the form for users who have that permission::
     from plone.autoform import directives as form
 
     class IMySchema(model.Schema):
-        form.read_permission('secret', 'cmf.ManagePortal')
-        form.write_permission('secret', 'cmf.ManagePortal')
+        form.read_permission(secret='cmf.ManagePortal')
+        form.write_permission(secret='cmf.ManagePortal')
         secret = schema.TextLine(
             title = u'Secret',
             )
