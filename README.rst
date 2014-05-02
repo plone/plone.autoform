@@ -56,7 +56,7 @@ The mode can be controlled using the ``mode`` directive::
     from plone.autoform import directives as form
 
     class IMySchema(model.Schema):
-    
+
         form.mode(secret='hidden')
         form.mode(IEditForm, secret='input')
         secret = schema.TextLine(
@@ -103,12 +103,12 @@ IEditForm interface::
     from plone.autoform import directives as form
 
     class IMySchema(model.Schema):
-            
+
         form.omitted('dummy')
         dummy = schema.Text(
             title=u"Dummy"
             )
-        
+
         form.omitted('edit_only')
         form.no_omit(IEditForm, 'edit_only')
         edit_only = schema.TextLine(
@@ -144,23 +144,24 @@ is placed before the ``summary`` field even though it is defined afterward::
     from plone.autoform import directives as form
 
     class IMySchema(model.Schema):
-    
+
         summary = schema.Text(
             title=u"Summary",
             description=u"Summary of the body",
             readonly=True
             )
-        
+
         form.order_before(not_last='summary')
         not_last = schema.TextLine(
             title=u"Not last",
             )
 
 The value passed to the directive may be either '*' (indicating before or after
-all fields) or the name of another field. Use ``'.fieldname'`` to refer to field
-in the current schema (or a base schema). Use a fully prefixed name (e.g.
-``'my.package.ISomeSchema'``) to refer to a field in another schema. Use an
-unprefixed name to refer to a field in the default schema for the form.
+all fields) or the name of another field. Use ``'.fieldname'`` to refer to
+field in the current schema or a base schema. Prefix with the schema name (e.g.
+``'IDublinCore.title'``) to refer to a field in another schema. Use an
+unprefixed name to refer to a field in the current or the default schema for
+the form.
 
 In supermodel XML, the directives are called ``form:before`` and ``form:after``.
 For example::
@@ -183,16 +184,16 @@ are placed within the ``extra`` fieldset::
     from plone.autoform import directives as form
 
     class IMySchema(model.Schema):
-    
-        model.fieldset('extra', 
+
+        model.fieldset('extra',
             label=u"Extra info",
             fields=['footer', 'dummy']
             )
-        
+
         footer = schema.Text(
             title=u"Footer text",
             )
-        
+
         dummy = schema.Text(
             title=u"Dummy"
             )
@@ -230,7 +231,7 @@ radio buttons instead of a checkbox::
             )
 
 You can also pass widget parameters to control attributes of the
-widget. For example, here we keep the default widget, but 
+widget. For example, here we keep the default widget, but
 set a CSS class::
 
     from plone.supermodel import model
