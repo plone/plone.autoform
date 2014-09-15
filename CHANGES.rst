@@ -4,7 +4,9 @@ Changelog
 1.6.1 (unreleased)
 ------------------
 
-- Fix field processing to not create duplicate fieldsets (form groups)
+- Fix issue where multiple (plone.supermodel) fieldset directive calls for the
+  same fieldset name resulted to duplicate fieldsets (e.g. when updating
+  fieldset with new fields in a subschema)
   [datakurre]
 
 

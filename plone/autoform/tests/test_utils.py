@@ -66,7 +66,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual('foo', self.secman.checks.pop())
         self.assertFalse('prefix.title' in form.fields)
 
-    def test_processFields_fieldsets_groups(self):
+    def test_processFields_fieldsets_as_form_groups(self):
         form = Form(None, None)
         form.groups = []
 
@@ -77,14 +77,14 @@ class TestUtils(unittest.TestCase):
                             fields=['title'])
         schema.setTaggedValue(FIELDSETS_KEY, [fieldset])
 
-        class inherited_schema(schema):
+        class subschema(schema):
             subtitle = zope.schema.TextLine()
 
         fieldset = Fieldset('custom', label=u'Custom',
                             fields=['subtitle'])
-        inherited_schema.setTaggedValue(FIELDSETS_KEY, [fieldset])
+        subschema.setTaggedValue(FIELDSETS_KEY, [fieldset])
 
-        processFields(form, inherited_schema,
+        processFields(form, subschema,
                       prefix='prefix', permissionChecks=True)
 
         self.assertEqual(len(form.groups), 1)
