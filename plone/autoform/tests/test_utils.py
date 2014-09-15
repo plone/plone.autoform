@@ -7,6 +7,8 @@ from z3c.form.form import Form
 from z3c.form.validator import SimpleFieldValidator
 import zope.schema
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
+from plone.supermodel.interfaces import FIELDSETS_KEY
+from plone.supermodel.model import Fieldset
 from plone.autoform.utils import processFields
 from plone.testing.zca import UNIT_TESTING
 
@@ -63,3 +65,28 @@ class TestUtils(unittest.TestCase):
 
         self.assertEqual('foo', self.secman.checks.pop())
         self.assertFalse('prefix.title' in form.fields)
+
+    def test_processFields_fieldsets_groups(self):
+        form = Form(None, None)
+        form.groups = []
+
+        class schema(Interface):
+            title = zope.schema.TextLine()
+
+        fieldset = Fieldset('custom', label=u'Custom',
+                            fields=['title'])
+        schema.setTaggedValue(FIELDSETS_KEY, [fieldset])
+
+        class inherited_schema(schema):
+            subtitle = zope.schema.TextLine()
+
+        fieldset = Fieldset('custom', label=u'Custom',
+                            fields=['subtitle'])
+        inherited_schema.setTaggedValue(FIELDSETS_KEY, [fieldset])
+
+        processFields(form, inherited_schema,
+                      prefix='prefix', permissionChecks=True)
+
+        self.assertEqual(len(form.groups), 1)
+        self.assertEqual(len(form.groups[0].fields), 2)
+        self.assertEqual([g.__name__ for g in form.groups], ['custom'])
