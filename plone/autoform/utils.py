@@ -221,10 +221,12 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
             _processWidgets(form, widgets, modes, newFields)
 
             if fieldset.__name__ not in groups:
-                form.groups.append(GroupFactory(fieldset.__name__,
-                                                label=fieldset.label,
-                                                description=fieldset.description,
-                                                fields=newFields))
+                group = GroupFactory(fieldset.__name__,
+                                     label=fieldset.label,
+                                     description=fieldset.description,
+                                     fields=newFields)
+                form.groups.append(group)
+                groups[group.__name__] = group
             else:
                 groups[fieldset.__name__].fields += newFields
 
