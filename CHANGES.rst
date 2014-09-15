@@ -4,7 +4,8 @@ Changelog
 1.6.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix field processing to not create duplicate fieldsets (form groups)
+  [datakurre]
 
 
 1.6 (2014-02-22)
