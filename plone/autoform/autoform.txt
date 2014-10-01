@@ -415,8 +415,6 @@ condition for group naming when autoGroups is True.
     >>> groups = [_getGroup(group) for group in naming_form.groups]
     >>> groups = dict((g.__name__, g) for g in groups)
     >>> names = tuple(sorted(group.__name__ for group in groups.values()))
-    >>> names
-
     >>> assert names == ('groucho', 'harpo')
     >>> assert 'groucho.this' in groups['groucho'].fields
     >>> assert 'harpo.that' in groups['harpo'].fields
