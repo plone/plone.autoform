@@ -1,17 +1,19 @@
+# -*- coding: utf-8 -*-
+from plone.autoform.interfaces import MODES_KEY
+from plone.autoform.interfaces import OMITTED_KEY
+from plone.autoform.interfaces import ORDER_KEY
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY
+from plone.autoform.interfaces import WIDGETS_KEY
+from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
+from plone.autoform.widgets import ParameterizedWidget
+from plone.supermodel.directives import DictCheckerPlugin
+from plone.supermodel.directives import ListCheckerPlugin
+from plone.supermodel.directives import MetadataDictDirective
+from plone.supermodel.directives import MetadataListDirective
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IWidget
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
-
-from plone.supermodel.directives import MetadataListDirective
-from plone.supermodel.directives import MetadataDictDirective
-from plone.supermodel.directives import ListCheckerPlugin
-from plone.supermodel.directives import DictCheckerPlugin
-
-from plone.autoform.interfaces import OMITTED_KEY, MODES_KEY, WIDGETS_KEY
-from plone.autoform.interfaces import ORDER_KEY
-from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
-from plone.autoform.widgets import ParameterizedWidget
 
 
 class omitted(MetadataListDirective):
@@ -22,7 +24,9 @@ class omitted(MetadataListDirective):
 
     def factory(self, *args):
         if not args:
-            raise TypeError('The omitted directive expects at least one argument.')
+            raise TypeError(
+                'The omitted directive expects at least one argument.'
+            )
         form_interface = Interface
         if IInterface.providedBy(args[0]):
             form_interface = args[0]
@@ -54,7 +58,9 @@ class mode(MetadataListDirective):
 
     def factory(self, *args, **kw):
         if len(args) > 1:
-            raise TypeError('The mode directive expects 0 or 1 non-keyword arguments.')
+            raise TypeError(
+                'The mode directive expects 0 or 1 non-keyword arguments.'
+            )
         form_interface = Interface
         if args:
             form_interface = args[0]
@@ -68,34 +74,41 @@ class ModePlugin(OmittedPlugin):
 class widget(MetadataDictDirective):
     """Schema directive used to set the widget for one or more fields.
 
-    Option 1: widget(field1='z3c.form.browser.text.TextWidget', field2=TextWidget)
+    Option 1:
+       ``widget(field1='z3c.form.browser.text.TextWidget', field2=TextWidget)``
 
       The directive is passed keyword arguments mapping field names to widgets.
       The widget can be specified as either a widget class, or as a string
-      with the dotted path to a widget class. It cannot be a widget instance, because
-      a new widget instance needs to be constructed for each request.
+      with the dotted path to a widget class. It cannot be a widget instance,
+      because a new widget instance needs to be constructed for each request.
 
-      (For backwards-compatibility, the widget can also be specified as a field widget factory.
-      A ``field widget factory`` is a callable that returns a widget instance
-      when passed a field and a request.)
+      (For backwards-compatibility, the widget can also be specified as a field
+      widget factory.  A ``field widget factory`` is a callable that returns a
+      widget instance when passed a field and a request.)
 
-    Option 2: widget('field1', TextWidget, label=u'My label')
+    Option 2:
+      ``widget('field1', TextWidget, label=u'My label')``
 
-      This option makes it possible to configure a custom widget _and_ customize its attributes.
+      This option makes it possible to configure a custom widget _and_
+      customize its attributes.
 
       * The first positional arg is a string giving the name of a single field.
-      * The second positional arg is a widget class, again specified as either a direct reference
-        or a dotted path.
-      * The remaining args are keyword arguments mapping arbitrary names to arbitrary values.
-        These will be set as attributes of the widget when it is constructed.
+      * The second positional arg is a widget class, again specified as either
+        a direct reference or a dotted path.
+      * The remaining args are keyword arguments mapping arbitrary names to
+        arbitrary values. These will be set as attributes of the widget when it
+        is constructed.
 
-    Option 3: widget('field1', label=u'My label')
+    Option 3:
+      ``widget('field1', label=u'My label')``
 
-      This option makes it possible to _customize_ the field's default widget without naming it
-      explicitly.
+      This option makes it possible to _customize_ the field's default widget
+      without naming it explicitly.
 
-      * The first and only positional arg is a string giving the name of a single field.
-      * The remaining args are keyword arguments mapping arbitrary names to arbitrary values.
+      * The first and only positional arg is a string giving the name of a
+        single field.
+      * The remaining args are keyword arguments mapping arbitrary names to
+        arbitrary values.
         These will be set as attributes of the widget when it is constructed.
     """
 
@@ -111,9 +124,11 @@ class widget(MetadataDictDirective):
                 widgets[field_name] = widget
         else:
             if widget_class is not None \
-            and not IFieldWidget.implementedBy(widget_class) \
-            and not IWidget.implementedBy(widget_class):
-                raise TypeError('widget_class must implement IWidget or IFieldWidget')
+               and not IFieldWidget.implementedBy(widget_class) \
+               and not IWidget.implementedBy(widget_class):
+                raise TypeError(
+                    'widget_class must implement IWidget or IFieldWidget'
+                )
             widgets[field_name] = ParameterizedWidget(widget_class, **kw)
 
         return widgets
@@ -129,7 +144,8 @@ class order_before(MetadataListDirective):
     key = ORDER_KEY
 
     def factory(self, **kw):
-        return [(field_name, 'before', relative_to) for field_name, relative_to in kw.items()]
+        return [(field_name, 'before', relative_to)
+                for field_name, relative_to in kw.items()]
 
 
 class order_after(MetadataListDirective):
@@ -138,7 +154,8 @@ class order_after(MetadataListDirective):
     key = ORDER_KEY
 
     def factory(self, **kw):
-        return [(field_name, 'after', relative_to) for field_name, relative_to in kw.items()]
+        return [(field_name, 'after', relative_to)
+                for field_name, relative_to in kw.items()]
 
 
 class OrderPlugin(ListCheckerPlugin):

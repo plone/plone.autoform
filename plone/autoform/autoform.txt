@@ -1,11 +1,11 @@
-Form setup details
+cd Form setup details
 ==================
 
 This package provides tools to construct z3c.form forms out of hints stored
 in tagged values on schema interfaces. A special form base class is used to
 set up the 'fields' and 'groups' properties on form instances.
 
-The tagged values are stored under keys represented by the following 
+The tagged values are stored under keys represented by the following
 constants:
 
     >>> from plone.autoform.interfaces import OMITTED_KEY
@@ -27,7 +27,7 @@ There are several ways to set the form data:
   provides a schema handler for the 'form' prefix that can be used to
   incorporate form hints. See supermodel.txt for details.
 * By using the grok directives in the plone.directives.form package.
-    
+
 For the purposes of this test, we'll set the form data manually.
 
 Test setup
@@ -89,7 +89,7 @@ And finally, a form:
     >>> class TestForm(AutoExtensibleForm, form.Form):
     ...     schema = ITestSchema
     ...     additionalSchemata = (ISupplementarySchema, IOtherSchema,)
-    ...     
+    ...
     ...     ignoreContext = True
 
 This form is in input mode:
@@ -105,28 +105,28 @@ Form data can be held under the following keys:
     OMITTED_KEY -- A list of (interface, fieldName, boolean) triples. If the
         third value evaluates to true, the field with the given fieldName will
         be omitted from forms providing the given interface.
-    
+
     MODES_KEY -- A list of (interface, fieldName, mode string) triples. A mode
         string may be one of the z3c.form widget modes, including 'hidden',
         'input', and 'display'.  The field will be rendered using a widget in
         the specified mode on forms providing the given interface.
-    
+
     WIDGETS_KEY -- A dict of fieldName => widget. The widget can be
         the dotted name of a z3c.form field widget factory, or an actual
         instance of one.
-        
+
     ORDER_KEY -- A list of (fieldName, direction, relative_to) triples.
         direction can be one of 'before' or 'after'. relative_to can be '*'
-        (any/all fields), or the name of a field to move the given field 
+        (any/all fields), or the name of a field to move the given field
         before or after in the form.
-    
-    READ_PERMISSIONS_KEY -- A dict of fieldName => permission id. When a 
+
+    READ_PERMISSIONS_KEY -- A dict of fieldName => permission id. When a
         form is in 'display' mode, the field will be omitted unless the user
         has the given permission in the form's context. The permission id
         should be a Zope 3 style IPermission utility name, not a Zope 2
         permission string.
 
-    WRITE_PERMISSIONS_KEY -- A dict of fieldName => permission id. When a 
+    WRITE_PERMISSIONS_KEY -- A dict of fieldName => permission id. When a
         form is in 'input' mode, the field will be omitted unless the user
         has the given permission in the form's context. The permission id
         should be a Zope 3 style IPermission utility name, not a Zope 2
@@ -218,7 +218,7 @@ Note that if a permission is not found, the field will be allowed.
 Finally, fieldsets are configured like this:
 
     >>> from plone.supermodel.model import Fieldset
-    >>> ITestSchema.setTaggedValue(FIELDSETS_KEY, 
+    >>> ITestSchema.setTaggedValue(FIELDSETS_KEY,
     ...                                 [Fieldset('fieldset1', fields=['three'],
     ...                                           label=u"Fieldset one",
     ...                                           description=u"Description of fieldset one")])
@@ -324,12 +324,12 @@ in full.
 
     >>> Basics.setTaggedValue(MODES_KEY, [(Interface, 'hidden_secret', 'hidden')])
     >>> Basics.setTaggedValue(FIELDSETS_KEY, [Fieldset('Dates', label="Cool dates", fields=['creation_date'])])
-    
+
     >>> class Dates(Interface):
     ...     """Date information"""
     ...     start_date = schema.Date(title=u"Start date")
     ...     end_date = schema.Date(title=u"End date")
-    
+
     >>> class Ownership(Interface):
     ...     """Ownership information"""
     ...     owner = schema.Date(title=u"The owner")
@@ -341,7 +341,7 @@ that this may cause clashes if fields in different schemata share a name.
     >>> class CombiForm(AutoExtensibleForm, form.Form):
     ...     schema = Basics
     ...     additionalSchemata = (Dates, Ownership,)
-    ...     
+    ...
     ...     ignoreContext = True
     ...     ignorePrefix = True
     ...     autoGroups = True
@@ -354,14 +354,14 @@ another fieldset.
 
     >>> combi_form.fields.keys()
     ['title', 'description', 'hidden_secret']
-    
+
     >>> combi_form.widgets['hidden_secret'].mode
     'hidden'
-    
+
 Each additional schema then has its own fields. Note that setting the 'dates'
 fieldset in the base schema had the effect of giving a more specific
 label to the automatically created group for the Dates schema.
-    
+
     >>> [(g.__name__, g.label, g.description, g.fields.keys(),) for g in combi_form.groups]
     [('Dates', 'Cool dates', None, ['creation_date', 'start_date', 'end_date']),
      ('Ownership', 'Ownership', 'Ownership information', ['owner'])]
@@ -377,12 +377,12 @@ condition for group naming when autoGroups is True.
 
     >>> class IUnknownName(Interface):
     ...     this = schema.TextLine()
-    ... 
+    ...
     >>> IUnknownName.__name__ = ''  # dynamic schema, empty __name__
-    
+
     >>> class IAnotherAnonymousSchema(Interface):
     ...     that = schema.TextLine()
-    ... 
+    ...
     >>> IAnotherAnonymousSchema.__name__ = ''
 
     Create an extrinsicly stored name mapping:
@@ -399,22 +399,24 @@ condition for group naming when autoGroups is True.
     >>> class GroupNamingForm(AutoExtensibleForm, form.Form):
     ...     autoGroups = True
     ...     ignoreContext = True
-    ... 
+    ...
     ...     schema = Interface
     ...     additionalSchemata = (IUnknownName, IAnotherAnonymousSchema)
-    ... 
+    ...
     ...     def getPrefix(self, schema):
     ...         if schema in schemaToName:
     ...             return schemaToName.get(schema)
     ...         return super(GroupNamingForm, self).getPrefix(schema)
-    ... 
+    ...
 
     >>> naming_form = GroupNamingForm(context, request)
     >>> naming_form.updateFieldsFromSchemata()
     >>> _getGroup = lambda factory: factory(context, request, None)
     >>> groups = [_getGroup(group) for group in naming_form.groups]
     >>> groups = dict((g.__name__, g) for g in groups)
-    >>> names = tuple(group.__name__ for group in groups.values())
+    >>> names = tuple(sorted(group.__name__ for group in groups.values()))
+    >>> names
+
     >>> assert names == ('groucho', 'harpo')
     >>> assert 'groucho.this' in groups['groucho'].fields
     >>> assert 'harpo.that' in groups['harpo'].fields

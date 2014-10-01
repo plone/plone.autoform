@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+from setuptools import find_packages
+from setuptools import setup
 import os
-from setuptools import setup, find_packages
 
 
 def read(*rnames):
@@ -20,7 +22,8 @@ setup(
     version=version,
     description="Tools to construct z3c.form forms",
     long_description=long_description,
-    # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
+    # Get more strings from http://www.python.org/pypi?%3Aaction=list_
+    # classifiers
     classifiers=[
         "Framework :: Plone",
         "Programming Language :: Python",

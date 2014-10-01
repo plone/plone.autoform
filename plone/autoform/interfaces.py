@@ -1,20 +1,18 @@
+# -*- coding: utf-8 -*-
+from plone.supermodel.interfaces import IFieldset
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IFieldsForm, IDisplayForm, IWidget
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
-
 import zope.schema
 
-from z3c.form.interfaces import IFieldsForm, IDisplayForm, IWidget
-from z3c.form.interfaces import IFieldWidget
-from plone.supermodel.interfaces import IFieldset
-
 # Schema interface tagged value keys
+MODES_KEY = u"plone.autoform.modes"
+OMITTED_KEY = u"plone.autoform.omitted"
+ORDER_KEY = u"plone.autoform.order"
+WIDGETS_KEY = u"plone.autoform.widgets"
 
-OMITTED_KEY   = u"plone.autoform.omitted"
-WIDGETS_KEY   = u"plone.autoform.widgets"
-MODES_KEY     = u"plone.autoform.modes"
-ORDER_KEY     = u"plone.autoform.order"
-
-READ_PERMISSIONS_KEY  = u"plone.autoform.security.read-permissions"
+READ_PERMISSIONS_KEY = u"plone.autoform.security.read-permissions"
 WRITE_PERMISSIONS_KEY = u"plone.autoform.security.write-permissions"
 
 # Supermodel namespace and prefix
@@ -39,16 +37,24 @@ class IAutoExtensibleForm(Interface):
     for details.
     """
 
-    ignorePrefix = zope.schema.Bool(title=u"Do not set a prefix for additional schemata",
-                                    default=False)
+    ignorePrefix = zope.schema.Bool(
+        title=u"Do not set a prefix for additional schemata",
+        default=False
+    )
 
-    schema = zope.schema.Object(title=u"Schema providing form fields",
-                                schema=IInterface)
+    schema = zope.schema.Object(
+        title=u"Schema providing form fields",
+        schema=IInterface
+    )
 
-    additionalSchemata = zope.schema.Tuple(title=u"Supplementary schemata providing additional form fields",
-                                           value_type=zope.schema.Object(title=u"Schema interface",
-                                                                          schema=IInterface),
-                                           required=False)
+    additionalSchemata = zope.schema.Tuple(
+        title=u"Supplementary schemata providing additional form fields",
+        value_type=zope.schema.Object(
+            title=u"Schema interface",
+            schema=IInterface
+        ),
+        required=False
+    )
 
 
 class IAutoObjectSubForm(Interface):
@@ -56,8 +62,10 @@ class IAutoObjectSubForm(Interface):
     to also have its fields updated with form hints. See subform.txt
     """
 
-    schema = zope.schema.Object(title=u"Schema providing form fields",
-                                schema=IInterface)
+    schema = zope.schema.Object(
+        title=u"Schema providing form fields",
+        schema=IInterface
+    )
 
 
 class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
@@ -65,15 +73,29 @@ class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     interfaces.
     """
 
-    w = zope.schema.Dict(title=u"Shortcut lookup for all widgets",
-                         description=u"Contains all widgets, including "
-                                      "those from groups within this form",
-                         key_type=zope.schema.ASCIILine(title=u"Widget name, with prefix"),
-                         value_type=zope.schema.Object(title=u"Widget", schema=IWidget))
+    w = zope.schema.Dict(
+        title=u"Shortcut lookup for all widgets",
+        description=u"Contains all widgets, including those from groups "
+                    u"within this form",
+        key_type=zope.schema.ASCIILine(
+            title=u"Widget name, with prefix"
+        ),
+        value_type=zope.schema.Object(
+            title=u"Widget",
+            schema=IWidget
+        )
+    )
 
-    fieldsets = zope.schema.Dict(title=u"Lookup fieldset (group) by name",
-                              key_type=zope.schema.ASCIILine(title=u"Fieldset name"),
-                              value_type=zope.schema.Object(title=u"Fieldset", schema=IFieldset))
+    fieldsets = zope.schema.Dict(
+        title=u"Lookup fieldset (group) by name",
+        key_type=zope.schema.ASCIILine(
+            title=u"Fieldset name"
+        ),
+        value_type=zope.schema.Object(
+            title=u"Fieldset",
+            schema=IFieldset
+        )
+    )
 
 
 class IParameterizedWidget(IFieldWidget):

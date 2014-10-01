@@ -1,8 +1,7 @@
-from z3c.form import field
-
-from plone.z3cform.fieldsets.group import GroupFactory
-
+# -*- coding: utf-8 -*-
 from plone.autoform.utils import processFieldMoves, processFields
+from plone.z3cform.fieldsets.group import GroupFactory
+from z3c.form import field
 
 _marker = object()
 
@@ -84,15 +83,22 @@ class AutoFields(object):
                             break
 
                     if not found:
-                        fieldset_group = GroupFactory(group_name,
-                                                      field.Fields(),
-                                                      group_name,
-                                                      schema.__doc__)
+                        fieldset_group = GroupFactory(
+                            group_name,
+                            field.Fields(),
+                            group_name,
+                            schema.__doc__
+                        )
                         self.groups.append(fieldset_group)
 
                     defaultGroup = group_name
 
-                processFields(self, schema, prefix=prefix, defaultGroup=defaultGroup, permissionChecks=have_user)
+                processFields(
+                    self, schema,
+                    prefix=prefix,
+                    defaultGroup=defaultGroup,
+                    permissionChecks=have_user
+                )
 
         # Then process relative field movements. The base schema is processed
         # last to allow it to override any movements made in additional

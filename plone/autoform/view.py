@@ -1,29 +1,27 @@
-from zope.interface import implements
-
+# -*- coding: utf-8 -*-
+from plone.autoform.base import AutoFields
+from plone.autoform.interfaces import IWidgetsView
+from plone.z3cform import z2
 from z3c.form.form import DisplayForm
 from z3c.form.interfaces import IFormLayer
+from zope.interface import implementer
 
 try:
     from Products.Five.bbb import AcquisitionBBB as Explicit
 except ImportError:
     from Acquisition import Explicit
 
-from plone.z3cform import z2
 
-from plone.autoform.interfaces import IWidgetsView
-from plone.autoform.base import AutoFields
-
-
+@implementer(IWidgetsView)
 class WidgetsView(AutoFields, DisplayForm, Explicit):
     """Mix-in to allow widgets (in view mode) to be accesed from browser
     views.
     """
 
-    implements(IWidgetsView)
-
     # You should set one or more of these, or the 'fields' variable
 
     schema = None
+
     additionalSchemata = ()
 
     request_layer = IFormLayer

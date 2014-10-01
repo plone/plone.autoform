@@ -1,21 +1,24 @@
+# -*- coding: utf-8 -*-
 from lxml import etree
-
+from plone.autoform.interfaces import FORM_NAMESPACE
+from plone.autoform.interfaces import FORM_PREFIX
+from plone.autoform.interfaces import MODES_KEY
+from plone.autoform.interfaces import OMITTED_KEY
+from plone.autoform.interfaces import ORDER_KEY
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY
+from plone.autoform.interfaces import SECURITY_NAMESPACE
+from plone.autoform.interfaces import SECURITY_PREFIX
+from plone.autoform.interfaces import WIDGETS_KEY
+from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
+from plone.autoform.utils import resolveDottedName
+from plone.autoform.widgets import ParameterizedWidget
+from plone.supermodel.parser import IFieldMetadataHandler
+from plone.supermodel.utils import ns
 from z3c.form.interfaces import IFieldWidget, IValidator
 from z3c.form.util import getSpecification
 from zope.component import provideAdapter
 from zope.interface import implements, Interface
 from zope.interface.interface import InterfaceClass
-
-from plone.supermodel.utils import ns
-from plone.supermodel.parser import IFieldMetadataHandler
-
-from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
-from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
-from plone.autoform.interfaces import FORM_NAMESPACE, FORM_PREFIX
-from plone.autoform.interfaces import SECURITY_NAMESPACE, SECURITY_PREFIX
-
-from plone.autoform.utils import resolveDottedName
-from plone.autoform.widgets import ParameterizedWidget
 
 
 class FormSchema(object):
@@ -57,10 +60,11 @@ class FormSchema(object):
             raise ValueError(
                 "z3c.form.interfaces.IValidator not implemented by %s."
                 % value)
-        provideAdapter(validator,
+        provideAdapter(
+            validator,
             (None, None, None, getSpecification(field), None),
             IValidator,
-            )
+        )
 
     def read(self, fieldNode, schema, field):
         name = field.__name__
@@ -106,9 +110,18 @@ class FormSchema(object):
         name = field.__name__
 
         widget = schema.queryTaggedValue(WIDGETS_KEY, {}).get(name, None)
-        mode = [(i, v) for i, n, v in schema.queryTaggedValue(MODES_KEY, []) if n == name]
-        omitted = [(i, v) for i, n, v in schema.queryTaggedValue(OMITTED_KEY, []) if n == name]
-        order = [(d, v) for n, d, v in schema.queryTaggedValue(ORDER_KEY, []) if n == name]
+        mode = [
+            (i, v) for i, n, v in schema.queryTaggedValue(MODES_KEY, [])
+            if n == name
+        ]
+        omitted = [
+            (i, v) for i, n, v in schema.queryTaggedValue(OMITTED_KEY, [])
+            if n == name
+        ]
+        order = [
+            (d, v) for n, d, v in schema.queryTaggedValue(ORDER_KEY, [])
+            if n == name
+        ]
 
         if widget is not None:
             if not isinstance(widget, ParameterizedWidget):
@@ -138,7 +151,10 @@ class FormSchema(object):
                 value = "%s:%s" % (interface.__identifier__, value)
             omitted_values.append(value)
         if omitted_values:
-            fieldNode.set(ns('omitted', self.namespace), " ".join(omitted_values))
+            fieldNode.set(
+                ns('omitted', self.namespace),
+                " ".join(omitted_values)
+            )
 
         for direction, relative_to in order:
             if direction == 'before':
@@ -159,7 +175,9 @@ class SecuritySchema(object):
         name = field.__name__
 
         read_permission = fieldNode.get(ns('read-permission', self.namespace))
-        write_permission = fieldNode.get(ns('write-permission', self.namespace))
+        write_permission = fieldNode.get(
+            ns('write-permission', self.namespace)
+        )
 
         read_permissions = schema.queryTaggedValue(READ_PERMISSIONS_KEY, {})
         write_permissions = schema.queryTaggedValue(WRITE_PERMISSIONS_KEY, {})
@@ -175,10 +193,21 @@ class SecuritySchema(object):
     def write(self, fieldNode, schema, field):
         name = field.__name__
 
-        read_permission = schema.queryTaggedValue(READ_PERMISSIONS_KEY, {}).get(name, None)
-        write_permission = schema.queryTaggedValue(WRITE_PERMISSIONS_KEY, {}).get(name, None)
+        read_permission = schema.queryTaggedValue(
+            READ_PERMISSIONS_KEY, {}
+        ).get(name, None)
+        write_permission = schema.queryTaggedValue(
+            WRITE_PERMISSIONS_KEY,
+            {}
+        ).get(name, None)
 
         if read_permission:
-            fieldNode.set(ns('read-permission', self.namespace), read_permission)
+            fieldNode.set(
+                ns('read-permission', self.namespace),
+                read_permission
+            )
         if write_permission:
-            fieldNode.set(ns('write-permission', self.namespace), write_permission)
+            fieldNode.set(
+                ns('write-permission', self.namespace),
+                write_permission
+            )
