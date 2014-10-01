@@ -1,4 +1,4 @@
-cd Form setup details
+Form setup details
 ==================
 
 This package provides tools to construct z3c.form forms out of hints stored
