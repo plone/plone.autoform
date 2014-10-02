@@ -1,21 +1,22 @@
-from z3c.form.widget import FieldWidget
-from z3c.form.interfaces import IWidget
+# -*- coding: utf-8 -*-
+from plone.autoform.interfaces import IParameterizedWidget
+from plone.autoform.interfaces import IWidgetExportImportHandler
+from plone.autoform.utils import resolveDottedName
+from plone.supermodel.utils import elementToValue
+from plone.supermodel.utils import noNS
+from plone.supermodel.utils import valueToElement
+from z3c.form.browser.interfaces import IHTMLFormElement
 from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IFormLayer
-from z3c.form.browser.interfaces import IHTMLFormElement
-import z3c.form.browser.interfaces
-from zope.component import getSiteManager
+from z3c.form.interfaces import IWidget
+from z3c.form.widget import FieldWidget
 from zope.component import getMultiAdapter
+from zope.component import getSiteManager
 from zope.component import queryUtility
 from zope.interface import implementer
 from zope.interface import providedBy
 from zope.schema import getFields
-from plone.autoform.interfaces import IParameterizedWidget
-from plone.autoform.interfaces import IWidgetExportImportHandler
-from plone.autoform.utils import resolveDottedName
-from plone.supermodel.utils import valueToElement
-from plone.supermodel.utils import elementToValue
-from plone.supermodel.utils import noNS
+import z3c.form.browser.interfaces
 
 
 @implementer(IParameterizedWidget)
@@ -113,7 +114,10 @@ class WidgetExportImportHandler(object):
         for attributeName, attributeField in self.fieldAttributes.items():
             for node in widgetNode.iterchildren():
                 if noNS(node.tag) == attributeName:
-                    params[attributeName] = elementToValue(attributeField, node)
+                    params[attributeName] = elementToValue(
+                        attributeField,
+                        node
+                    )
 
     def write(self, widgetNode, params):
         for attributeName, attributeField in self.fieldAttributes.items():
@@ -124,4 +128,6 @@ class WidgetExportImportHandler(object):
                 widgetNode.append(child)
 
 
-TextAreaWidgetExportImportHandler = WidgetExportImportHandler(z3c.form.browser.interfaces.IHTMLTextAreaWidget)
+TextAreaWidgetExportImportHandler = WidgetExportImportHandler(
+    z3c.form.browser.interfaces.IHTMLTextAreaWidget
+)

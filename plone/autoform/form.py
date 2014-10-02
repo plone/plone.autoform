@@ -1,25 +1,27 @@
-from zope.interface import implements
-
-from plone.z3cform.fieldsets.extensible import ExtensibleForm
-
+# -*- coding: utf-8 -*-
+from plone.autoform.base import AutoFields
 from plone.autoform.interfaces import IAutoExtensibleForm
 from plone.autoform.interfaces import IAutoObjectSubForm
-from plone.autoform.base import AutoFields
+from plone.z3cform.fieldsets.extensible import ExtensibleForm
+from zope.interface import implementer
 
 _marker = object()
 
 
+@implementer(IAutoExtensibleForm)
 class AutoExtensibleForm(AutoFields, ExtensibleForm):
     """Mixin class for z3c.form forms that support fields extracted from
     a schema
     """
 
-    implements(IAutoExtensibleForm)
     showEmptyGroups = False
 
     @property
     def schema(self):
-        raise NotImplementedError("The class deriving from AutoExtensibleForm must have a 'schema' property")
+        raise NotImplementedError(
+            "The class deriving from AutoExtensibleForm must have a "
+            "'schema' property"
+        )
 
     @property
     def additionalSchemata(self):
@@ -32,12 +34,11 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
         super(AutoExtensibleForm, self).updateFields()
 
 
+@implementer(IAutoObjectSubForm)
 class AutoObjectSubForm(AutoFields):
-    """A Mixin class for z3c.form.object.ObjectSubForm forms that supports fields being
-    updated from hints in a schema.
+    """A Mixin class for z3c.form.object.ObjectSubForm forms that supports
+    fields being updated from hints in a schema.
     """
-
-    implements(IAutoObjectSubForm)
 
     @property
     def schema(self):
@@ -45,4 +46,3 @@ class AutoObjectSubForm(AutoFields):
 
     def setupFields(self):
         self.updateFieldsFromSchemata()
-

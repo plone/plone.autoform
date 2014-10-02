@@ -1,28 +1,26 @@
-from zope.component import queryUtility
-from zope.interface import providedBy
-
-from zope.security.interfaces import IPermission
-
-from zope.dottedname.resolve import resolve
-
-from z3c.form import field
-from z3c.form.util import expandPrefix
-from z3c.form.interfaces import IFieldWidget, INPUT_MODE, DISPLAY_MODE
-
+# -*- coding: utf-8 -*-
+from AccessControl import getSecurityManager
+from plone.autoform.interfaces import IParameterizedWidget
+from plone.autoform.interfaces import MODES_KEY
+from plone.autoform.interfaces import OMITTED_KEY
+from plone.autoform.interfaces import ORDER_KEY
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY
+from plone.autoform.interfaces import WIDGETS_KEY
+from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
+from plone.supermodel.interfaces import FIELDSETS_KEY
 from plone.supermodel.utils import mergedTaggedValueDict
 from plone.supermodel.utils import mergedTaggedValueList
-
 from plone.z3cform.fieldsets.group import GroupFactory
-
 from plone.z3cform.fieldsets.utils import move
-
-from plone.supermodel.interfaces import FIELDSETS_KEY
-
-from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
-from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
-from plone.autoform.interfaces import IParameterizedWidget
-
-from AccessControl import getSecurityManager
+from z3c.form import field
+from z3c.form.interfaces import DISPLAY_MODE
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import INPUT_MODE
+from z3c.form.util import expandPrefix
+from zope.component import queryUtility
+from zope.dottedname.resolve import resolve
+from zope.interface import providedBy
+from zope.security.interfaces import IPermission
 
 _dottedCache = {}
 
@@ -97,7 +95,9 @@ def _processWidgets(form, widgets, modes, newFields):
         baseName = _bn(fieldInstance)
 
         widgetName = widgets.get(baseName, None)
-        widgetMode = modes.get(baseName, fieldInstance.mode) or form.mode or INPUT_MODE
+        widgetMode = modes.get(baseName, fieldInstance.mode) \
+            or form.mode \
+            or INPUT_MODE
 
         widgetFactory = None
         if widgetName is not None:
@@ -115,7 +115,8 @@ def _processWidgets(form, widgets, modes, newFields):
             newFields[fieldName].mode = widgetMode
 
 
-def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=True):
+def processFields(form, schema, prefix='', defaultGroup=None,
+                  permissionChecks=True):
     """Add the fields from the schema to the form, taking into account
     the hints in the various tagged values as well as fieldsets. If prefix
     is given, the fields will be prefixed with this prefix. If
@@ -127,23 +128,38 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
 
     # Get data from tagged values, flattening data from super-interfaces
 
-    # Note: The names always refer to a field in the schema, and never contain a prefix.
+    # Note: The names always refer to a field in the schema, and never
+    # contain a prefix.
 
-    omitted = mergedTaggedValuesForForm(schema, OMITTED_KEY, form)   # { name => True }
-    modes = mergedTaggedValuesForForm(schema, MODES_KEY, form)       # { name => e.g. 'hidden' }
-    widgets = mergedTaggedValueDict(schema, WIDGETS_KEY)             # { name => widget/dotted name }
+    # { name => True }
+    omitted = mergedTaggedValuesForForm(schema, OMITTED_KEY, form)
 
-    fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY)         # list of IFieldset instances
+    # { name => e.g. 'hidden' }
+    modes = mergedTaggedValuesForForm(schema, MODES_KEY, form)
 
-    # Get either read or write permissions depending on what type of form this is
+    # { name => widget/dotted name }
+    widgets = mergedTaggedValueDict(schema, WIDGETS_KEY)
 
+    # list of IFieldset instances
+    fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY)
+
+    # Get either read or write permissions depending on what type of
+    # form this is
     readPermissions = {}  # field name -> permission name
     writePermissions = {}  # field name -> permission name
     permissionCache = {}  # permission name -> allowed/disallowed
 
     if permissionChecks:
-        readPermissions = mergedTaggedValueDict(schema, READ_PERMISSIONS_KEY)  # name => permission name
-        writePermissions = mergedTaggedValueDict(schema, WRITE_PERMISSIONS_KEY)  # name => permission name
+        # name => permission name
+        readPermissions = mergedTaggedValueDict(
+            schema,
+            READ_PERMISSIONS_KEY
+        )
+        # name => permission name
+        writePermissions = mergedTaggedValueDict(
+            schema,
+            WRITE_PERMISSIONS_KEY
+        )
         securityManager = getSecurityManager()
 
     # Find the fields we should not worry about
@@ -163,7 +179,11 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
 
     # Find all allowed fields so that we have something to select from
     omitReadOnly = form.mode != DISPLAY_MODE
-    allFields = field.Fields(schema, prefix=prefix, omitReadOnly=omitReadOnly).omit(*doNotProcess)
+    allFields = field.Fields(
+        schema,
+        prefix=prefix,
+        omitReadOnly=omitReadOnly
+    ).omit(*doNotProcess)
 
     # Check permissions
     if permissionChecks:
@@ -185,7 +205,12 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
                     if permission is None:
                         permissionCache[permissionName] = True
                     else:
-                        permissionCache[permissionName] = bool(securityManager.checkPermission(permission.title, form.context))
+                        permissionCache[permissionName] = bool(
+                            securityManager.checkPermission(
+                                permission.title,
+                                form.context
+                            )
+                        )
                 if not permissionCache.get(permissionName, True):
                     disallowedFields.append(fieldName)
 
@@ -214,8 +239,8 @@ def processFields(form, schema, prefix='', defaultGroup=None, permissionChecks=T
     for fieldset in fieldsets:
 
         newFields = allFields.select(*[_fn(prefix, fieldName)
-                                            for fieldName in fieldset.fields
-                                                if _fn(prefix, fieldName) in allFields])
+                                       for fieldName in fieldset.fields
+                                       if _fn(prefix, fieldName) in allFields])
 
         if getattr(form, 'showEmptyGroups', False) or (len(newFields) > 0):
             _processWidgets(form, widgets, modes, newFields)
@@ -237,7 +262,8 @@ def processFieldMoves(form, schema, prefix=''):
     processFields().
     """
 
-    order = mergedTaggedValueList(schema, ORDER_KEY)      # (name, 'before'/'after', other name)
+    # (name, 'before'/'after', other name)
+    order = mergedTaggedValueList(schema, ORDER_KEY)
 
     for fieldName, direction, relative_to in order:
 

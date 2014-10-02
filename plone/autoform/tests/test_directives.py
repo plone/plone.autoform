@@ -1,14 +1,16 @@
-import unittest
-
-from zope.interface import Interface
-import zope.schema
-
+# -*- coding: utf-8 -*-
 from plone.autoform import directives as form
-from plone.supermodel import model
-
-from plone.autoform.interfaces import OMITTED_KEY, WIDGETS_KEY, MODES_KEY, ORDER_KEY
-from plone.autoform.interfaces import READ_PERMISSIONS_KEY, WRITE_PERMISSIONS_KEY
+from plone.autoform.interfaces import MODES_KEY
+from plone.autoform.interfaces import OMITTED_KEY
+from plone.autoform.interfaces import ORDER_KEY
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY
+from plone.autoform.interfaces import WIDGETS_KEY
+from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.testing import AUTOFORM_INTEGRATION_TESTING
+from plone.supermodel import model
+from zope.interface import Interface
+import unittest
+import zope.schema
 
 
 class DummyWidget(object):
@@ -42,23 +44,23 @@ class TestSchemaDirectives(unittest.TestCase):
         model.finalizeSchemas(IDummy)
 
         self.assertEqual({'foo': 'some.dummy.Widget',
-                           'baz': 'other.Widget'},
-                          IDummy.queryTaggedValue(WIDGETS_KEY))
+                          'baz': 'other.Widget'},
+                         IDummy.queryTaggedValue(WIDGETS_KEY))
         self.assertEqual([(Interface, 'foo', 'true'),
-                           (Interface, 'bar', 'true'),
-                           (model.Schema, 'qux', 'true'),
-                           (model.Schema, 'bar', 'false')],
-                          IDummy.queryTaggedValue(OMITTED_KEY))
+                          (Interface, 'bar', 'true'),
+                          (model.Schema, 'qux', 'true'),
+                          (model.Schema, 'bar', 'false')],
+                         IDummy.queryTaggedValue(OMITTED_KEY))
         self.assertEqual([(Interface, 'bar', 'hidden'),
-                           (model.Schema, 'bar', 'input')],
-                          IDummy.queryTaggedValue(MODES_KEY))
+                          (model.Schema, 'bar', 'input')],
+                         IDummy.queryTaggedValue(MODES_KEY))
         self.assertEqual([('baz', 'before', 'title',),
-                           ('qux', 'after', 'title')],
-                          IDummy.queryTaggedValue(ORDER_KEY))
+                          ('qux', 'after', 'title')],
+                         IDummy.queryTaggedValue(ORDER_KEY))
         self.assertEqual({'foo': 'zope2.View'},
-                          IDummy.queryTaggedValue(READ_PERMISSIONS_KEY))
+                         IDummy.queryTaggedValue(READ_PERMISSIONS_KEY))
         self.assertEqual({'foo': 'cmf.ModifyPortalContent'},
-                          IDummy.queryTaggedValue(WRITE_PERMISSIONS_KEY))
+                         IDummy.queryTaggedValue(WRITE_PERMISSIONS_KEY))
 
     def test_widget_supports_instances_and_strings(self):
 
@@ -69,8 +71,10 @@ class TestSchemaDirectives(unittest.TestCase):
             bar = zope.schema.TextLine(title=u"Bar")
             baz = zope.schema.TextLine(title=u"Baz")
 
-        self.assertEqual({'foo': 'plone.autoform.tests.test_directives.DummyWidget'},
-                  IDummy.queryTaggedValue(WIDGETS_KEY))
+        self.assertEqual(
+            {'foo': 'plone.autoform.tests.test_directives.DummyWidget'},
+            IDummy.queryTaggedValue(WIDGETS_KEY)
+        )
 
     def test_widget_parameterized(self):
         from zope.interface import implementer
@@ -144,23 +148,29 @@ class TestSchemaDirectives(unittest.TestCase):
             qux = zope.schema.TextLine(title=u"Qux")
 
         self.assertEqual({'foo': 'some.dummy.Widget',
-                           'baz': 'other.Widget'},
-                          IDummy.queryTaggedValue(WIDGETS_KEY))
+                          'baz': 'other.Widget'},
+                         IDummy.queryTaggedValue(WIDGETS_KEY))
         self.assertEqual([(Interface, 'foo', 'true'),
-                           (Interface, 'bar', 'true')],
-                          IDummy.queryTaggedValue(OMITTED_KEY))
+                          (Interface, 'bar', 'true')],
+                         IDummy.queryTaggedValue(OMITTED_KEY))
         self.assertEqual([(Interface, 'bar', 'hidden'),
-                           (Interface, 'foo', 'display')],
-                          IDummy.queryTaggedValue(MODES_KEY))
+                          (Interface, 'foo', 'display')],
+                         IDummy.queryTaggedValue(MODES_KEY))
         self.assertEqual([('baz', 'before', 'title'),
-                           ('baz', 'after', 'qux'),
-                           ('qux', 'after', 'bar'),
-                           ('foo', 'before', 'body'), ],
-                          IDummy.queryTaggedValue(ORDER_KEY))
-        self.assertEqual({'foo': 'zope2.View', 'bar': 'zope2.View', 'baz': 'random.Permission'},
-                          IDummy.queryTaggedValue(READ_PERMISSIONS_KEY))
-        self.assertEqual({'foo': 'cmf.ModifyPortalContent', 'baz': 'another.Permission'},
-                          IDummy.queryTaggedValue(WRITE_PERMISSIONS_KEY))
+                          ('baz', 'after', 'qux'),
+                          ('qux', 'after', 'bar'),
+                          ('foo', 'before', 'body'), ],
+                         IDummy.queryTaggedValue(ORDER_KEY))
+        self.assertEqual(
+            {'foo': 'zope2.View',
+             'bar': 'zope2.View',
+             'baz': 'random.Permission'},
+            IDummy.queryTaggedValue(READ_PERMISSIONS_KEY)
+        )
+        self.assertEqual(
+            {'foo': 'cmf.ModifyPortalContent', 'baz': 'another.Permission'},
+            IDummy.queryTaggedValue(WRITE_PERMISSIONS_KEY)
+        )
 
     def test_misspelled_field(self):
 
@@ -191,7 +201,10 @@ class TestSchemaDirectives(unittest.TestCase):
             form.order_after(foo='bar')
             bar = zope.schema.TextLine()
 
-        self.assertEqual([('foo', 'after', 'bar'), ], IBar.queryTaggedValue(ORDER_KEY))
+        self.assertEqual(
+            [('foo', 'after', 'bar'), ],
+            IBar.queryTaggedValue(ORDER_KEY)
+        )
 
 
 def test_suite():

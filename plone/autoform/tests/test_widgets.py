@@ -1,5 +1,6 @@
-import unittest2 as unittest
+# -*- coding: utf-8 -*-
 from plone.testing.zca import UNIT_TESTING
+import unittest2 as unittest
 
 
 class TestParameterizedWidget(unittest.TestCase):
@@ -7,11 +8,11 @@ class TestParameterizedWidget(unittest.TestCase):
     layer = UNIT_TESTING
 
     def test_widget_instantiated_with_parameters(self):
-        from zope.interface import implementer
-        from zope.schema import Field
+        from plone.autoform.widgets import ParameterizedWidget
         from z3c.form.interfaces import IFieldWidget
         from z3c.form.interfaces import IWidget
-        from plone.autoform.widgets import ParameterizedWidget
+        from zope.interface import implementer
+        from zope.schema import Field
 
         @implementer(IWidget)
         class DummyWidget(object):
@@ -30,12 +31,12 @@ class TestParameterizedWidget(unittest.TestCase):
         self.assertEqual('bar', widget.foo)
 
     def test_default_widget_instantiated(self):
+        from plone.autoform.widgets import ParameterizedWidget
+        from z3c.form.interfaces import IFieldWidget
         from zope.component import provideAdapter
         from zope.interface import Interface
         from zope.interface import implementer
         from zope.schema import Field
-        from z3c.form.interfaces import IFieldWidget
-        from plone.autoform.widgets import ParameterizedWidget
 
         class DummyWidget(object):
             def __init__(self, request):

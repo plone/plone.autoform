@@ -348,6 +348,13 @@ in the ``plone.autoform.interfaces`` module. They can be set several ways:
 * By using the directives from ``plone.autoform.directives`` while defining
   a schema in Python.
 
+Source Code
+===========
+
+Contributors please read the document `Process for Plone core's development <http://docs.plone.org/develop/plone-coredev/index.html>`_
+
+Sources are at the `Plone code repository hosted at Github <https://github.com/plone/plone.autoform>`_.
+
 
 .. _z3c.form: http://pypi.python.org/pypi/z3c.form
 .. _zope.schema: http://pypi.python.org/pypi/zope.schema
