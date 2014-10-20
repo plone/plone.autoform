@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.6.1 (unreleased)
+1.6.1 (2014-10-20)
 ------------------
 
 - pep8 cleanup, utf8-header,sorted imports, readability, ...
