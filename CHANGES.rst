@@ -10,7 +10,7 @@ New:
 
 Fixes:
 
-- Test fix test for changed ``zope.interface`` comparison method, which incorrectly reports two different Interfaces from the same module but with empty name as being equal.
+- Fix test for changed ``zope.interface`` comparison method, which incorrectly reports two different Interfaces from the same module but with empty name as being equal.
   [thet]
 
 
