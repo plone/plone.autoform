@@ -385,6 +385,9 @@ condition for group naming when autoGroups is True.
     ...
     >>> IAnotherAnonymousSchema.__name__ = ''
 
+Fix for https://github.com/zopefoundation/zope.interface/issues/31
+    >>> IAnotherAnonymousSchema.__module__ = 'different.module'
+
     Create an extrinsicly stored name mapping:
 
     >>> nameToSchema = {
