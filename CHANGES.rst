@@ -4,14 +4,11 @@ Changelog
 1.6.2 (unreleased)
 ------------------
 
-New:
-
-- *add item here*
-
 Fixes:
 
-- Fix test for changed ``zope.interface`` comparison method, which incorrectly reports two different Interfaces from the same module but with empty name as being equal.
-  [thet]
+- Fix test for changed ``zope.interface`` comparison method, which
+  incorrectly reports two different Interfaces from the same module
+  but with empty name as being equal.  [thet]
 
 
 1.6.1 (2014-10-20)
