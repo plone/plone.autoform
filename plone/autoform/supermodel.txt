@@ -16,7 +16,7 @@ First, let's load this package's ZCML so that we can run the tests:
     ...
     ...     <include package="Products.Five" file="configure.zcml" />
     ...     <include package="plone.autoform" />
-    ...     
+    ...
     ... </configure>
     ... """
     >>> from StringIO import StringIO
@@ -78,7 +78,7 @@ Notes:
 * To set a custom validator for a field, use ``form:validator`` to give a fully
   qualified name to the field validator factory.
 * To set a read or write permission, use ``security:read-permission`` or
-  ``security:write-permission``. The value should be the name of an 
+  ``security:write-permission``. The value should be the name of an
   ``IPermission`` utility.
 
 We can load this using plone.supermodel:

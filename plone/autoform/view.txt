@@ -12,7 +12,7 @@ First, let's load this package's ZCML so that we can run the tests:
     ...
     ...     <include package="Products.Five" file="configure.zcml" />
     ...     <include package="plone.autoform" />
-    ...     
+    ...
     ... </configure>
     ... """
     >>> from StringIO import StringIO
@@ -80,7 +80,7 @@ set up.
 
     >>> view = TestView(context, request)
     >>> print view()
-    <div>My title widget says 
+    <div>My title widget says
         <span id="form-widgets-title"
               class="text-widget...textline-field">Test title</span>
     <BLANKLINE>
@@ -97,8 +97,8 @@ There is also a shortcut to allow access to any widget by (possibly prefixed)
 name:
 
     >>> view.w.items()
-    [('body', <TextAreaWidget 'form.widgets.body'>), 
-     ('ISecondarySchema.summary', <TextAreaWidget 'form.widgets.ISecondarySchema.summary'>), 
+    [('body', <TextAreaWidget 'form.widgets.body'>),
+     ('ISecondarySchema.summary', <TextAreaWidget 'form.widgets.ISecondarySchema.summary'>),
      ('title', <TextWidget 'form.widgets.title'>)]
 
 You can also see fieldsets (groups) either in order:
@@ -118,8 +118,8 @@ you wish to flatten the namespace, you can set ignorePrefix to true:
     >>> view.ignorePrefix = True
     >>> view.update()
     >>> view.w.items()
-    [('body', <TextAreaWidget 'form.widgets.body'>), 
-     ('summary', <TextAreaWidget 'form.widgets.summary'>), 
+    [('body', <TextAreaWidget 'form.widgets.body'>),
+     ('summary', <TextAreaWidget 'form.widgets.summary'>),
      ('title', <TextWidget 'form.widgets.title'>)]
 
 For supporting widget traversal it is necessary that after updating

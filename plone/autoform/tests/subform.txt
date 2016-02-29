@@ -71,7 +71,7 @@ make z3c.form happy:
     >>> request = TestRequest(environ={'AUTHENTICATED_USER': 'user1'}, skin=interfaces.IFormLayer)
 
 Note that we need to pretend that we have authenticated a user. Without this,
-the permission checks will be turned off. 
+the permission checks will be turned off.
 
 Now we define a TestForm, and a TestObjectSubForm. The object subform must
 subclass from AutoObjectSubForm for the form hints to be generated.
@@ -98,7 +98,7 @@ Finally we need an adapter that acts as the ObjectSubForm's factory.
 
     >>> from z3c.form.browser.object import ObjectWidget
     >>> from z3c.form.object import SubformAdapter
-    >>> import zope.component 
+    >>> import zope.component
 
     >>> class TestSubformAdapter(SubformAdapter):
     ...     """ """
@@ -125,7 +125,7 @@ Omitted fields are listed like this:
     ...                             (IForm, 'barfield', False),
     ...                             (IForm, 'foofield', False),
     ...                           ))
-    
+
 Widgets can be specified either by a dotted name string or an actual instance:
 
     >>> from z3c.form.browser.radio import RadioFieldWidget
@@ -145,7 +145,7 @@ Field modes can be set like this:
 The ObjectSubForm is not a GroupForm, so it doesn't support Fieldsets. Fieldset
 hints would thus be ignored.
 
-Lets test this now. 
+Lets test this now.
 -------------------
 
 First we instantiate and update the TestForm.
@@ -158,7 +158,7 @@ Now we instantiate and update the ObjectSubForm for the object in TestForm's sch
     >>> widget = test_form.widgets.get('subobject')
     >>> from z3c.form.object import makeDummyObject
     >>> test_subform = zope.component.getMultiAdapter(
-    ...     (None, request, context, test_form, widget, widget.field, makeDummyObject(ITestSubObjectSchema)), 
+    ...     (None, request, context, test_form, widget, widget.field, makeDummyObject(ITestSubObjectSchema)),
     ...     interfaces.ISubformFactory)()
 
     >>> test_subform.update()
@@ -179,7 +179,3 @@ Now the modes, barfield was hidden and foofield was set to display:
     'hidden'
     >>> test_subform.widgets['foofield'].mode
     'display'
-
-
-
-
