@@ -36,7 +36,7 @@ setup(
     keywords='plone form z3c.form',
     author='Martin Aspeli',
     author_email='optilude@gmail.com',
-    url='http://code.google.com/p/dexterity',
+    url='http://github.com/plone/plone.autoform',
     license='LGPL',
     packages=find_packages(exclude=['ez_setup']),
     namespace_packages=['plone'],

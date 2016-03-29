@@ -10,7 +10,8 @@ New:
 
 Fixes:
 
-- *add item here*
+- Update setup.py url
+  [esteele]
 
 
 1.6.2 (2016-02-20)
