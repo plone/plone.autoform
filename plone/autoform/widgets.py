@@ -79,7 +79,7 @@ class ParameterizedWidget(object):
         if widget is None:
             return
         if not isinstance(widget, basestring):
-            widget = "%s.%s" % (widget.__module__, widget.__name__)
+            widget = '{0}.{1}'.format(widget.__module__, widget.__name__)
         return widget
 
     def getExportImportHandler(self, field):
@@ -93,8 +93,10 @@ class ParameterizedWidget(object):
             widgetFactory = sm.adapters.lookup(
                 (providedBy(field), IFormLayer), IFieldWidget)
             if widgetFactory is not None:
-                widgetName = "%s.%s" % (widgetFactory.__module__,
-                                        widgetFactory.__name__)
+                widgetName = '{0}.{1}'.format(
+                    widgetFactory.__module__,
+                    widgetFactory.__name__
+                )
             else:
                 widgetName = u''
 

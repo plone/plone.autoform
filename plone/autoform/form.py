@@ -20,8 +20,8 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
     @property
     def schema(self):
         raise NotImplementedError(
-            "The class deriving from AutoExtensibleForm must have a "
-            "'schema' property"
+            'The class deriving from AutoExtensibleForm must have a '
+            '\'schema\' property'
         )
 
     @property
