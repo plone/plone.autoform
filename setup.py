@@ -9,14 +9,9 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
-version = '1.6.3.dev0'
+version = '1.7.0.dev0'
 
-long_description = (
-    read('README.rst')
-    + '\n' +
-    read('CHANGES.rst')
-    + '\n'
-)
+long_description = (read('README.rst') + '\n' + read('CHANGES.rst'))
 
 setup(
     name='plone.autoform',
