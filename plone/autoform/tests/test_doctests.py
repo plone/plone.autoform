@@ -10,7 +10,7 @@ def test_suite():
     return unittest.TestSuite((
         layered(
             doctest.DocFileSuite(
-                '../autoform.txt',
+                '../autoform.rst',
                 optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
             layer=UNIT_TESTING),
         layered(
