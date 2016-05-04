@@ -24,6 +24,7 @@ import zope.schema
 
 @implementer(IWidget)
 class DummyWidget(object):
+
     def __init__(self, request):
         pass
 

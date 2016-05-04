@@ -17,6 +17,7 @@ class TestParameterizedWidget(unittest.TestCase):
 
         @implementer(IWidget)
         class DummyWidget(object):
+
             def __init__(self, request):
                 self.request = request
 
@@ -40,6 +41,7 @@ class TestParameterizedWidget(unittest.TestCase):
         from zope.schema import Field
 
         class DummyWidget(object):
+
             def __init__(self, request):
                 self.request = request
 

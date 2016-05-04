@@ -84,6 +84,7 @@ class TestSchemaDirectives(unittest.TestCase):
 
         @implementer(IWidget)
         class DummyWidget(object):
+
             def __init__(self, request):
                 pass
 
@@ -103,6 +104,7 @@ class TestSchemaDirectives(unittest.TestCase):
 
         @implementer(IWidget)
         class DummyWidget(object):
+
             def __init__(self, request):
                 pass
 
@@ -211,4 +213,4 @@ class TestSchemaDirectives(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TestSchemaDirectives),
-        ))
+    ))

@@ -28,4 +28,4 @@ def test_suite():
                 '../supermodel.txt',
                 optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
             layer=UNIT_TESTING),
-        ))
+    ))
