@@ -9,6 +9,7 @@ from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.testing import AUTOFORM_INTEGRATION_TESTING
 from plone.supermodel import model
 from zope.interface import Interface
+
 import unittest
 import zope.schema
 

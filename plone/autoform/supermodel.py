@@ -14,10 +14,12 @@ from plone.autoform.utils import resolveDottedName
 from plone.autoform.widgets import ParameterizedWidget
 from plone.supermodel.parser import IFieldMetadataHandler
 from plone.supermodel.utils import ns
-from z3c.form.interfaces import IFieldWidget, IValidator
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IValidator
 from z3c.form.util import getSpecification
 from zope.component import provideAdapter
-from zope.interface import implements, Interface
+from zope.interface import implements
+from zope.interface import Interface
 from zope.interface.interface import InterfaceClass
 
 

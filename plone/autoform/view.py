@@ -6,6 +6,7 @@ from z3c.form.form import DisplayForm
 from z3c.form.interfaces import IFormLayer
 from zope.interface import implementer
 
+
 try:
     from Products.Five.bbb import AcquisitionBBB as Explicit
 except ImportError:

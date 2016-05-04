@@ -22,6 +22,7 @@ from zope.dottedname.resolve import resolve
 from zope.interface import providedBy
 from zope.security.interfaces import IPermission
 
+
 _dottedCache = {}
 
 

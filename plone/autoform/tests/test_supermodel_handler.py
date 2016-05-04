@@ -15,8 +15,9 @@ from z3c.form.interfaces import IForm
 from z3c.form.interfaces import IValidator
 from z3c.form.interfaces import IWidget
 from zope.component import getMultiAdapter
-from zope.interface import Interface
 from zope.interface import implementer
+from zope.interface import Interface
+
 import unittest2 as unittest
 import zope.schema
 

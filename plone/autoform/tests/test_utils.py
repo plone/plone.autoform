@@ -9,7 +9,9 @@ from plone.testing.zca import UNIT_TESTING
 from z3c.form.form import Form
 from z3c.form.validator import SimpleFieldValidator
 from zope.component import provideUtility
-from zope.interface import Interface, Invalid
+from zope.interface import Interface
+from zope.interface import Invalid
+
 import unittest
 import zope.schema
 

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from plone.autoform.utils import processFieldMoves, processFields
+from plone.autoform.utils import processFieldMoves
+from plone.autoform.utils import processFields
 from plone.z3cform.fieldsets.group import GroupFactory
 from z3c.form import field
+
 
 _marker = object()
 
