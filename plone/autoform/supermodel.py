@@ -18,15 +18,15 @@ from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import IValidator
 from z3c.form.util import getSpecification
 from zope.component import provideAdapter
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 from zope.interface.interface import InterfaceClass
 
 
+@implementer(IFieldMetadataHandler)
 class FormSchema(object):
     """Support the form: namespace in model definitions.
     """
-    implements(IFieldMetadataHandler)
 
     namespace = FORM_NAMESPACE
     prefix = FORM_PREFIX
@@ -165,10 +165,10 @@ class FormSchema(object):
                 fieldNode.set(ns('after', self.namespace), relative_to)
 
 
+@implementer(IFieldMetadataHandler)
 class SecuritySchema(object):
     """Support the security: namespace in model definitions.
     """
-    implements(IFieldMetadataHandler)
 
     namespace = SECURITY_NAMESPACE
     prefix = SECURITY_PREFIX

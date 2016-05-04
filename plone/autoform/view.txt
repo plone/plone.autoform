@@ -43,9 +43,9 @@ A display form normally operates on a given context, although you could set
 schema interfaces need to be provided by or adaptable from the context. For
 the purposes of this test, we'll just make them directly provided.
 
-    >>> from zope.interface import implements
-    >>> class Context(object):
-    ...     implements(IDefaultSchema, ISecondarySchema)
+    >>> from zope.interface import implementer
+    >>> @implementer(IDefaultSchema, ISecondarySchema)
+    ... class Context(object):
     ...     title = u""
     ...     body = u""
     ...     summary = u""

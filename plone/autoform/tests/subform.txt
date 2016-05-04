@@ -100,17 +100,16 @@ Finally we need an adapter that acts as the ObjectSubForm's factory.
     >>> from z3c.form.object import SubformAdapter
     >>> import zope.component
 
-    >>> class TestSubformAdapter(SubformAdapter):
-    ...     """ """
-    ...     zope.interface.implements(interfaces.ISubformFactory)
-    ...     zope.component.adapts(zope.interface.Interface,  # widget value
+    >>> @zope.interface.implementer(interfaces.ISubformFactory)
+    ... @zope.component.adapter(zope.interface.Interface,  # widget value
     ...                         interfaces.IFormLayer,       # request
     ...                         zope.interface.Interface,    # widget context
     ...                         zope.interface.Interface,    # form
     ...                         ObjectWidget,                # widget
     ...                         zope.interface.Interface,    # field
     ...                         zope.interface.Interface)    # field.schema
-    ...
+    ... class TestSubformAdapter(SubformAdapter):
+    ...     """ """
     ...     factory = TestObjectSubForm
 
     >>> zope.component.provideAdapter(TestSubformAdapter)
