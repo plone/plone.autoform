@@ -20,7 +20,7 @@ class TestValidator(SimpleFieldValidator):
 
     def validate(self, value):
         super(TestValidator, self).validate(value)
-        raise Invalid("Test")
+        raise Invalid('Test')
 
 
 class TestUtils(unittest.TestCase):
