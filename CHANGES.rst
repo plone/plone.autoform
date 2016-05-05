@@ -16,7 +16,12 @@ Incompatibilities:
 
 New:
 
-- *add item here*
+- Fieldset labels/descriptions we're taken from first occurence.
+  It was not possible to override them in a subsequent directive.
+  Also it was not possible to set them in a subsequent directive, if it was not set before.
+  Now subsequent directives w/o a label/description are just adding the field to the fieldset.
+  If a different label and/or description is given, it replaces the existing prior loaded one.
+  [jensens]
 
 Fixes:
 
