@@ -1,14 +1,29 @@
 Changelog
 =========
 
-1.6.3 (unreleased)
+1.7.0 (unreleased)
 ------------------
+
+Incompatibilities:
+
+- Because of the ordering fix the field order in forms may be different.
+  Before this fix the order was a gamble dependent on schema order.
+  Schema form hints ``order_after`` and ``order_before`` may need minor adjustments.
+  ``plone.autoform.utils.processFieldMoves`` was deprecated,
+  but still works as before.
+  The new functionality is now part of ``plone.autoform.base.AutoFields``.
+  [jensens]
 
 New:
 
 - *add item here*
 
 Fixes:
+
+- Implementation on how field ordering happens was unreproducible if same schemas are coming in in different orders.
+  New implementation build a well defined rule tree and processes then the field moves,
+  almost independent from the schema order.
+  [jensens]
 
 - Update setup.py url
   [esteele]

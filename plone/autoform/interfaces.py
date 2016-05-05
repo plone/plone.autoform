@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from plone.supermodel.interfaces import IFieldset
+from z3c.form.interfaces import IDisplayForm
+from z3c.form.interfaces import IFieldsForm
 from z3c.form.interfaces import IFieldWidget
-from z3c.form.interfaces import IFieldsForm, IDisplayForm, IWidget
+from z3c.form.interfaces import IWidget
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
+
 import zope.schema
+
 
 # Schema interface tagged value keys
 MODES_KEY = u"plone.autoform.modes"

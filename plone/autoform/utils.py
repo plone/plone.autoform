@@ -18,9 +18,11 @@ from z3c.form.interfaces import IFieldWidget
 from z3c.form.interfaces import INPUT_MODE
 from z3c.form.util import expandPrefix
 from zope.component import queryUtility
+from zope.deprecation import deprecate
 from zope.dottedname.resolve import resolve
 from zope.interface import providedBy
 from zope.security.interfaces import IPermission
+
 
 _dottedCache = {}
 
@@ -256,6 +258,14 @@ def processFields(form, schema, prefix='', defaultGroup=None,
                 groups[fieldset.__name__].fields += newFields
 
 
+@deprecate(
+    'processFieldMoves must not be used any longer. Its implementation is '
+    'unreproducible if same schemas are coming in in different orders. '
+    'The new solution is part of the base.AutoFields class and does '
+    'follow strict rules by first creating a rule dependency tree.'
+    'This function will be remove in a 2.0 releaese and kept until then for '
+    'backward compatibility reasons.'
+)
 def processFieldMoves(form, schema, prefix=''):
     """Process all field moves stored under ORDER_KEY in the schema tagged
     value. This should be run after all schemata have been processed with
@@ -264,10 +274,9 @@ def processFieldMoves(form, schema, prefix=''):
 
     # (name, 'before'/'after', other name)
     order = mergedTaggedValueList(schema, ORDER_KEY)
-
     for fieldName, direction, relative_to in order:
 
-        # Handle shortcut: leading . means "in this form". May be useful
+        # Handle shortcut: leading . means 'in this schema'. May be useful
         # if you want to move a field relative to one in the current
         # schema or (more likely) a base schema of the current schema, without
         # having to repeat the full prefix of this schema.

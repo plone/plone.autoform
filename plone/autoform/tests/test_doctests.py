@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.testing import layered
 from plone.testing.zca import UNIT_TESTING
+
 import doctest
 import unittest
 
@@ -9,7 +10,7 @@ def test_suite():
     return unittest.TestSuite((
         layered(
             doctest.DocFileSuite(
-                '../autoform.txt',
+                '../autoform.rst',
                 optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
             layer=UNIT_TESTING),
         layered(
@@ -27,4 +28,4 @@ def test_suite():
                 '../supermodel.txt',
                 optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
             layer=UNIT_TESTING),
-        ))
+    ))

@@ -6,7 +6,7 @@ in tagged values on schema interfaces. A special form base class is used to
 set up the 'fields' and 'groups' properties on form instances.
 
 The tagged values are stored under keys represented by the following
-constants:
+constants::
 
     >>> from plone.autoform.interfaces import OMITTED_KEY
     >>> from plone.autoform.interfaces import WIDGETS_KEY
@@ -16,7 +16,7 @@ constants:
     >>> from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 
 In addition, field groups are constructed from plone.supermodel fieldsets,
-which are also stored in tagged values, under the following constant:
+which are also stored in tagged values, under the following constant::
 
     >>> from plone.supermodel.interfaces import FIELDSETS_KEY
 
@@ -33,7 +33,8 @@ For the purposes of this test, we'll set the form data manually.
 Test setup
 ----------
 
-First, let's load this package's ZCML so that we can run the tests:
+First, let's load this package's ZCML so that we can run the tests::
+
     >>> configuration = """\
     ... <configure xmlns="http://namespaces.zope.org/zope">
     ...
@@ -46,7 +47,7 @@ First, let's load this package's ZCML so that we can run the tests:
     >>> from zope.configuration import xmlconfig
     >>> xmlconfig.xmlconfig(StringIO(configuration))
 
-We also need a few sample interfaces:
+We also need a few sample interfaces::
 
     >>> from zope.interface import Interface
     >>> from zope import schema
@@ -70,7 +71,7 @@ We also need a few sample interfaces:
     ...     six = schema.TextLine(title=u"Six")
 
 And a test context and request, marked with the ``IFormLayer`` interface to
-make z3c.form happy:
+make z3c.form happy::
 
     >>> from zope.publisher.browser import TestRequest
     >>> from z3c.form.interfaces import IFormLayer
@@ -81,7 +82,7 @@ Note that we need to pretend that we have authenticated a user. Without this,
 the permission checks will be turned off. This is to support setting up a form
 pre-traversal in the ++widget++ namespace in plone.z3cform.
 
-And finally, a form:
+And finally, a form::
 
     >>> from z3c.form.interfaces import IForm, IEditForm
     >>> from plone.autoform.form import AutoExtensibleForm
@@ -92,7 +93,7 @@ And finally, a form:
     ...
     ...     ignoreContext = True
 
-This form is in input mode:
+This form is in input mode::
 
     >>> TestForm.mode
     'input'
@@ -102,35 +103,41 @@ Adding form data
 
 Form data can be held under the following keys:
 
-    OMITTED_KEY -- A list of (interface, fieldName, boolean) triples. If the
-        third value evaluates to true, the field with the given fieldName will
-        be omitted from forms providing the given interface.
+OMITTED_KEY
+    A list of (interface, fieldName, boolean) triples.
+    If the third value evaluates to true,
+    the field with the given fieldName will be omitted from forms providing the given interface.
 
-    MODES_KEY -- A list of (interface, fieldName, mode string) triples. A mode
-        string may be one of the z3c.form widget modes, including 'hidden',
-        'input', and 'display'.  The field will be rendered using a widget in
-        the specified mode on forms providing the given interface.
+MODES_KEY
+    A list of (interface, fieldName, mode string) triples.
+    A mode string may be one of the z3c.form widget modes,
+    including 'hidden', 'input', and 'display'.
+    The field will be rendered using a widget in the specified mode on forms providing the given interface.
 
-    WIDGETS_KEY -- A dict of fieldName => widget. The widget can be
-        the dotted name of a z3c.form field widget factory, or an actual
-        instance of one.
+WIDGETS_KEY
+    A dict of fieldName => widget.
+    The widget can be the dotted name of a z3c.form field widget factory,
+    or an actual instance of one.
 
-    ORDER_KEY -- A list of (fieldName, direction, relative_to) triples.
-        direction can be one of 'before' or 'after'. relative_to can be '*'
-        (any/all fields), or the name of a field to move the given field
-        before or after in the form.
+ORDER_KEY
+    A list of (fieldName, direction, relative_to) triples.
+    'direction' can be one of ``before`` or ``after``.
+    relative_to can be ``*`` (any/all fields),
+    or the name of a field to move the given field before or after in the form.
 
-    READ_PERMISSIONS_KEY -- A dict of fieldName => permission id. When a
-        form is in 'display' mode, the field will be omitted unless the user
-        has the given permission in the form's context. The permission id
-        should be a Zope 3 style IPermission utility name, not a Zope 2
-        permission string.
+READ_PERMISSIONS_KEY
+    A dict of fieldName => permission id.
+    When a form is in 'display' mode,
+    the field will be omitted unless the user has the given permission in the form's context.
+    The permission id should be a Zope 3 style IPermission utility name,
+    not a Zope 2 permission string.
 
-    WRITE_PERMISSIONS_KEY -- A dict of fieldName => permission id. When a
-        form is in 'input' mode, the field will be omitted unless the user
-        has the given permission in the form's context. The permission id
-        should be a Zope 3 style IPermission utility name, not a Zope 2
-        permission string.
+WRITE_PERMISSIONS_KEY
+    A dict of fieldName => permission id.
+    When a form is in 'input' mode,
+    the field will be omitted unless the user has the given permission in the form's context.
+    The permission id should be a Zope 3 style IPermission utility name,
+    not a Zope 2 permission string.
 
 Note that 'order' directives are processed after all schemata in the form are
 set up. Ordering will start by going through the additionalSchemata in order.
@@ -154,12 +161,15 @@ This contains a list of ``plone.supermodel.model.Fieldset`` instances.
 At this point, there is no form data. When the form is updated, the 'fields'
 and 'groups' properties will be set.
 
+::
+
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
     >>> test_form.fields.keys()
     ['one', 'two', 'three', 'four', 'five', 'six',
      'ISupplementarySchema.one', 'ISupplementarySchema.two',
-     'IOtherSchema.three', 'IOtherSchema.four', 'IOtherSchema.five', 'IOtherSchema.six']
+     'IOtherSchema.three', 'IOtherSchema.four',
+     'IOtherSchema.five', 'IOtherSchema.six']
     >>> test_form.groups
     ()
 
@@ -168,7 +178,7 @@ from the additional schemata have been prefixed with the schema dotted name.
 
 Let us now set up some form data.
 
-Omitted fields are listed like this:
+Omitted fields are listed like this::
 
     >>> ITestSchema.setTaggedValue(OMITTED_KEY,
     ...                            ((IForm, 'four', True),
@@ -177,7 +187,7 @@ Omitted fields are listed like this:
     ...                             (Interface, 'five', True))
     ...                           )
 
-Field modes can be set like this:
+Field modes can be set like this::
 
     >>> ITestSchema.setTaggedValue(MODES_KEY,
     ...                            ((Interface, 'one', 'display'),
@@ -186,21 +196,50 @@ Field modes can be set like this:
     ...                             (Interface, 'two', 'display'))
     ...                           )
 
-Widgets can be specified either by a dotted name string or an actual instance:
+Widgets can be specified either by a dotted name string or an actual instance::
 
     >>> from z3c.form.browser.password import PasswordFieldWidget
     >>> ITestSchema.setTaggedValue(WIDGETS_KEY, {'two': PasswordFieldWidget})
     >>> IOtherSchema.setTaggedValue(WIDGETS_KEY, {'five': 'z3c.form.browser.password.PasswordFieldWidget'})
 
-Fields can be moved like this:
+Fields can be moved like this::
 
-    >>> IOtherSchema.setTaggedValue(ORDER_KEY, [('four', 'before', 'ISupplementarySchema.one'),
-    ...                                         ('five', 'after', '.six',)])
+    >>> ITestSchema.setTaggedValue(
+    ...     ORDER_KEY,
+    ...     [('one', 'after', 'two')]
+    ... )
 
-    >>> ISupplementarySchema.setTaggedValue(ORDER_KEY, [('one', 'before', '*'),
-    ...                                                 ('two', 'before', 'one')])
+    >>> IOtherSchema.setTaggedValue(
+    ...     ORDER_KEY,
+    ...     [
+    ...         ('four', 'before', 'ISupplementarySchema.one'),
+    ...         ('five', 'after', '.six',)
+    ...     ]
+    ... )
 
-    >>> ITestSchema.setTaggedValue(ORDER_KEY,          [('one', 'after', 'two')])
+    >>> ISupplementarySchema.setTaggedValue(
+    ...     ORDER_KEY,
+    ...     [
+    ...         ('one', 'before', '*'),
+    ...         ('two', 'before', 'one')
+    ...     ]
+    ... )
+
+
+    >>> test_form = TestForm(context, request)
+    >>> test_form.update()
+    >>> test_form.fields.keys()
+    ['IOtherSchema.four',
+    'ISupplementarySchema.one',
+    'two',
+    'ISupplementarySchema.two',
+    'one',
+    'three',
+    'five',
+    'six',
+    'IOtherSchema.three',
+    'IOtherSchema.six',
+    'IOtherSchema.five']
 
 Note how the second value of each tuple refers to the full name with a prefix,
 so the field 'two' from ``ISupplementarySchema`` is moved before the field
@@ -208,33 +247,37 @@ so the field 'two' from ``ISupplementarySchema`` is moved before the field
 ``IOtherSchema``'s field 'five' after the field 'six' in the same schema by
 using a shortcut: '.six' is equivalent to 'IOtherSchema.six' in this case.
 
-Field permissions can be set like this:
+Field permissions can be set like this::
 
-    >>> ITestSchema.setTaggedValue(WRITE_PERMISSIONS_KEY, { 'five': u'dummy.PermissionOne',
-    ...                                                      'six': u'five.ManageSite'})
+    >>> ITestSchema.setTaggedValue(
+    ...     WRITE_PERMISSIONS_KEY,
+    ...     {'five': u'dummy.PermissionOne', 'six': u'five.ManageSite'}
+    ... )
 
 Note that if a permission is not found, the field will be allowed.
 
-Finally, fieldsets are configured like this:
+Finally, fieldsets are configured like this::
 
     >>> from plone.supermodel.model import Fieldset
-    >>> ITestSchema.setTaggedValue(FIELDSETS_KEY,
-    ...                                 [Fieldset('fieldset1', fields=['three'],
-    ...                                           label=u"Fieldset one",
-    ...                                           description=u"Description of fieldset one")])
+    >>> ITestSchema.setTaggedValue(
+    ...     FIELDSETS_KEY,
+    ...     [Fieldset('fieldset1', fields=['three'],
+    ...      label=u"Fieldset one",
+    ...      description=u"Description of fieldset one")])
     >>> IOtherSchema.setTaggedValue(FIELDSETS_KEY, [Fieldset('fieldset1', fields=['three'])])
 
 Note how the label/description need only be specified once.
 
-The results of all of this can be seen below:
+The results of all of this can be seen below::
+
 
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
     >>> test_form.fields.keys()
     ['IOtherSchema.four',
      'ISupplementarySchema.one',
-     'ISupplementarySchema.two',
      'two',
+     'ISupplementarySchema.two',
      'one',
      'five',
      'IOtherSchema.six',
@@ -247,7 +290,7 @@ but then ``IOtherSchema['four']`` was moved before this one again.
 coming between ``ITestSchema['one']`` and ``ITestSchema['two']``.
 
 ``ITestSchema['one']`` was hidden and ``ITestSchema['two']`` was put into
-display mode:
+display mode::
 
     >>> test_form.widgets['one'].mode
     'hidden'
@@ -255,7 +298,7 @@ display mode:
     'display'
 
 ``ITestSchema['two']`` and ``IOtherSchema['five']`` were both given a password
-widget - one by instance, the other by dotted name:
+widget - one by instance, the other by dotted name::
 
     >>> test_form.widgets['two']
     <PasswordWidget 'form.widgets.two'>
@@ -264,7 +307,7 @@ widget - one by instance, the other by dotted name:
     <PasswordWidget 'form.widgets.IOtherSchema.five'>
 
 There is one group corresponding to the fieldset where we put two fields. It
-has taken the label and description from the first definition.
+has taken the label and description from the first definition::
 
     >>> len(test_form.groups)
     1
@@ -292,15 +335,9 @@ return.
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
     >>> test_form.fields.keys()
-    ['IOtherSchema.four',
-     'ISupplementarySchema.one',
-     'ISupplementarySchema.two',
-     'two',
-     'one',
-     'five',
-     'six',
-     'IOtherSchema.six',
-     'IOtherSchema.five']
+    ['IOtherSchema.four', 'ISupplementarySchema.one', 'two',
+    'ISupplementarySchema.two', 'one', 'five', 'six',
+    'IOtherSchema.six', 'IOtherSchema.five']
 
 Automatic field sets
 --------------------

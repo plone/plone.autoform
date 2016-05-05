@@ -9,6 +9,7 @@ from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.testing import AUTOFORM_INTEGRATION_TESTING
 from plone.supermodel import model
 from zope.interface import Interface
+
 import unittest
 import zope.schema
 
@@ -83,6 +84,7 @@ class TestSchemaDirectives(unittest.TestCase):
 
         @implementer(IWidget)
         class DummyWidget(object):
+
             def __init__(self, request):
                 pass
 
@@ -102,6 +104,7 @@ class TestSchemaDirectives(unittest.TestCase):
 
         @implementer(IWidget)
         class DummyWidget(object):
+
             def __init__(self, request):
                 pass
 
@@ -210,4 +213,4 @@ class TestSchemaDirectives(unittest.TestCase):
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(TestSchemaDirectives),
-        ))
+    ))

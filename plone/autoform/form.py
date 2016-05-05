@@ -5,6 +5,7 @@ from plone.autoform.interfaces import IAutoObjectSubForm
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 from zope.interface import implementer
 
+
 _marker = object()
 
 
@@ -19,8 +20,8 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
     @property
     def schema(self):
         raise NotImplementedError(
-            "The class deriving from AutoExtensibleForm must have a "
-            "'schema' property"
+            'The class deriving from AutoExtensibleForm must have a '
+            '\'schema\' property'
         )
 
     @property

@@ -14,17 +14,19 @@ from plone.autoform.utils import resolveDottedName
 from plone.autoform.widgets import ParameterizedWidget
 from plone.supermodel.parser import IFieldMetadataHandler
 from plone.supermodel.utils import ns
-from z3c.form.interfaces import IFieldWidget, IValidator
+from z3c.form.interfaces import IFieldWidget
+from z3c.form.interfaces import IValidator
 from z3c.form.util import getSpecification
 from zope.component import provideAdapter
-from zope.interface import implements, Interface
+from zope.interface import implementer
+from zope.interface import Interface
 from zope.interface.interface import InterfaceClass
 
 
+@implementer(IFieldMetadataHandler)
 class FormSchema(object):
     """Support the form: namespace in model definitions.
     """
-    implements(IFieldMetadataHandler)
 
     namespace = FORM_NAMESPACE
     prefix = FORM_PREFIX
@@ -48,7 +50,7 @@ class FormSchema(object):
                 interface = resolveDottedName(interface_dotted_name)
                 if not isinstance(interface, InterfaceClass):
                     raise ValueError(
-                        "%s not an Interface." % interface_dotted_name)
+                        '%s not an Interface.' % interface_dotted_name)
             else:
                 interface = Interface
             tagged_value.append((interface, name, value))
@@ -58,7 +60,7 @@ class FormSchema(object):
         validator = resolveDottedName(value)
         if not IValidator.implementedBy(validator):
             raise ValueError(
-                "z3c.form.interfaces.IValidator not implemented by %s."
+                'z3c.form.interfaces.IValidator not implemented by %s.'
                 % value)
         provideAdapter(
             validator,
@@ -101,7 +103,7 @@ class FormSchema(object):
         elif widgetAttr is not None:  # BBB for old form:widget attributes
             obj = resolveDottedName(widgetAttr)
             if not IFieldWidget.implementedBy(obj):
-                raise ValueError("IFieldWidget not implemented by %s" % obj)
+                raise ValueError('IFieldWidget not implemented by %s' % obj)
             widget = widgetAttr
         if widget is not None:
             self._add(schema, WIDGETS_KEY, name, widget)
@@ -140,20 +142,20 @@ class FormSchema(object):
         mode_values = []
         for interface, value in mode:
             if interface is not Interface:
-                value = "%s:%s" % (interface.__identifier__, value)
+                value = '%s:%s' % (interface.__identifier__, value)
             mode_values.append(value)
         if mode_values:
-            fieldNode.set(ns('mode', self.namespace), " ".join(mode_values))
+            fieldNode.set(ns('mode', self.namespace), ' '.join(mode_values))
 
         omitted_values = []
         for interface, value in omitted:
             if interface is not Interface:
-                value = "%s:%s" % (interface.__identifier__, value)
+                value = '%s:%s' % (interface.__identifier__, value)
             omitted_values.append(value)
         if omitted_values:
             fieldNode.set(
                 ns('omitted', self.namespace),
-                " ".join(omitted_values)
+                ' '.join(omitted_values)
             )
 
         for direction, relative_to in order:
@@ -163,10 +165,10 @@ class FormSchema(object):
                 fieldNode.set(ns('after', self.namespace), relative_to)
 
 
+@implementer(IFieldMetadataHandler)
 class SecuritySchema(object):
     """Support the security: namespace in model definitions.
     """
-    implements(IFieldMetadataHandler)
 
     namespace = SECURITY_NAMESPACE
     prefix = SECURITY_PREFIX
