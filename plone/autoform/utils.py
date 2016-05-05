@@ -68,7 +68,7 @@ def mergedTaggedValuesForForm(schema, name, form):
 
 # Some helper functions
 
-def _fn(prefix, fieldName):
+def _process_prefixed_name(prefix, fieldName):
     """Give prefixed fieldname if applicable
     """
     if prefix:
@@ -78,7 +78,7 @@ def _fn(prefix, fieldName):
 
 
 def _bn(fieldInstance):
-    """Give base (non-prefixed) fieldname
+    """Base Name: Give base (non-prefixed) fieldname
     """
     prefix = fieldInstance.prefix
     fieldName = fieldInstance.__name__
@@ -117,6 +117,78 @@ def _processWidgets(form, widgets, modes, newFields):
             newFields[fieldName].mode = widgetMode
 
 
+def _process_fieldsets(
+    form,
+    schema,
+    groups,
+    all_fields,
+    prefix,
+    default_group
+):
+    """ Keep track of which fields are in a fieldset, and, by elimination,
+    which ones are not
+    """
+    # { name => e.g. 'hidden' }
+    modes = mergedTaggedValuesForForm(schema, MODES_KEY, form)
+
+    # { name => widget/dotted name }
+    widgets = mergedTaggedValueDict(schema, WIDGETS_KEY)
+
+    # list of IFieldset instances
+    fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY)
+
+    # process primary schema fieldsets
+    fieldset_fields = []
+    for fieldset in fieldsets:
+        for field_name in fieldset.fields:
+            fieldset_fields.append(_process_prefixed_name(prefix, field_name))
+
+    # Set up the default fields, widget factories and widget modes
+    new_fields = all_fields.omit(*fieldset_fields)
+    _processWidgets(form, widgets, modes, new_fields)
+
+    if not default_group:
+        form.fields += new_fields
+    else:
+        groups[default_group].fields += new_fields
+
+    # Set up fields for fieldsets
+
+    for fieldset in fieldsets:
+        new_fields = all_fields.select(
+            *[_process_prefixed_name(prefix, name) for name in fieldset.fields
+              if _process_prefixed_name(prefix, name) in all_fields]
+        )
+        if not (
+            getattr(form, 'showEmptyGroups', False) or
+            len(new_fields) > 0
+        ):
+            continue
+        _processWidgets(form, widgets, modes, new_fields)
+
+        if fieldset.__name__ not in groups:
+            group = GroupFactory(fieldset.__name__,
+                                 label=fieldset.label,
+                                 description=fieldset.description,
+                                 fields=new_fields)
+            form.groups.append(group)
+            groups[group.__name__] = group
+        else:
+            group = groups[fieldset.__name__]
+            group.fields += new_fields
+            if (
+                fieldset.label and
+                group.label != fieldset.label and
+                group.__name__ != fieldset.label  # defaults to name!
+            ):
+                group.label = fieldset.label
+            if (
+                fieldset.description and
+                group.description != fieldset.description
+            ):
+                group.description = fieldset.description
+
+
 def processFields(form, schema, prefix='', defaultGroup=None,
                   permissionChecks=True):
     """Add the fields from the schema to the form, taking into account
@@ -135,15 +207,6 @@ def processFields(form, schema, prefix='', defaultGroup=None,
 
     # { name => True }
     omitted = mergedTaggedValuesForForm(schema, OMITTED_KEY, form)
-
-    # { name => e.g. 'hidden' }
-    modes = mergedTaggedValuesForForm(schema, MODES_KEY, form)
-
-    # { name => widget/dotted name }
-    widgets = mergedTaggedValueDict(schema, WIDGETS_KEY)
-
-    # list of IFieldset instances
-    fieldsets = mergedTaggedValueList(schema, FIELDSETS_KEY)
 
     # Get either read or write permissions depending on what type of
     # form this is
@@ -171,7 +234,7 @@ def processFields(form, schema, prefix='', defaultGroup=None,
 
     for fieldName, status in omitted.items():
         if status and status != 'false':
-            doNotProcess.append(_fn(prefix, fieldName))
+            doNotProcess.append(_process_prefixed_name(prefix, fieldName))
 
     for group in form.groups:
         doNotProcess.extend(list(group.fields.keys()))
@@ -217,45 +280,7 @@ def processFields(form, schema, prefix='', defaultGroup=None,
                     disallowedFields.append(fieldName)
 
         allFields = allFields.omit(*disallowedFields)
-
-    # Keep track of which fields are in a fieldset, and, by elimination,
-    # which ones are not
-
-    fieldsetFields = []
-    for fieldset in fieldsets:
-        for fieldName in fieldset.fields:
-            fieldsetFields.append(_fn(prefix, fieldName))
-
-    # Set up the default fields, widget factories and widget modes
-
-    newFields = allFields.omit(*fieldsetFields)
-    _processWidgets(form, widgets, modes, newFields)
-
-    if not defaultGroup:
-        form.fields += newFields
-    else:
-        groups[defaultGroup].fields += newFields
-
-    # Set up fields for fieldsets
-
-    for fieldset in fieldsets:
-
-        newFields = allFields.select(*[_fn(prefix, fieldName)
-                                       for fieldName in fieldset.fields
-                                       if _fn(prefix, fieldName) in allFields])
-
-        if getattr(form, 'showEmptyGroups', False) or (len(newFields) > 0):
-            _processWidgets(form, widgets, modes, newFields)
-
-            if fieldset.__name__ not in groups:
-                group = GroupFactory(fieldset.__name__,
-                                     label=fieldset.label,
-                                     description=fieldset.description,
-                                     fields=newFields)
-                form.groups.append(group)
-                groups[group.__name__] = group
-            else:
-                groups[fieldset.__name__].fields += newFields
+    _process_fieldsets(form, schema, groups, allFields, prefix, defaultGroup)
 
 
 @deprecate(
