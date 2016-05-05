@@ -348,8 +348,8 @@ class TestFormSchema(unittest.TestCase):
         self.assertEqual(
             etree.tostring(fieldNode),
             '<field><ns0:widget'
-            ' xmlns:ns0=\'http://namespaces.plone.org/supermodel/form\''
-            ' type=\'foo\'/></field>'
+            ' xmlns:ns0="http://namespaces.plone.org/supermodel/form"'
+            ' type="foo"/></field>'
         )
 
     def test_write_parameterized_widget_default(self):
@@ -384,9 +384,9 @@ class TestFormSchema(unittest.TestCase):
         self.assertEqual(
             etree.tostring(fieldNode),
             '<field><ns0:widget'
-            ' xmlns:ns0=\'http://namespaces.plone.org/supermodel/form\''
-            ' type=\'plone.autoform.tests.test_supermodel_handler.'
-            'DummyWidget\'>'
+            ' xmlns:ns0="http://namespaces.plone.org/supermodel/form"'
+            ' type="plone.autoform.tests.test_supermodel_handler.'
+            'DummyWidget">'
             '<klass>custom</klass>'
             '</ns0:widget></field>')
 
@@ -405,7 +405,7 @@ class TestFormSchema(unittest.TestCase):
         self.assertEqual(
             etree.tostring(fieldNode),
             '<field><ns0:widget'
-            ' xmlns:ns0=\'http://namespaces.plone.org/supermodel/form\'>'
+            ' xmlns:ns0="http://namespaces.plone.org/supermodel/form">'
             '<klass>custom</klass></ns0:widget></field>')
 
 
