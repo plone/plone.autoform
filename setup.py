@@ -44,8 +44,8 @@ setup(
         'zope.schema',
         'zope.security',
         'zope.dottedname',
-        'plone.supermodel>=1.1dev',
-        'plone.z3cform',
+        'plone.supermodel>=1.3.dev0',
+        'plone.z3cform>=0.9.0.dev0',
         'z3c.form',
         # 'AccessControl',
         # -*- Extra requirements: -*-

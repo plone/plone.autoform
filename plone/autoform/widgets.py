@@ -67,8 +67,11 @@ class ParameterizedWidget(object):
         return widget
 
     def __repr__(self):
-        return '%s(%s, %s)' % (self.__class__.__name__,
-                               self.widget_factory, self.params)
+        return '{0}({1}, {2})'.format(
+            self.__class__.__name__,
+            self.widget_factory,
+            self.params
+        )
 
     def getWidgetFactoryName(self):
         """Returns the dotted path of the widget factory for serialization.

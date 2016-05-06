@@ -120,7 +120,10 @@ class widget(MetadataDictDirective):
         if field_name is None:  # Usage 3
             for field_name, widget in kw.items():
                 if not isinstance(widget, basestring):
-                    widget = '%s.%s' % (widget.__module__, widget.__name__)
+                    widget = '{0}.{1}'.format(
+                        widget.__module__,
+                        widget.__name__
+                    )
                 widgets[field_name] = widget
         else:
             if widget_class is not None \
