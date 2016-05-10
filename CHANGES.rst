@@ -23,6 +23,10 @@ New:
   If a different label and/or description is given, it replaces the existing prior loaded one.
   [jensens]
 
+- The order of the fieldsets can be defined now explictly with the ``plone.supermodel.directives.fieldset`` directive.
+  ``plone.autoform`` now does the sorting while fieldset processing.
+  [jensens]
+
 Fixes:
 
 - Implementation on how field ordering happens was unreproducible if same schemas are coming in in different orders.

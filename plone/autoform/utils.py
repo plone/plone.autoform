@@ -7,6 +7,7 @@ from plone.autoform.interfaces import ORDER_KEY
 from plone.autoform.interfaces import READ_PERMISSIONS_KEY
 from plone.autoform.interfaces import WIDGETS_KEY
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
+from plone.supermodel.interfaces import DEFAULT_ORDER
 from plone.supermodel.interfaces import FIELDSETS_KEY
 from plone.supermodel.utils import mergedTaggedValueDict
 from plone.supermodel.utils import mergedTaggedValueList
@@ -88,7 +89,7 @@ def _bn(fieldInstance):
         return fieldName
 
 
-def _processWidgets(form, widgets, modes, newFields):
+def _process_widgets(form, widgets, modes, newFields):
     """Update the fields list with widgets
     """
 
@@ -145,7 +146,7 @@ def _process_fieldsets(
 
     # Set up the default fields, widget factories and widget modes
     new_fields = all_fields.omit(*fieldset_fields)
-    _processWidgets(form, widgets, modes, new_fields)
+    _process_widgets(form, widgets, modes, new_fields)
 
     if not default_group:
         form.fields += new_fields
@@ -164,12 +165,12 @@ def _process_fieldsets(
             len(new_fields) > 0
         ):
             continue
-        _processWidgets(form, widgets, modes, new_fields)
-
+        _process_widgets(form, widgets, modes, new_fields)
         if fieldset.__name__ not in groups:
             group = GroupFactory(fieldset.__name__,
                                  label=fieldset.label,
                                  description=fieldset.description,
+                                 order=fieldset.order,
                                  fields=new_fields)
             form.groups.append(group)
             groups[group.__name__] = group
@@ -187,6 +188,57 @@ def _process_fieldsets(
                 group.description != fieldset.description
             ):
                 group.description = fieldset.description
+            if (
+                fieldset.order and
+                fieldset.order != DEFAULT_ORDER and
+                fieldset.order != group.order
+            ):
+                group.order = fieldset.order
+
+
+def _process_permissions(schema, form, all_fields):
+    # Get either read or write permissions depending on what type of
+    # form this is
+    permission_cache = {}  # permission name -> allowed/disallowed
+
+    # name => permission name
+    read_permissions = mergedTaggedValueDict(
+        schema,
+        READ_PERMISSIONS_KEY
+    )
+    # name => permission name
+    write_permissions = mergedTaggedValueDict(
+        schema,
+        WRITE_PERMISSIONS_KEY
+    )
+    security_manager = getSecurityManager()
+    disallowed_fields = []
+
+    for field_name, field_instance in all_fields.items():
+        field_mode = field_instance.mode or form.mode
+        permission_name = None
+        base_name = _bn(field_instance)
+        if field_mode == DISPLAY_MODE:
+            permission_name = read_permissions.get(base_name, None)
+        elif field_mode == INPUT_MODE:
+            permission_name = write_permissions.get(base_name, None)
+        if permission_name is None:
+            continue
+        if permission_name not in permission_cache:
+            permission = queryUtility(IPermission, name=permission_name)
+            if permission is None:
+                permission_cache[permission_name] = True
+            else:
+                permission_cache[permission_name] = bool(
+                    security_manager.checkPermission(
+                        permission.title,
+                        form.context
+                    )
+                )
+        if not permission_cache.get(permission_name, True):
+            disallowed_fields.append(field_name)
+
+    return all_fields.omit(*disallowed_fields)
 
 
 def processFields(form, schema, prefix='', defaultGroup=None,
@@ -208,79 +260,29 @@ def processFields(form, schema, prefix='', defaultGroup=None,
     # { name => True }
     omitted = mergedTaggedValuesForForm(schema, OMITTED_KEY, form)
 
-    # Get either read or write permissions depending on what type of
-    # form this is
-    readPermissions = {}  # field name -> permission name
-    writePermissions = {}  # field name -> permission name
-    permissionCache = {}  # permission name -> allowed/disallowed
-
-    if permissionChecks:
-        # name => permission name
-        readPermissions = mergedTaggedValueDict(
-            schema,
-            READ_PERMISSIONS_KEY
-        )
-        # name => permission name
-        writePermissions = mergedTaggedValueDict(
-            schema,
-            WRITE_PERMISSIONS_KEY
-        )
-        securityManager = getSecurityManager()
-
     # Find the fields we should not worry about
-
     groups = {}
-    doNotProcess = list(form.fields.keys())
+    do_not_process = list(form.fields.keys())
 
-    for fieldName, status in omitted.items():
+    for field_name, status in omitted.items():
         if status and status != 'false':
-            doNotProcess.append(_process_prefixed_name(prefix, fieldName))
+            do_not_process.append(_process_prefixed_name(prefix, field_name))
 
     for group in form.groups:
-        doNotProcess.extend(list(group.fields.keys()))
-
-        groupName = getattr(group, '__name__', group.label)
-        groups[groupName] = group
+        do_not_process.extend(list(group.fields.keys()))
+        groups[getattr(group, '__name__', group.label)] = group
 
     # Find all allowed fields so that we have something to select from
-    omitReadOnly = form.mode != DISPLAY_MODE
-    allFields = field.Fields(
+    omit_read_only = form.mode != DISPLAY_MODE
+    all_fields = field.Fields(
         schema,
         prefix=prefix,
-        omitReadOnly=omitReadOnly
-    ).omit(*doNotProcess)
+        omitReadOnly=omit_read_only
+    ).omit(*do_not_process)
 
-    # Check permissions
     if permissionChecks:
-
-        disallowedFields = []
-
-        for fieldName, fieldInstance in allFields.items():
-            fieldName = fieldInstance.__name__
-            fieldMode = fieldInstance.mode or form.mode
-
-            permissionName = None
-            if fieldMode == DISPLAY_MODE:
-                permissionName = readPermissions.get(_bn(fieldInstance), None)
-            elif fieldMode == INPUT_MODE:
-                permissionName = writePermissions.get(_bn(fieldInstance), None)
-            if permissionName is not None:
-                if permissionName not in permissionCache:
-                    permission = queryUtility(IPermission, name=permissionName)
-                    if permission is None:
-                        permissionCache[permissionName] = True
-                    else:
-                        permissionCache[permissionName] = bool(
-                            securityManager.checkPermission(
-                                permission.title,
-                                form.context
-                            )
-                        )
-                if not permissionCache.get(permissionName, True):
-                    disallowedFields.append(fieldName)
-
-        allFields = allFields.omit(*disallowedFields)
-    _process_fieldsets(form, schema, groups, allFields, prefix, defaultGroup)
+        all_fields = _process_permissions(schema, form, all_fields)
+    _process_fieldsets(form, schema, groups, all_fields, prefix, defaultGroup)
 
 
 @deprecate(
@@ -299,7 +301,7 @@ def processFieldMoves(form, schema, prefix=''):
 
     # (name, 'before'/'after', other name)
     order = mergedTaggedValueList(schema, ORDER_KEY)
-    for fieldName, direction, relative_to in order:
+    for field_name, direction, relative_to in order:
 
         # Handle shortcut: leading . means 'in this schema'. May be useful
         # if you want to move a field relative to one in the current
@@ -313,9 +315,9 @@ def processFieldMoves(form, schema, prefix=''):
 
         try:
             if direction == 'before':
-                move(form, fieldName, before=relative_to, prefix=prefix)
+                move(form, field_name, before=relative_to, prefix=prefix)
             elif direction == 'after':
-                move(form, fieldName, after=relative_to, prefix=prefix)
+                move(form, field_name, after=relative_to, prefix=prefix)
         except KeyError:
             # The relative_to field doesn't exist
             pass

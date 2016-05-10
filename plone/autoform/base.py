@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
+from operator import attrgetter
 from plone.autoform.interfaces import ORDER_KEY
 from plone.autoform.utils import processFields
+from plone.supermodel.interfaces import DEFAULT_ORDER
 from plone.supermodel.utils import mergedTaggedValueList
 from plone.z3cform.fieldsets.group import GroupFactory
 from plone.z3cform.fieldsets.utils import move
@@ -98,8 +100,9 @@ class AutoFields(object):
                     fieldset_group = GroupFactory(
                         group_name,
                         field.Fields(),
-                        group_name,
-                        schema.__doc__
+                        label=group_name,
+                        description=schema.__doc__,
+                        order=DEFAULT_ORDER,
                     )
                     self.groups.append(fieldset_group)
 
@@ -129,6 +132,7 @@ class AutoFields(object):
             rules = self._calculate_field_moves(order, rules=rules)
         self._cleanup_rules(rules)
         self._process_field_moves(rules)
+        self._process_group_order()
 
     def getPrefix(self, schema):
         """Get the preferred prefix for the given schema
@@ -247,3 +251,6 @@ class AutoFields(object):
                         )
                     )
             self._process_field_moves(rule.get('with', {}))
+
+    def _process_group_order(self):
+        self.groups.sort(key=attrgetter('order'))
