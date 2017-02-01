@@ -14,7 +14,7 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Make sure WidgetsView doesn't use acquisition in Zope 4. [davisagli]
 
 
 1.7.0 (2016-06-07)

@@ -7,14 +7,8 @@ from z3c.form.interfaces import IFormLayer
 from zope.interface import implementer
 
 
-try:
-    from Products.Five.bbb import AcquisitionBBB as Explicit
-except ImportError:
-    from Acquisition import Explicit
-
-
 @implementer(IWidgetsView)
-class WidgetsView(AutoFields, DisplayForm, Explicit):
+class WidgetsView(AutoFields, DisplayForm):
     """Mix-in to allow widgets (in view mode) to be accesed from browser
     views.
     """
