@@ -4,14 +4,6 @@ Changelog
 1.7.1 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Make sure WidgetsView doesn't use acquisition in Zope 4. [davisagli]
