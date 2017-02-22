@@ -52,15 +52,30 @@ class ParameterizedWidget(object):
         self.params = params
 
     def __call__(self, field, request):
+        __traceback_info__ = (
+            '{0}, processing:\n'
+            '- field "{1}"\n'
+            '- widget: {2}\n'
+            '- params: {3}\n'.format(
+                self.__class__.__name__,
+                field.__name__,
+                repr(self.widget_factory),
+                self.params
+            )
+        )
         if isinstance(self.widget_factory, basestring):
+            __traceback_info__ += '- resolving dotted name\n'
             self.widget_factory = resolveDottedName(self.widget_factory)
-
         if self.widget_factory is None:
             # use default widget factory for this field type
+            __traceback_info__ += '- using default widget factory\n'
             widget = getMultiAdapter((field, request), IFieldWidget)
         elif IWidget.implementedBy(self.widget_factory):
+            __traceback_info__ += '- calling factory, then wrapping with ' \
+                                  'FieldWidget\n'
             widget = FieldWidget(field, self.widget_factory(request))
         elif IFieldWidget.implementedBy(self.widget_factory):
+            __traceback_info__ += '- calling factory\n'
             widget = self.widget_factory(field, request)
         for k, v in self.params.items():
             setattr(widget, k, v)

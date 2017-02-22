@@ -10,7 +10,8 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Make of tracebacks of ``plone.autoform.widgets.ParameterizedWidget`` calls more verbose in order to ease debugging.
+  [jensens]
 
 Bug fixes:
 
