@@ -4,18 +4,10 @@ Changelog
 1.7.2 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Make of tracebacks of ``plone.autoform.widgets.ParameterizedWidget`` calls more verbose in order to ease debugging.
   [jensens]
-
-Bug fixes:
-
-- *add item here*
 
 
 1.7.1 (2017-02-12)
