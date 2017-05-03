@@ -125,4 +125,4 @@ class TestBase(unittest.TestCase):
         autofields = AutoFields()
         autofields.request = {}
         autofields.updateFieldsFromSchemata()
-        # (the assertion is that is doesn't break)
+        self.assertEqual(autofields.groups, [])
