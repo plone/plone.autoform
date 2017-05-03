@@ -123,5 +123,6 @@ class TestBase(unittest.TestCase):
     def test_updateFieldsFromSchemata(self):
         from plone.autoform.base import AutoFields
         autofields = AutoFields()
+        autofields.request = {}
         autofields.updateFieldsFromSchemata()
         # (the assertion is that is doesn't break)
