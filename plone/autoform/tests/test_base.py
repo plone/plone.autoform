@@ -119,3 +119,9 @@ class TestBase(unittest.TestCase):
         self.assertIn('z', rules)
         self.assertNotIn('a', rules)
         self.assertNotIn('c', rules)
+
+    def test_updateFieldsFromSchemata(self):
+        from plone.autoform.base import AutoFields
+        autofields = AutoFields()
+        autofields.updateFieldsFromSchemata()
+        # (the assertion is that is doesn't break)
