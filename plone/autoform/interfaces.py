@@ -11,13 +11,13 @@ import zope.schema
 
 
 # Schema interface tagged value keys
-MODES_KEY = u"plone.autoform.modes"
-OMITTED_KEY = u"plone.autoform.omitted"
-ORDER_KEY = u"plone.autoform.order"
-WIDGETS_KEY = u"plone.autoform.widgets"
+MODES_KEY = u'plone.autoform.modes'
+OMITTED_KEY = u'plone.autoform.omitted'
+ORDER_KEY = u'plone.autoform.order'
+WIDGETS_KEY = u'plone.autoform.widgets'
 
-READ_PERMISSIONS_KEY = u"plone.autoform.security.read-permissions"
-WRITE_PERMISSIONS_KEY = u"plone.autoform.security.write-permissions"
+READ_PERMISSIONS_KEY = u'plone.autoform.security.read-permissions'
+WRITE_PERMISSIONS_KEY = u'plone.autoform.security.write-permissions'
 
 # Supermodel namespace and prefix
 
@@ -42,19 +42,19 @@ class IAutoExtensibleForm(Interface):
     """
 
     ignorePrefix = zope.schema.Bool(
-        title=u"Do not set a prefix for additional schemata",
+        title=u'Do not set a prefix for additional schemata',
         default=False
     )
 
     schema = zope.schema.Object(
-        title=u"Schema providing form fields",
+        title=u'Schema providing form fields',
         schema=IInterface
     )
 
     additionalSchemata = zope.schema.Tuple(
-        title=u"Supplementary schemata providing additional form fields",
+        title=u'Supplementary schemata providing additional form fields',
         value_type=zope.schema.Object(
-            title=u"Schema interface",
+            title=u'Schema interface',
             schema=IInterface
         ),
         required=False
@@ -67,7 +67,7 @@ class IAutoObjectSubForm(Interface):
     """
 
     schema = zope.schema.Object(
-        title=u"Schema providing form fields",
+        title=u'Schema providing form fields',
         schema=IInterface
     )
 
@@ -78,25 +78,25 @@ class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     """
 
     w = zope.schema.Dict(
-        title=u"Shortcut lookup for all widgets",
-        description=u"Contains all widgets, including those from groups "
-                    u"within this form",
+        title=u'Shortcut lookup for all widgets',
+        description=u'Contains all widgets, including those from groups '
+                    u'within this form',
         key_type=zope.schema.ASCIILine(
-            title=u"Widget name, with prefix"
+            title=u'Widget name, with prefix'
         ),
         value_type=zope.schema.Object(
-            title=u"Widget",
+            title=u'Widget',
             schema=IWidget
         )
     )
 
     fieldsets = zope.schema.Dict(
-        title=u"Lookup fieldset (group) by name",
+        title=u'Lookup fieldset (group) by name',
         key_type=zope.schema.ASCIILine(
-            title=u"Fieldset name"
+            title=u'Fieldset name'
         ),
         value_type=zope.schema.Object(
-            title=u"Fieldset",
+            title=u'Fieldset',
             schema=IFieldset
         )
     )

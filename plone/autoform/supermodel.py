@@ -50,7 +50,8 @@ class FormSchema(object):
                 interface = resolveDottedName(interface_dotted_name)
                 if not isinstance(interface, InterfaceClass):
                     raise ValueError(
-                        '%s not an Interface.' % interface_dotted_name)
+                        '{0} not an Interface.'.format(interface_dotted_name)
+                    )
             else:
                 interface = Interface
             tagged_value.append((interface, name, value))
@@ -59,9 +60,8 @@ class FormSchema(object):
     def _add_validator(self, field, value):
         validator = resolveDottedName(value)
         if not IValidator.implementedBy(validator):
-            raise ValueError(
-                'z3c.form.interfaces.IValidator not implemented by %s.'
-                % value)
+            msg = 'z3c.form.interfaces.IValidator not implemented by {0}.'
+            raise ValueError(msg.format(value))
         provideAdapter(
             validator,
             (None, None, None, getSpecification(field), None),
@@ -103,7 +103,9 @@ class FormSchema(object):
         elif widgetAttr is not None:  # BBB for old form:widget attributes
             obj = resolveDottedName(widgetAttr)
             if not IFieldWidget.implementedBy(obj):
-                raise ValueError('IFieldWidget not implemented by %s' % obj)
+                raise ValueError(
+                    'IFieldWidget not implemented by {0}'.format(obj)
+                )
             widget = widgetAttr
         if widget is not None:
             self._add(schema, WIDGETS_KEY, name, widget)
@@ -142,7 +144,7 @@ class FormSchema(object):
         mode_values = []
         for interface, value in mode:
             if interface is not Interface:
-                value = '%s:%s' % (interface.__identifier__, value)
+                value = '{0}:{1}'.format(interface.__identifier__, value)
             mode_values.append(value)
         if mode_values:
             fieldNode.set(ns('mode', self.namespace), ' '.join(mode_values))
@@ -150,7 +152,7 @@ class FormSchema(object):
         omitted_values = []
         for interface, value in omitted:
             if interface is not Interface:
-                value = '%s:%s' % (interface.__identifier__, value)
+                value = '{0}:{1}'.format(interface.__identifier__, value)
             omitted_values.append(value)
         if omitted_values:
             fieldNode.set(

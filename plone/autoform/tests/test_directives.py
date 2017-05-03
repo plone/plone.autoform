@@ -37,10 +37,10 @@ class TestSchemaDirectives(unittest.TestCase):
             form.read_permission(foo='zope2.View')
             form.write_permission(foo='cmf.ModifyPortalContent')
 
-            foo = zope.schema.TextLine(title=u"Foo")
-            bar = zope.schema.TextLine(title=u"Bar")
-            baz = zope.schema.TextLine(title=u"Baz")
-            qux = zope.schema.TextLine(title=u"Qux")
+            foo = zope.schema.TextLine(title=u'Foo')
+            bar = zope.schema.TextLine(title=u'Bar')
+            baz = zope.schema.TextLine(title=u'Baz')
+            qux = zope.schema.TextLine(title=u'Qux')
 
         model.finalizeSchemas(IDummy)
 
@@ -68,9 +68,9 @@ class TestSchemaDirectives(unittest.TestCase):
         class IDummy(model.Schema):
             form.widget(foo=DummyWidget)
 
-            foo = zope.schema.TextLine(title=u"Foo")
-            bar = zope.schema.TextLine(title=u"Bar")
-            baz = zope.schema.TextLine(title=u"Baz")
+            foo = zope.schema.TextLine(title=u'Foo')
+            bar = zope.schema.TextLine(title=u'Bar')
+            baz = zope.schema.TextLine(title=u'Baz')
 
         self.assertEqual(
             {'foo': 'plone.autoform.tests.test_directives.DummyWidget'},
@@ -90,7 +90,7 @@ class TestSchemaDirectives(unittest.TestCase):
 
         class IDummy(model.Schema):
             form.widget('foo', DummyWidget, foo='bar')
-            foo = zope.schema.TextLine(title=u"Foo")
+            foo = zope.schema.TextLine(title=u'Foo')
 
         tv = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(tv['foo'], ParameterizedWidget))
@@ -110,7 +110,7 @@ class TestSchemaDirectives(unittest.TestCase):
 
         class IDummy(model.Schema):
             form.widget('foo', foo='bar')
-            foo = zope.schema.TextLine(title=u"Foo")
+            foo = zope.schema.TextLine(title=u'Foo')
 
         tv = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(tv['foo'], ParameterizedWidget))
@@ -145,10 +145,10 @@ class TestSchemaDirectives(unittest.TestCase):
             form.write_permission(foo='cmf.ModifyPortalContent')
             form.write_permission(baz='another.Permission')
 
-            foo = zope.schema.TextLine(title=u"Foo")
-            bar = zope.schema.TextLine(title=u"Bar")
-            baz = zope.schema.TextLine(title=u"Baz")
-            qux = zope.schema.TextLine(title=u"Qux")
+            foo = zope.schema.TextLine(title=u'Foo')
+            bar = zope.schema.TextLine(title=u'Bar')
+            baz = zope.schema.TextLine(title=u'Baz')
+            qux = zope.schema.TextLine(title=u'Qux')
 
         self.assertEqual({'foo': 'some.dummy.Widget',
                           'baz': 'other.Widget'},
