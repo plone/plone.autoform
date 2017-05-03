@@ -119,3 +119,10 @@ class TestBase(unittest.TestCase):
         self.assertIn('z', rules)
         self.assertNotIn('a', rules)
         self.assertNotIn('c', rules)
+
+    def test_updateFieldsFromSchemata(self):
+        from plone.autoform.base import AutoFields
+        autofields = AutoFields()
+        autofields.request = {}
+        autofields.updateFieldsFromSchemata()
+        self.assertEqual(autofields.groups, [])

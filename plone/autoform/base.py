@@ -119,7 +119,7 @@ class AutoFields(object):
         # Then process relative field movements. The base schema is processed
         # last to allow it to override any movements made in additional
         # schemata.
-        rules = None
+        rules = {'__all__': {}}
         for schema in self.additionalSchemata:
             order = mergedTaggedValueList(schema, ORDER_KEY)
             rules = self._calculate_field_moves(

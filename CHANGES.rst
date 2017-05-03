@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix traceback in updateFieldsFromSchemata for forms with no schema.
+  [davisagli]
 
 
 1.7.2 (2017-04-01)
