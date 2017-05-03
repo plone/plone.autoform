@@ -17,6 +17,8 @@ Bug fixes:
 - Fix traceback in updateFieldsFromSchemata for forms with no schema.
   [davisagli]
 
+- Clean up code.
+  [gforcada]
 
 1.7.2 (2017-04-01)
 ------------------
