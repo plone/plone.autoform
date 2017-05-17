@@ -14,6 +14,10 @@ New features:
 
 Bug fixes:
 
+- Reduce field move failure logging from error to warning.
+  Log more information like full rule.
+  [jensens]
+
 - Fix traceback in updateFieldsFromSchemata for forms with no schema.
   [davisagli]
 
