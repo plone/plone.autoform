@@ -241,15 +241,21 @@ class AutoFields(object):
                     )
                 try:
                     move(self, name, before=before, after=after, prefix=prefix)
-                except KeyError:
-                    # The relative_to field doesn't exist
-                    logger.exception(
-                        'No field move possible for non-existing field named '
-                        '{0} with target {1}'.format(
-                            prefix + '.' + name,
-                            before or after
+                except KeyError as e:
+                    if (
+                        e.message.startswith('Field ') and
+                        e.message.endswith(' not found')
+                    ):
+                        # The relative_to field doesn't exist
+                        logger.warning(
+                            'Field move to non-existing: '
+                            'field name: {0}, rule: {1}'.format(
+                                prefix + '.' + name,
+                                str(rule)
+                            )
                         )
-                    )
+                    else:
+                        raise
             self._process_field_moves(rule.get('with', {}))
 
     def _process_group_order(self):
