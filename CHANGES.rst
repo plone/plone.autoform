@@ -24,6 +24,10 @@ Bug fixes:
 - Clean up code.
   [gforcada]
 
+- Remove unittest2 dependency
+  [kakshay21]
+
+
 1.7.2 (2017-04-01)
 ------------------
 

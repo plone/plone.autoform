@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.testing.zca import UNIT_TESTING
 
-import unittest2 as unittest
+import unittest
 
 
 class TestParameterizedWidget(unittest.TestCase):
