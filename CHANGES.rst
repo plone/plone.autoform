@@ -4,14 +4,6 @@ Changelog
 1.7.3 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Reduce field move failure logging from error to warning.
