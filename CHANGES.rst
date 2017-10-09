@@ -10,7 +10,10 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Add handler registration for text input widgets to support e.g. 'placeholder'
+  parameter in parameterized widgets
+  [datakurre]
+
 
 Bug fixes:
 
