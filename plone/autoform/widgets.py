@@ -149,6 +149,10 @@ class WidgetExportImportHandler(object):
                 widgetNode.append(child)
 
 
+TextInputWidgetExportImportHandler = WidgetExportImportHandler(
+    z3c.form.browser.interfaces.IHTMLTextInputWidget
+)
+
 TextAreaWidgetExportImportHandler = WidgetExportImportHandler(
     z3c.form.browser.interfaces.IHTMLTextAreaWidget
 )
