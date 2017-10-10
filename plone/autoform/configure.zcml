@@ -46,6 +46,13 @@
         />
 
     <!-- widget import/export -->
+
+    <utility
+        provides=".interfaces.IWidgetExportImportHandler"
+        component=".widgets.TextInputWidgetExportImportHandler"
+        name="z3c.form.browser.text.TextFieldWidget"
+        />
+
     <utility
         provides=".interfaces.IWidgetExportImportHandler"
         component=".widgets.TextAreaWidgetExportImportHandler"

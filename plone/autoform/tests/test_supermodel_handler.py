@@ -212,8 +212,11 @@ class TestFormSchema(unittest.TestCase):
 
         param_node = etree.Element('klass')
         param_node.text = 'custom'
+        param2_node = etree.Element('placeholder')
+        param2_node.text = 'help'
         widget_node = etree.Element(ns('widget', self.namespace))
         widget_node.append(param_node)
+        widget_node.append(param2_node)
         field_node = etree.Element('field')
         field_node.append(widget_node)
 
@@ -226,7 +229,10 @@ class TestFormSchema(unittest.TestCase):
         widgets = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(widgets['foo'], ParameterizedWidget))
         self.assertTrue(widgets['foo'].widget_factory is None)
-        self.assertEqual(widgets['foo'].params, {'klass': 'custom'})
+        self.assertIn('klass', widgets['foo'].params)
+        self.assertEqual(widgets['foo'].params['klass'], 'custom')
+        self.assertIn('placeholder', widgets['foo'].params)
+        self.assertEqual(widgets['foo'].params['placeholder'], 'help')
 
     def test_write(self):
         field_node = etree.Element('field')
