@@ -160,21 +160,10 @@ def _process_fieldsets(
             *[_process_prefixed_name(prefix, name) for name in fieldset.fields
               if _process_prefixed_name(prefix, name) in all_fields]
         )
-        if not (
-            getattr(form, 'showEmptyGroups', False) or
-            len(new_fields) > 0
-        ):
-            continue
-        _process_widgets(form, widgets, modes, new_fields)
-        if fieldset.__name__ not in groups:
-            group = GroupFactory(fieldset.__name__,
-                                 label=fieldset.label,
-                                 description=fieldset.description,
-                                 order=fieldset.order,
-                                 fields=new_fields)
-            form.groups.append(group)
-            groups[group.__name__] = group
-        else:
+
+        if fieldset.__name__ in groups:
+            # Process also, if no fields are defined to allow fieldset-only
+            # configurations via plone.supermodel fieldset directive.
             group = groups[fieldset.__name__]
             group.fields += new_fields
             if (
@@ -194,6 +183,17 @@ def _process_fieldsets(
                 fieldset.order != group.order
             ):
                 group.order = fieldset.order
+
+        if len(new_fields) > 0 or getattr(form, 'showEmptyGroups', False):
+            _process_widgets(form, widgets, modes, new_fields)
+            if fieldset.__name__ not in groups:
+                group = GroupFactory(fieldset.__name__,
+                                     label=fieldset.label,
+                                     description=fieldset.description,
+                                     order=fieldset.order,
+                                     fields=new_fields)
+                form.groups.append(group)
+                groups[group.__name__] = group
 
 
 def _process_permissions(schema, form, all_fields):
