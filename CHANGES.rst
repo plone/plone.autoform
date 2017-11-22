@@ -10,6 +10,10 @@ Breaking changes:
 
 New features:
 
+- Allow configuration of fieldsets via ``plone.supermodel`` fieldset directives via a schema without fields.
+  This can be used to create a Plone behavior for stable ordering of fieldsets.
+  [thet]
+
 - Add handler registration for text input widgets to support e.g. 'placeholder'
   parameter in parameterized widgets
   [datakurre]
