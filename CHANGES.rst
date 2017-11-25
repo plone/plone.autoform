@@ -4,10 +4,6 @@ Changelog
 1.7.4 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Allow configuration of fieldsets via ``plone.supermodel`` fieldset directives via a schema without fields.
@@ -18,10 +14,6 @@ New features:
   parameter in parameterized widgets
   [datakurre]
 
-
-Bug fixes:
-
-- *add item here*
 
 
 1.7.3 (2017-06-03)
