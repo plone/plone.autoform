@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.7.4 (unreleased)
+1.7.4 (2017-11-24)
 ------------------
 
 New features:
