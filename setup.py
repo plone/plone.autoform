@@ -38,6 +38,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'setuptools',
+        'six',
         'zope.interface',
         'zope.schema',
         'zope.security',
