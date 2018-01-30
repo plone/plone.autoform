@@ -24,6 +24,8 @@ from zope.dottedname.resolve import resolve
 from zope.interface import providedBy
 from zope.security.interfaces import IPermission
 
+import six
+
 
 _dottedCache = {}
 
@@ -104,7 +106,7 @@ def _process_widgets(form, widgets, modes, newFields):
 
         widgetFactory = None
         if widgetName is not None:
-            if isinstance(widgetName, basestring):
+            if isinstance(widgetName, six.string_types):
                 widgetFactory = resolveDottedName(widgetName)
             elif IFieldWidget.implementedBy(widgetName):
                 widgetFactory = widgetName

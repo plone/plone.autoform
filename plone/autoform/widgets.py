@@ -17,6 +17,7 @@ from zope.interface import implementer
 from zope.interface import providedBy
 from zope.schema import getFields
 
+import six
 import z3c.form.browser.interfaces
 
 
@@ -45,7 +46,7 @@ class ParameterizedWidget(object):
         if widget_factory is not None:
             if not IFieldWidget.implementedBy(widget_factory) \
                     and not IWidget.implementedBy(widget_factory) \
-                    and not isinstance(widget_factory, basestring):
+                    and not isinstance(widget_factory, six.string_types):
                 raise TypeError('widget_factory must be an IFieldWidget '
                                 'or an IWidget')
         self.widget_factory = widget_factory
@@ -63,7 +64,7 @@ class ParameterizedWidget(object):
                 self.params
             )
         )
-        if isinstance(self.widget_factory, basestring):
+        if isinstance(self.widget_factory, six.string_types):
             __traceback_info__ += '- resolving dotted name\n'
             self.widget_factory = resolveDottedName(self.widget_factory)
         if self.widget_factory is None:
@@ -96,7 +97,7 @@ class ParameterizedWidget(object):
         widget = self.widget_factory
         if widget is None:
             return
-        if not isinstance(widget, basestring):
+        if not isinstance(widget, six.string_types):
             widget = '{0}.{1}'.format(widget.__module__, widget.__name__)
         return widget
 

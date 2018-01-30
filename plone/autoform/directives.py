@@ -15,6 +15,8 @@ from z3c.form.interfaces import IWidget
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
 
+import six
+
 
 class omitted(MetadataListDirective):
     """Directive used to omit one or more fields
@@ -119,7 +121,7 @@ class widget(MetadataDictDirective):
 
         if field_name is None:  # Usage 3
             for field_name, widget in kw.items():
-                if not isinstance(widget, basestring):
+                if not isinstance(widget, six.string_types):
                     widget = '{0}.{1}'.format(
                         widget.__module__,
                         widget.__name__
