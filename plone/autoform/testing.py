@@ -2,6 +2,7 @@
 from plone.testing import z2
 from plone.testing import zca
 
+import doctest
 import plone.autoform
 
 
@@ -14,3 +15,8 @@ AUTOFORM_FIXTURE = zca.ZCMLSandbox(
 AUTOFORM_INTEGRATION_TESTING = z2.IntegrationTesting(
     bases=(AUTOFORM_FIXTURE,),
     name='plone.autoform:Integration')
+
+optionflags = (
+    doctest.NORMALIZE_WHITESPACE
+    | doctest.ELLIPSIS
+)

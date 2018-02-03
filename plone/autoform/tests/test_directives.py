@@ -208,9 +208,3 @@ class TestSchemaDirectives(unittest.TestCase):
             [('foo', 'after', 'bar'), ],
             IBar.queryTaggedValue(ORDER_KEY)
         )
-
-
-def test_suite():
-    return unittest.TestSuite((
-        unittest.makeSuite(TestSchemaDirectives),
-    ))

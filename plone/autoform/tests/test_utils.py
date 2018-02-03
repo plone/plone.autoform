@@ -41,9 +41,6 @@ class TestUtils(unittest.TestCase):
         self.secman = DummySecurityManager()
         setSecurityManager(self.secman)
 
-    def tearDown(self):
-        noSecurityManager()
-
     def test_processFields_permissionChecks_no_prefix(self):
         form = Form(None, None)
         form.groups = ()
@@ -95,7 +92,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual([g.__name__ for g in form.groups], ['custom'])
 
     def test_fieldset_configuration(self):
-        """Test, if fieldsets can be orderd via fieldset configuration on a 
+        """Test, if fieldsets can be orderd via fieldset configuration on a
         schema without fields. This schema should also not be included in form
         groups.
         """
@@ -120,7 +117,7 @@ class TestUtils(unittest.TestCase):
         fs3 = Fieldset('fs1', order=2)
         fs4 = Fieldset('fs2', order=1)
         schema3.setTaggedValue(FIELDSETS_KEY, [fs3, fs4])
-       
+
         processFields(form, schema1, prefix='prefix', permissionChecks=True)
         processFields(form, schema2, prefix='prefix', permissionChecks=True)
         processFields(form, schema3, prefix='prefix', permissionChecks=True)

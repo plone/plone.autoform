@@ -17,6 +17,8 @@ Bug fixes:
 - Prepare for Python 2 / 3 compatibility
   [pbauer]
 
+- Minor fixes on testing that could avoid having test isolation problems.
+  [gforcada]
 
 1.7.4 (2017-11-24)
 ------------------
