@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from plone.autoform.testing import optionflags
 from plone.testing import layered
 from plone.testing.zca import UNIT_TESTING
 
@@ -6,26 +7,24 @@ import doctest
 import unittest
 
 
+test_files = [
+    '../autoform.rst',
+    'subform.txt',
+    '../view.txt',
+    '../supermodel.txt',
+]
+
+
 def test_suite():
-    return unittest.TestSuite((
+    tests = [
         layered(
             doctest.DocFileSuite(
-                '../autoform.rst',
-                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
-            layer=UNIT_TESTING),
-        layered(
-            doctest.DocFileSuite(
-                'subform.txt',
-                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
-            layer=UNIT_TESTING),
-        layered(
-            doctest.DocFileSuite(
-                '../view.txt',
-                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
-            layer=UNIT_TESTING),
-        layered(
-            doctest.DocFileSuite(
-                '../supermodel.txt',
-                optionflags=doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS,),
-            layer=UNIT_TESTING),
-    ))
+                test_file,
+                optionflags=optionflags,
+            ),
+            layer=UNIT_TESTING,
+        )
+        for test_file in test_files
+    ]
+
+    return unittest.TestSuite(tests)
