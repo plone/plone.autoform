@@ -509,10 +509,3 @@ class TestSecuritySchema(unittest.TestCase):
             None,
             field_node.get(ns('write-permission', self.namespace))
         )
-
-
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestFormSchema))
-    suite.addTest(unittest.makeSuite(TestSecuritySchema))
-    return suite
