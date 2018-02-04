@@ -4,14 +4,6 @@ Changelog
 1.7.5 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Prepare for Python 2 / 3 compatibility
