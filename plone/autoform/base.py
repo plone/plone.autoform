@@ -259,4 +259,7 @@ class AutoFields(object):
             self._process_field_moves(rule.get('with', {}))
 
     def _process_group_order(self):
-        self.groups.sort(key=attrgetter('order'))
+        try:
+            self.groups.sort(key=attrgetter('order'))
+        except TypeError:
+            pass
