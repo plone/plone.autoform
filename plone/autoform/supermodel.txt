@@ -19,7 +19,8 @@ First, let's load this package's ZCML so that we can run the tests:
     ...
     ... </configure>
     ... """
-    >>> from StringIO import StringIO
+    >>> import six
+    >>> from six import StringIO
     >>> from zope.configuration import xmlconfig
     >>> xmlconfig.xmlconfig(StringIO(configuration))
 
