@@ -26,7 +26,8 @@ There are several ways to set the form data:
 * By loading the schema from a plone.supermodel XML file. This package
   provides a schema handler for the 'form' prefix that can be used to
   incorporate form hints. See supermodel.txt for details.
-* By using the grok directives in the plone.directives.form package.
+* By using the directives from ``plone.autoform.directives`` while defining
+  a schema in Python.
 
 For the purposes of this test, we'll set the form data manually.
 
