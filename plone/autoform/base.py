@@ -11,6 +11,7 @@ from z3c.form import field
 from z3c.form.util import expandPrefix
 
 import logging
+import six
 
 
 logger = logging.getLogger(__name__)
@@ -242,9 +243,13 @@ class AutoFields(object):
                 try:
                     move(self, name, before=before, after=after, prefix=prefix)
                 except KeyError as e:
+                    if six.PY2:
+                        message = e.message
+                    else:
+                        message = e.args[0]
                     if (
-                        e.message.startswith('Field ') and
-                        e.message.endswith(' not found')
+                        message.startswith('Field ') and
+                        message.endswith(' not found')
                     ):
                         # The relative_to field doesn't exist
                         logger.warning(
@@ -259,4 +264,7 @@ class AutoFields(object):
             self._process_field_moves(rule.get('with', {}))
 
     def _process_group_order(self):
-        self.groups.sort(key=attrgetter('order'))
+        try:
+            self.groups.sort(key=attrgetter('order'))
+        except TypeError:
+            pass

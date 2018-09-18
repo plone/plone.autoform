@@ -353,9 +353,9 @@ class TestFormSchema(unittest.TestCase):
 
         self.assertEqual(
             etree.tostring(fieldNode),
-            '<field><ns0:widget'
-            ' xmlns:ns0="http://namespaces.plone.org/supermodel/form"'
-            ' type="foo"/></field>'
+            b'<field><ns0:widget'
+            b' xmlns:ns0="http://namespaces.plone.org/supermodel/form"'
+            b' type="foo"/></field>'
         )
 
     def test_write_parameterized_widget_default(self):
@@ -372,7 +372,7 @@ class TestFormSchema(unittest.TestCase):
 
         self.assertEqual(
             etree.tostring(fieldNode),
-            '<field/>'
+            b'<field/>'
         )
 
     def test_write_parameterized_widget_with_handler(self):
@@ -389,12 +389,12 @@ class TestFormSchema(unittest.TestCase):
 
         self.assertEqual(
             etree.tostring(fieldNode),
-            '<field><ns0:widget'
-            ' xmlns:ns0="http://namespaces.plone.org/supermodel/form"'
-            ' type="plone.autoform.tests.test_supermodel_handler.'
-            'DummyWidget">'
-            '<klass>custom</klass>'
-            '</ns0:widget></field>')
+            b'<field><ns0:widget'
+            b' xmlns:ns0="http://namespaces.plone.org/supermodel/form"'
+            b' type="plone.autoform.tests.test_supermodel_handler.'
+            b'DummyWidget">'
+            b'<klass>custom</klass>'
+            b'</ns0:widget></field>')
 
     def test_write_parameterized_widget_default_with_handler(self):
         from plone.autoform.widgets import ParameterizedWidget
@@ -410,9 +410,9 @@ class TestFormSchema(unittest.TestCase):
 
         self.assertEqual(
             etree.tostring(fieldNode),
-            '<field><ns0:widget'
-            ' xmlns:ns0="http://namespaces.plone.org/supermodel/form">'
-            '<klass>custom</klass></ns0:widget></field>')
+            b'<field><ns0:widget'
+            b' xmlns:ns0="http://namespaces.plone.org/supermodel/form">'
+            b'<klass>custom</klass></ns0:widget></field>')
 
 
 class TestSecuritySchema(unittest.TestCase):

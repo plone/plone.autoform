@@ -19,7 +19,8 @@ First, let's load this package's ZCML so that we can run the tests:
     ...
     ... </configure>
     ... """
-    >>> from StringIO import StringIO
+    >>> import six
+    >>> from six import StringIO
     >>> from zope.configuration import xmlconfig
     >>> xmlconfig.xmlconfig(StringIO(configuration))
 
@@ -96,7 +97,7 @@ The interface defined in the model should now have the relevant form data:
     [(<InterfaceClass zope.interface.Interface>, 'one', 'true'), (<InterfaceClass z3c.form.interfaces.IForm>, 'three', 'true'), (<InterfaceClass z3c.form.interfaces.IEditForm>, 'three', 'false')]
     >>> model.schema.getTaggedValue(ORDER_KEY)
     [('one', 'after', 'two'), ('three', 'before', 'two')]
-    >>> model.schema.getTaggedValue(MODES_KEY)
+    >>> sorted(model.schema.getTaggedValue(MODES_KEY))
     [(<InterfaceClass z3c.form.interfaces.IEditForm>, 'three', 'input'), (<InterfaceClass zope.interface.Interface>, 'two', 'hidden')]
     >>> model.schema.getTaggedValue(READ_PERMISSIONS_KEY)
     {'one': 'zope2.View'}

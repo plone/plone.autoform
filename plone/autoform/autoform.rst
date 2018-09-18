@@ -44,7 +44,8 @@ First, let's load this package's ZCML so that we can run the tests::
     ...
     ... </configure>
     ... """
-    >>> from StringIO import StringIO
+    >>> import six
+    >>> from six import StringIO
     >>> from zope.configuration import xmlconfig
     >>> xmlconfig.xmlconfig(StringIO(configuration))
 
@@ -313,9 +314,9 @@ has taken the label and description from the first definition::
     >>> len(test_form.groups)
     1
     >>> test_form.groups[0].label
-    u'Fieldset one'
+    'Fieldset one'
     >>> test_form.groups[0].description
-    u'Description of fieldset one'
+    'Description of fieldset one'
     >>> test_form.groups[0].fields.keys()
     ['three', 'IOtherSchema.three']
 

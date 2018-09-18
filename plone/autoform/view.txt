@@ -15,7 +15,8 @@ First, let's load this package's ZCML so that we can run the tests:
     ...
     ... </configure>
     ... """
-    >>> from StringIO import StringIO
+    >>> import six
+    >>> from six import StringIO
     >>> from zope.configuration import xmlconfig
     >>> xmlconfig.xmlconfig(StringIO(configuration))
 
@@ -79,7 +80,7 @@ set up.
     >>> context.summary = u"Summary"
 
     >>> view = TestView(context, request)
-    >>> print view()
+    >>> print(view())
     <div>My title widget says
         <span id="form-widgets-title"
               class="text-widget...textline-field">Test title</span>
@@ -96,9 +97,10 @@ updated, we have access to widgets in the default fieldset:
 There is also a shortcut to allow access to any widget by (possibly prefixed)
 name:
 
-    >>> view.w.items()
-    [('body', <TextAreaWidget 'form.widgets.body'>),
-     ('ISecondarySchema.summary', <TextAreaWidget 'form.widgets.ISecondarySchema.summary'>),
+    >>> items = sorted(list(view.w.items()))
+    >>> items
+    [('ISecondarySchema.summary', <TextAreaWidget 'form.widgets.ISecondarySchema.summary'>),
+     ('body', <TextAreaWidget 'form.widgets.body'>),
      ('title', <TextWidget 'form.widgets.title'>)]
 
 You can also see fieldsets (groups) either in order:
@@ -108,7 +110,7 @@ You can also see fieldsets (groups) either in order:
 
 or looked up by name:
 
-    >>> view.fieldsets.items()
+    >>> list(view.fieldsets.items())
     [('secondary', <plone.z3cform.fieldsets.group.Group object at ...>)]
 
 Note how the schema name is used as a prefix to all additional schemata. If
@@ -117,7 +119,8 @@ you wish to flatten the namespace, you can set ignorePrefix to true:
     >>> view = TestView(context, request)
     >>> view.ignorePrefix = True
     >>> view.update()
-    >>> view.w.items()
+    >>> items = sorted(view.w.items())
+    >>> items
     [('body', <TextAreaWidget 'form.widgets.body'>),
      ('summary', <TextAreaWidget 'form.widgets.summary'>),
      ('title', <TextWidget 'form.widgets.title'>)]
