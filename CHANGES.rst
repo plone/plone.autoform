@@ -10,7 +10,8 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Add support for python 3
+  [pbauer]
 
 Bug fixes:
 
