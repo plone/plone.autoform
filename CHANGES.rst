@@ -4,18 +4,10 @@ Changelog
 1.8.0 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Add support for python 3
   [pbauer]
-
-Bug fixes:
-
-- *add item here*
 
 
 1.7.5 (2018-02-04)
