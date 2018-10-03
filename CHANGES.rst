@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Remove the dummy security manager on test tear down
+  [ale-rt]
 
 
 1.8.0 (2018-09-26)

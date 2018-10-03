@@ -41,6 +41,9 @@ class TestUtils(unittest.TestCase):
         self.secman = DummySecurityManager()
         setSecurityManager(self.secman)
 
+    def tearDown(self):
+        noSecurityManager()
+
     def test_processFields_permissionChecks_no_prefix(self):
         form = Form(None, None)
         form.groups = ()
