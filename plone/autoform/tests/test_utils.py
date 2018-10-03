@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.SecurityManagement import setSecurityManager
+from AccessControl.SecurityManagement import getSecurityManager
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.utils import processFields
 from plone.supermodel.interfaces import FIELDSETS_KEY
@@ -38,8 +38,12 @@ class TestUtils(unittest.TestCase):
                 self.checks.append(perm)
                 return False
 
+        self.oldsecman = getSecurityManager()
         self.secman = DummySecurityManager()
         setSecurityManager(self.secman)
+
+    def tearDown(self):
+        setSecurityManager(self.oldsecman)
 
     def test_processFields_permissionChecks_no_prefix(self):
         form = Form(None, None)
