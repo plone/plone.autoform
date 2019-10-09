@@ -18,8 +18,7 @@ setup(
     version=version,
     description="Tools to construct z3c.form forms",
     long_description=long_description,
-    # Get more strings from https://pypi.python.org/pypi?%3Aaction=list_
-    # classifiers
+    # Get more strings from https://pypi.org/classifiers/
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
