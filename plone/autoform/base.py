@@ -252,7 +252,7 @@ class AutoFields(object):
                         message.endswith(' not found')
                     ):
                         # The relative_to field doesn't exist
-                        logger.warning(
+                        logger.debug(
                             'Field move to non-existing: '
                             'field name: {0}, rule: {1}'.format(
                                 prefix + '.' + name,
