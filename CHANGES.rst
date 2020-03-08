@@ -8,6 +8,15 @@ Changelog
 
 .. towncrier release notes start
 
+1.8.2 (2020-03-09)
+------------------
+
+Bug fixes:
+
+
+- Decrease the loglevel of "Field move to non-existing: ..." (#21)
+
+
 1.8.1 (2018-10-31)
 ------------------
 
