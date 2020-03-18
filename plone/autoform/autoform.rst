@@ -419,13 +419,22 @@ condition for group naming when autoGroups is True.
     ...
     >>> IUnknownName.__name__ = ''  # dynamic schema, empty __name__
 
-    >>> class IAnotherAnonymousSchema(Interface):
-    ...     that = schema.TextLine()
-    ...
-    >>> IAnotherAnonymousSchema.__name__ = ''
+In any case, if we want to have a different anonymous schema, we have to create it using the InterfaceClass constructor.
+The rare case of setting `__name__` or `__module__` is not supported in zope.interface >= 5 due to performance optimizations.
+For more information also read:
 
-Fix for https://github.com/zopefoundation/zope.interface/issues/31
-    >>> IAnotherAnonymousSchema.__module__ = 'different.module'
+- https://github.com/zopefoundation/zope.interface/issues/31
+- https://github.com/zopefoundation/zope.interface/pull/183#issuecomment-599547556
+
+::
+
+    >>> from zope.interface.interface import InterfaceClass
+    >>> IAnotherAnonymousSchema = InterfaceClass(
+    ...     '',
+    ...     (Interface,),
+    ...     {'that': schema.TextLine(), '__module__': 'different.module'},
+    ... )
+
 
     Create an extrinsicly stored name mapping:
 
