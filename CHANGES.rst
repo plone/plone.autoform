@@ -8,6 +8,17 @@ Changelog
 
 .. towncrier release notes start
 
+1.9.0 (2020-04-20)
+------------------
+
+New features:
+
+
+- Support for zope.interface 5. 
+  See https://github.com/zopefoundation/zope.interface/pull/183#issuecomment-599547556
+  [jensens] (#39)
+
+
 1.8.2 (2020-03-09)
 ------------------
 
