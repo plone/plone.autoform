@@ -90,7 +90,7 @@ set up.
 More generally, the view supports the contract of display forms. After being
 updated, we have access to widgets in the default fieldset:
 
-    >>> view.widgets.items()
+    >>> list(view.widgets.items())
     [('title', <TextWidget 'form.widgets.title'>),
      ('body', <TextAreaWidget 'form.widgets.body'>)]
 
@@ -130,7 +130,5 @@ the form the widgets are present:
 
     >>> view2 = TestView(context, request)
     >>> view2.update()
-    >>> view2.widgets
-    <z3c.form.field.FieldWidgets object at ...>
-    >>> view2.widgets.keys()
-    ['title', 'body']
+    >>> sorted(view2.widgets.items())
+    [('body', <TextAreaWidget 'form.widgets.body'>), ('title', <TextWidget 'form.widgets.title'>)]

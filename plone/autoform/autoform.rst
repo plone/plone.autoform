@@ -167,7 +167,7 @@ and 'groups' properties will be set.
 
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
-    >>> test_form.fields.keys()
+    >>> list(test_form.fields.keys())
     ['one', 'two', 'three', 'four', 'five', 'six',
      'ISupplementarySchema.one', 'ISupplementarySchema.two',
      'IOtherSchema.three', 'IOtherSchema.four',
@@ -230,7 +230,7 @@ Fields can be moved like this::
 
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
-    >>> test_form.fields.keys()
+    >>> list(test_form.fields.keys())
     ['IOtherSchema.four',
     'ISupplementarySchema.one',
     'two',
@@ -275,7 +275,7 @@ The results of all of this can be seen below::
 
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
-    >>> test_form.fields.keys()
+    >>> list(test_form.fields.keys())
     ['IOtherSchema.four',
      'ISupplementarySchema.one',
      'two',
@@ -317,7 +317,7 @@ has taken the label and description from the first definition::
     'Fieldset one'
     >>> test_form.groups[0].description
     'Description of fieldset one'
-    >>> test_form.groups[0].fields.keys()
+    >>> list(test_form.groups[0].fields.keys())
     ['three', 'IOtherSchema.three']
 
 Pre-traversal
@@ -336,7 +336,7 @@ return.
 
     >>> test_form = TestForm(context, request)
     >>> test_form.update()
-    >>> test_form.fields.keys()
+    >>> list(test_form.fields.keys())
     ['IOtherSchema.four', 'ISupplementarySchema.one', 'two',
     'ISupplementarySchema.two', 'one', 'five', 'six',
     'IOtherSchema.six', 'IOtherSchema.five']
@@ -391,7 +391,7 @@ that this may cause clashes if fields in different schemata share a name.
 The default fields are those from the base schema, minus the one moved to
 another fieldset.
 
-    >>> combi_form.fields.keys()
+    >>> list(combi_form.fields.keys())
     ['title', 'description', 'hidden_secret']
 
     >>> combi_form.widgets['hidden_secret'].mode
@@ -401,7 +401,7 @@ Each additional schema then has its own fields. Note that setting the 'dates'
 fieldset in the base schema had the effect of giving a more specific
 label to the automatically created group for the Dates schema.
 
-    >>> [(g.__name__, g.label, g.description, g.fields.keys(),) for g in combi_form.groups]
+    >>> [(g.__name__, g.label, g.description, list(g.fields.keys()),) for g in combi_form.groups]
     [('Dates', 'Cool dates', None, ['creation_date', 'start_date', 'end_date']),
      ('Ownership', 'Ownership', 'Ownership information', ['owner'])]
 
