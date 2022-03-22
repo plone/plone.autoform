@@ -51,9 +51,8 @@ setup(
         'zope.security',
         'zope.dottedname',
         'plone.supermodel>=1.3.dev0',
-        'plone.z3cform>=0.9.0.dev0',
+        'plone.z3cform>=2.0.0a2.dev0',
         'z3c.form',
-        # 'AccessControl',
         # -*- Extra requirements: -*-
     ],
     entry_points="""

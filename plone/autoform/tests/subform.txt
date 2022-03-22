@@ -2,11 +2,15 @@
 Sub-form setup details
 ======================
 
-PLEASE NOTE: This doctest tests ObjectSubForm generation. The more general use-case
-is tested in autoform.txt, which also contains a more thorough explanation of
-the concepts and mechanisms concerned.
+PLEASE NOTE: This doctest tests SubForm generation for zope.schema.Object fields.
 
-To handle hints for z3c.form.object.ObjectSubForm forms, the special base class
+IMPORTANT: SubFormAdapter and ISubformFactory was backported to plone.z3cform
+since this got removed in z3c.form >= 4.x
+
+The more general use-case is tested in autoform.txt, which also contains a more
+thorough explanation of the concepts and mechanisms concerned.
+
+To handle hints for zope.schema.Object sub-forms, the special base class
 AutoObjectSubForm is required, to set up the 'fields' property on the subform
 instance.
 
@@ -74,12 +78,11 @@ make z3c.form happy:
 Note that we need to pretend that we have authenticated a user. Without this,
 the permission checks will be turned off.
 
-Now we define a TestForm, and a TestObjectSubForm. The object subform must
-subclass from AutoObjectSubForm for the form hints to be generated.
+Now we define a TestForm, and a TestObjectSubForm.
 
-    >>> from z3c.form.object import ObjectSubForm
     >>> from plone.autoform.form import AutoExtensibleForm
     >>> from plone.autoform.form import AutoObjectSubForm
+    >>> from plone.z3cform.subform import ObjectSubForm
     >>> from z3c.form import form
     >>> from z3c.form.interfaces import IForm
 
@@ -94,14 +97,14 @@ subclass from AutoObjectSubForm for the form hints to be generated.
     >>> class TestObjectSubForm(AutoObjectSubForm, ObjectSubForm):
     ...     pass
 
-
 Finally we need an adapter that acts as the ObjectSubForm's factory.
 
+    >>> from plone.z3cform.interfaces import ISubformFactory
+    >>> from plone.z3cform.subform import SubformAdapter
     >>> from z3c.form.browser.object import ObjectWidget
-    >>> from z3c.form.object import SubformAdapter
     >>> import zope.component
 
-    >>> @zope.interface.implementer(interfaces.ISubformFactory)
+    >>> @zope.interface.implementer(ISubformFactory)
     ... @zope.component.adapter(zope.interface.Interface,  # widget value
     ...                         interfaces.IFormLayer,       # request
     ...                         zope.interface.Interface,    # widget context
@@ -114,7 +117,6 @@ Finally we need an adapter that acts as the ObjectSubForm's factory.
     ...     factory = TestObjectSubForm
 
     >>> zope.component.provideAdapter(TestSubformAdapter)
-
 
 Now we can set some form data on the ObjectSubForm.
 
@@ -158,14 +160,15 @@ Now we instantiate and update the ObjectSubForm for the object in TestForm's sch
     >>> widget = test_form.widgets.get('subobject')
     >>> from z3c.form.object import makeDummyObject
     >>> test_subform = zope.component.getMultiAdapter(
-    ...     (None, request, context, test_form, widget, widget.field, makeDummyObject(ITestSubObjectSchema)),
-    ...     interfaces.ISubformFactory)()
+    ...     (None, request, context, test_form, widget, widget.field,
+    ...      makeDummyObject(ITestSubObjectSchema)),
+    ...      ISubformFactory)()
 
     >>> test_subform.update()
 
 Lets check that foofield is after barfield and that quxfield is not shown.
 
-    >>> test_subform.fields.keys()
+    >>> list(test_subform.fields.keys())
     ['barfield', 'foofield', 'bazfield']
 
 And that the barfield has a RadioWidget.

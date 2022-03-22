@@ -11,7 +11,7 @@ import unittest
 
 test_files = [
     '../autoform.rst',
-    # 'subform.txt',  # subform is removed in z3c.form >= 4.x
+    'subform.txt',
     '../view.txt',
     '../supermodel.txt',
 ]
