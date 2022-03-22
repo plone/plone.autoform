@@ -37,8 +37,8 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
 
 @implementer(IAutoObjectSubForm)
 class AutoObjectSubForm(AutoFields):
-    """A Mixin class for z3c.form.object.ObjectSubForm forms that supports
-    fields being updated from hints in a schema.
+    """A Mixin class for plone.z3cform.subform.ObjectSubForm forms that
+    supports fields being updated from hints in a schema.
     """
 
     @property
