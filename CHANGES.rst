@@ -8,6 +8,24 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.0a1 (2022-03-23)
+--------------------
+
+Breaking changes:
+
+
+- Plone 6 only. (#41)
+
+
+New features:
+
+
+- Fixes for latest z3c.form
+  [petschki] (#40)
+- Reimplementation of backported ObjectSubForm and ISubformFactory
+  [petschki] (#41)
+
+
 1.9.0 (2020-04-20)
 ------------------
 
