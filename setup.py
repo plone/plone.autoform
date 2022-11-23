@@ -26,7 +26,6 @@ setup(
         "Framework :: Plone :: 6.0",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
@@ -49,10 +48,9 @@ setup(
         'zope.schema',
         'zope.security',
         'zope.dottedname',
-        'plone.supermodel>=1.3.dev0',
-        'plone.z3cform>=2.0.0a2.dev0',
+        'plone.supermodel>=1.3',
+        'plone.z3cform>=2.0.0',
         'z3c.form',
-        # -*- Extra requirements: -*-
     ],
     entry_points="""
     # -*- Entry points: -*-
