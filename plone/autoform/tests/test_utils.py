@@ -16,19 +16,18 @@ import zope.schema
 
 
 class TestValidator(SimpleFieldValidator):
-
     def validate(self, value):
         super().validate(value)
-        raise Invalid('Test')
+        raise Invalid("Test")
 
 
 class TestUtils(unittest.TestCase):
-
     layer = UNIT_TESTING
 
     def setUp(self):
         from zope.security.permission import Permission
-        provideUtility(Permission('foo', 'foo', ''), name='foo')
+
+        provideUtility(Permission("foo", "foo", ""), name="foo")
 
         class DummySecurityManager:
             checks = []
@@ -51,11 +50,11 @@ class TestUtils(unittest.TestCase):
         class schema(Interface):
             title = zope.schema.TextLine()
 
-        schema.setTaggedValue(WRITE_PERMISSIONS_KEY, {'title': 'foo'})
-        processFields(form, schema, prefix='', permissionChecks=True)
+        schema.setTaggedValue(WRITE_PERMISSIONS_KEY, {"title": "foo"})
+        processFields(form, schema, prefix="", permissionChecks=True)
 
-        self.assertEqual('foo', self.secman.checks.pop())
-        self.assertFalse('title' in form.fields)
+        self.assertEqual("foo", self.secman.checks.pop())
+        self.assertFalse("title" in form.fields)
 
     def test_processFields_permissionChecks_w_prefix(self):
         form = Form(None, None)
@@ -63,11 +62,12 @@ class TestUtils(unittest.TestCase):
 
         class schema(Interface):
             title = zope.schema.TextLine()
-        schema.setTaggedValue(WRITE_PERMISSIONS_KEY, {'title': 'foo'})
-        processFields(form, schema, prefix='prefix', permissionChecks=True)
 
-        self.assertEqual('foo', self.secman.checks.pop())
-        self.assertFalse('prefix.title' in form.fields)
+        schema.setTaggedValue(WRITE_PERMISSIONS_KEY, {"title": "foo"})
+        processFields(form, schema, prefix="prefix", permissionChecks=True)
+
+        self.assertEqual("foo", self.secman.checks.pop())
+        self.assertFalse("prefix.title" in form.fields)
 
     def test_processFields_fieldsets_as_form_groups(self):
         form = Form(None, None)
@@ -76,23 +76,20 @@ class TestUtils(unittest.TestCase):
         class schema(Interface):
             title = zope.schema.TextLine()
 
-        fieldset = Fieldset('custom', label='Custom',
-                            fields=['title'])
+        fieldset = Fieldset("custom", label="Custom", fields=["title"])
         schema.setTaggedValue(FIELDSETS_KEY, [fieldset])
 
         class subschema(schema):
             subtitle = zope.schema.TextLine()
 
-        fieldset = Fieldset('custom', label='Custom',
-                            fields=['subtitle'])
+        fieldset = Fieldset("custom", label="Custom", fields=["subtitle"])
         subschema.setTaggedValue(FIELDSETS_KEY, [fieldset])
 
-        processFields(form, subschema,
-                      prefix='prefix', permissionChecks=True)
+        processFields(form, subschema, prefix="prefix", permissionChecks=True)
 
         self.assertEqual(len(form.groups), 1)
         self.assertEqual(len(form.groups[0].fields), 2)
-        self.assertEqual([g.__name__ for g in form.groups], ['custom'])
+        self.assertEqual([g.__name__ for g in form.groups], ["custom"])
 
     def test_fieldset_configuration(self):
         """Test, if fieldsets can be orderd via fieldset configuration on a
@@ -105,30 +102,30 @@ class TestUtils(unittest.TestCase):
         class schema1(Interface):
             title = zope.schema.TextLine()
 
-        fs1 = Fieldset('fs1', label='fs1', fields=['title'])
+        fs1 = Fieldset("fs1", label="fs1", fields=["title"])
         schema1.setTaggedValue(FIELDSETS_KEY, [fs1])
 
         class schema2(Interface):
             subtitle = zope.schema.TextLine()
 
-        fs2 = Fieldset('fs2', label='fs2', fields=['subtitle'])
+        fs2 = Fieldset("fs2", label="fs2", fields=["subtitle"])
         schema2.setTaggedValue(FIELDSETS_KEY, [fs2])
 
         class schema3(Interface):
             pass
 
-        fs3 = Fieldset('fs1', order=2)
-        fs4 = Fieldset('fs2', order=1)
+        fs3 = Fieldset("fs1", order=2)
+        fs4 = Fieldset("fs2", order=1)
         schema3.setTaggedValue(FIELDSETS_KEY, [fs3, fs4])
 
-        processFields(form, schema1, prefix='prefix', permissionChecks=True)
-        processFields(form, schema2, prefix='prefix', permissionChecks=True)
-        processFields(form, schema3, prefix='prefix', permissionChecks=True)
+        processFields(form, schema1, prefix="prefix", permissionChecks=True)
+        processFields(form, schema2, prefix="prefix", permissionChecks=True)
+        processFields(form, schema3, prefix="prefix", permissionChecks=True)
 
         self.assertEqual(len(form.groups), 2)
 
-        self.assertEqual(form.groups[0].__name__, 'fs1')
+        self.assertEqual(form.groups[0].__name__, "fs1")
         self.assertEqual(form.groups[0].order, 2)
 
-        self.assertEqual(form.groups[1].__name__, 'fs2')
+        self.assertEqual(form.groups[1].__name__, "fs2")
         self.assertEqual(form.groups[1].order, 1)

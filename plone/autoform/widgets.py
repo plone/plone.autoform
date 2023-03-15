@@ -43,49 +43,51 @@ class ParameterizedWidget:
 
     def __init__(self, widget_factory=None, **params):
         if widget_factory is not None:
-            if not IFieldWidget.implementedBy(widget_factory) \
-                    and not IWidget.implementedBy(widget_factory) \
-                    and not isinstance(widget_factory, str):
-                raise TypeError('widget_factory must be an IFieldWidget '
-                                'or an IWidget')
+            if (
+                not IFieldWidget.implementedBy(widget_factory)
+                and not IWidget.implementedBy(widget_factory)
+                and not isinstance(widget_factory, str)
+            ):
+                raise TypeError(
+                    "widget_factory must be an IFieldWidget " "or an IWidget"
+                )
         self.widget_factory = widget_factory
         self.params = params
 
     def __call__(self, field, request):
         __traceback_info__ = (
-            '{}, processing:\n'
+            "{}, processing:\n"
             '- field "{}"\n'
-            '- widget: {}\n'
-            '- params: {}\n'.format(
+            "- widget: {}\n"
+            "- params: {}\n".format(
                 self.__class__.__name__,
                 field.__name__,
                 repr(self.widget_factory),
-                self.params
+                self.params,
             )
         )
         if isinstance(self.widget_factory, str):
-            __traceback_info__ += '- resolving dotted name\n'
+            __traceback_info__ += "- resolving dotted name\n"
             self.widget_factory = resolveDottedName(self.widget_factory)
         if self.widget_factory is None:
             # use default widget factory for this field type
-            __traceback_info__ += '- using default widget factory\n'
+            __traceback_info__ += "- using default widget factory\n"
             widget = getMultiAdapter((field, request), IFieldWidget)
         elif IWidget.implementedBy(self.widget_factory):
-            __traceback_info__ += '- calling factory, then wrapping with ' \
-                                  'FieldWidget\n'
+            __traceback_info__ += (
+                "- calling factory, then wrapping with " "FieldWidget\n"
+            )
             widget = FieldWidget(field, self.widget_factory(request))
         elif IFieldWidget.implementedBy(self.widget_factory):
-            __traceback_info__ += '- calling factory\n'
+            __traceback_info__ += "- calling factory\n"
             widget = self.widget_factory(field, request)
         for k, v in self.params.items():
             setattr(widget, k, v)
         return widget
 
     def __repr__(self):
-        return '{}({}, {})'.format(
-            self.__class__.__name__,
-            self.widget_factory,
-            self.params
+        return "{}({}, {})".format(
+            self.__class__.__name__, self.widget_factory, self.params
         )
 
     def getWidgetFactoryName(self):
@@ -97,7 +99,7 @@ class ParameterizedWidget:
         if widget is None:
             return
         if not isinstance(widget, str):
-            widget = f'{widget.__module__}.{widget.__name__}'
+            widget = f"{widget.__module__}.{widget.__name__}"
         return widget
 
     def getExportImportHandler(self, field):
@@ -109,17 +111,16 @@ class ParameterizedWidget:
             # instantiate the widget.
             sm = getSiteManager()
             widgetFactory = sm.adapters.lookup(
-                (providedBy(field), IFormLayer), IFieldWidget)
+                (providedBy(field), IFormLayer), IFieldWidget
+            )
             if widgetFactory is not None:
-                widgetName = '{}.{}'.format(
-                    widgetFactory.__module__,
-                    widgetFactory.__name__
+                widgetName = "{}.{}".format(
+                    widgetFactory.__module__, widgetFactory.__name__
                 )
             else:
-                widgetName = ''
+                widgetName = ""
 
-        widgetHandler = queryUtility(IWidgetExportImportHandler,
-                                     name=widgetName)
+        widgetHandler = queryUtility(IWidgetExportImportHandler, name=widgetName)
         if widgetHandler is None:
             widgetHandler = WidgetExportImportHandler(IHTMLFormElement)
         return widgetHandler
@@ -127,7 +128,6 @@ class ParameterizedWidget:
 
 @implementer(IWidgetExportImportHandler)
 class WidgetExportImportHandler:
-
     def __init__(self, widget_schema):
         self.fieldAttributes = getFields(widget_schema)
 
@@ -135,10 +135,7 @@ class WidgetExportImportHandler:
         for attributeName, attributeField in self.fieldAttributes.items():
             for node in widgetNode.iterchildren():
                 if noNS(node.tag) == attributeName:
-                    params[attributeName] = elementToValue(
-                        attributeField,
-                        node
-                    )
+                    params[attributeName] = elementToValue(attributeField, node)
 
     def write(self, widgetNode, params):
         for attributeName, attributeField in self.fieldAttributes.items():

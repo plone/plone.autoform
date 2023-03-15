@@ -24,8 +24,7 @@ from zope.interface.interface import InterfaceClass
 
 @implementer(IFieldMetadataHandler)
 class FormSchema:
-    """Support the form: namespace in model definitions.
-    """
+    """Support the form: namespace in model definitions."""
 
     namespace = FORM_NAMESPACE
     prefix = FORM_PREFIX
@@ -37,20 +36,18 @@ class FormSchema:
 
     def _add_order(self, schema, name, direction, relative_to):
         tagged_value = schema.queryTaggedValue(ORDER_KEY, [])
-        tagged_value.append((name, direction, relative_to,))
+        tagged_value.append((name, direction, relative_to))
         schema.setTaggedValue(ORDER_KEY, tagged_value)
 
     def _add_interface_values(self, schema, key, name, values):
         tagged_value = schema.queryTaggedValue(key, [])
-        values = values.split(' ')
+        values = values.split(" ")
         for value in values:
-            if ':' in value:
-                (interface_dotted_name, value) = value.split(':')
+            if ":" in value:
+                (interface_dotted_name, value) = value.split(":")
                 interface = resolveDottedName(interface_dotted_name)
                 if not isinstance(interface, InterfaceClass):
-                    raise ValueError(
-                        f'{interface_dotted_name} not an Interface.'
-                    )
+                    raise ValueError(f"{interface_dotted_name} not an Interface.")
             else:
                 interface = Interface
             tagged_value.append((interface, name, value))
@@ -59,7 +56,7 @@ class FormSchema:
     def _add_validator(self, field, value):
         validator = resolveDottedName(value)
         if not IValidator.implementedBy(validator):
-            msg = 'z3c.form.interfaces.IValidator not implemented by {0}.'
+            msg = "z3c.form.interfaces.IValidator not implemented by {0}."
             raise ValueError(msg.format(value))
         provideAdapter(
             validator,
@@ -70,28 +67,28 @@ class FormSchema:
     def read(self, fieldNode, schema, field):
         name = field.__name__
 
-        widgetAttr = fieldNode.get(ns('widget', self.namespace))
-        mode = fieldNode.get(ns('mode', self.namespace))
-        omitted = fieldNode.get(ns('omitted', self.namespace))
-        before = fieldNode.get(ns('before', self.namespace))
-        after = fieldNode.get(ns('after', self.namespace))
-        validator = fieldNode.get(ns('validator', self.namespace))
+        widgetAttr = fieldNode.get(ns("widget", self.namespace))
+        mode = fieldNode.get(ns("mode", self.namespace))
+        omitted = fieldNode.get(ns("omitted", self.namespace))
+        before = fieldNode.get(ns("before", self.namespace))
+        after = fieldNode.get(ns("after", self.namespace))
+        validator = fieldNode.get(ns("validator", self.namespace))
 
         if mode:
             self._add_interface_values(schema, MODES_KEY, name, mode)
         if omitted:
             self._add_interface_values(schema, OMITTED_KEY, name, omitted)
         if before:
-            self._add_order(schema, name, 'before', before)
+            self._add_order(schema, name, "before", before)
         if after:
-            self._add_order(schema, name, 'after', after)
+            self._add_order(schema, name, "after", after)
         if validator:
             self._add_validator(field, validator)
 
-        widgetNode = fieldNode.find(ns('widget', self.namespace))
+        widgetNode = fieldNode.find(ns("widget", self.namespace))
         widget = None
         if widgetNode is not None:  # form:widget element
-            widgetFactory = widgetNode.get('type')
+            widgetFactory = widgetNode.get("type")
             if widgetFactory is not None:
                 # resolve immediately so we don't have to each time
                 # form is rendered
@@ -102,9 +99,7 @@ class FormSchema:
         elif widgetAttr is not None:  # BBB for old form:widget attributes
             obj = resolveDottedName(widgetAttr)
             if not IFieldWidget.implementedBy(obj):
-                raise ValueError(
-                    f'IFieldWidget not implemented by {obj}'
-                )
+                raise ValueError(f"IFieldWidget not implemented by {obj}")
             widget = widgetAttr
         if widget is not None:
             self._add(schema, WIDGETS_KEY, name, widget)
@@ -114,16 +109,13 @@ class FormSchema:
 
         widget = schema.queryTaggedValue(WIDGETS_KEY, {}).get(name, None)
         mode = [
-            (i, v) for i, n, v in schema.queryTaggedValue(MODES_KEY, [])
-            if n == name
+            (i, v) for i, n, v in schema.queryTaggedValue(MODES_KEY, []) if n == name
         ]
         omitted = [
-            (i, v) for i, n, v in schema.queryTaggedValue(OMITTED_KEY, [])
-            if n == name
+            (i, v) for i, n, v in schema.queryTaggedValue(OMITTED_KEY, []) if n == name
         ]
         order = [
-            (d, v) for n, d, v in schema.queryTaggedValue(ORDER_KEY, [])
-            if n == name
+            (d, v) for n, d, v in schema.queryTaggedValue(ORDER_KEY, []) if n == name
         ]
 
         if widget is not None:
@@ -131,10 +123,10 @@ class FormSchema:
                 widget = ParameterizedWidget(widget)
 
             if widget.widget_factory or widget.params:
-                widgetNode = etree.Element(ns('widget', self.namespace))
+                widgetNode = etree.Element(ns("widget", self.namespace))
                 widgetName = widget.getWidgetFactoryName()
                 if widgetName is not None:
-                    widgetNode.set('type', widgetName)
+                    widgetNode.set("type", widgetName)
 
                 widgetHandler = widget.getExportImportHandler(field)
                 widgetHandler.write(widgetNode, widget.params)
@@ -143,33 +135,29 @@ class FormSchema:
         mode_values = []
         for interface, value in mode:
             if interface is not Interface:
-                value = f'{interface.__identifier__}:{value}'
+                value = f"{interface.__identifier__}:{value}"
             mode_values.append(value)
         if mode_values:
-            fieldNode.set(ns('mode', self.namespace), ' '.join(mode_values))
+            fieldNode.set(ns("mode", self.namespace), " ".join(mode_values))
 
         omitted_values = []
         for interface, value in omitted:
             if interface is not Interface:
-                value = f'{interface.__identifier__}:{value}'
+                value = f"{interface.__identifier__}:{value}"
             omitted_values.append(value)
         if omitted_values:
-            fieldNode.set(
-                ns('omitted', self.namespace),
-                ' '.join(omitted_values)
-            )
+            fieldNode.set(ns("omitted", self.namespace), " ".join(omitted_values))
 
         for direction, relative_to in order:
-            if direction == 'before':
-                fieldNode.set(ns('before', self.namespace), relative_to)
-            elif direction == 'after':
-                fieldNode.set(ns('after', self.namespace), relative_to)
+            if direction == "before":
+                fieldNode.set(ns("before", self.namespace), relative_to)
+            elif direction == "after":
+                fieldNode.set(ns("after", self.namespace), relative_to)
 
 
 @implementer(IFieldMetadataHandler)
 class SecuritySchema:
-    """Support the security: namespace in model definitions.
-    """
+    """Support the security: namespace in model definitions."""
 
     namespace = SECURITY_NAMESPACE
     prefix = SECURITY_PREFIX
@@ -177,10 +165,8 @@ class SecuritySchema:
     def read(self, fieldNode, schema, field):
         name = field.__name__
 
-        read_permission = fieldNode.get(ns('read-permission', self.namespace))
-        write_permission = fieldNode.get(
-            ns('write-permission', self.namespace)
-        )
+        read_permission = fieldNode.get(ns("read-permission", self.namespace))
+        write_permission = fieldNode.get(ns("write-permission", self.namespace))
 
         read_permissions = schema.queryTaggedValue(READ_PERMISSIONS_KEY, {})
         write_permissions = schema.queryTaggedValue(WRITE_PERMISSIONS_KEY, {})
@@ -196,21 +182,14 @@ class SecuritySchema:
     def write(self, fieldNode, schema, field):
         name = field.__name__
 
-        read_permission = schema.queryTaggedValue(
-            READ_PERMISSIONS_KEY, {}
-        ).get(name, None)
-        write_permission = schema.queryTaggedValue(
-            WRITE_PERMISSIONS_KEY,
-            {}
-        ).get(name, None)
+        read_permission = schema.queryTaggedValue(READ_PERMISSIONS_KEY, {}).get(
+            name, None
+        )
+        write_permission = schema.queryTaggedValue(WRITE_PERMISSIONS_KEY, {}).get(
+            name, None
+        )
 
         if read_permission:
-            fieldNode.set(
-                ns('read-permission', self.namespace),
-                read_permission
-            )
+            fieldNode.set(ns("read-permission", self.namespace), read_permission)
         if write_permission:
-            fieldNode.set(
-                ns('write-permission', self.namespace),
-                write_permission
-            )
+            fieldNode.set(ns("write-permission", self.namespace), write_permission)

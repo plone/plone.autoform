@@ -9,10 +9,10 @@ import unittest
 
 
 test_files = [
-    '../autoform.rst',
-    'subform.txt',
-    '../view.txt',
-    '../supermodel.txt',
+    "../autoform.rst",
+    "subform.txt",
+    "../view.txt",
+    "../supermodel.txt",
 ]
 
 

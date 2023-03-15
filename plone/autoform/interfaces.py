@@ -10,26 +10,25 @@ import zope.schema
 
 
 # Schema interface tagged value keys
-MODES_KEY = 'plone.autoform.modes'
-OMITTED_KEY = 'plone.autoform.omitted'
-ORDER_KEY = 'plone.autoform.order'
-WIDGETS_KEY = 'plone.autoform.widgets'
+MODES_KEY = "plone.autoform.modes"
+OMITTED_KEY = "plone.autoform.omitted"
+ORDER_KEY = "plone.autoform.order"
+WIDGETS_KEY = "plone.autoform.widgets"
 
-READ_PERMISSIONS_KEY = 'plone.autoform.security.read-permissions'
-WRITE_PERMISSIONS_KEY = 'plone.autoform.security.write-permissions'
+READ_PERMISSIONS_KEY = "plone.autoform.security.read-permissions"
+WRITE_PERMISSIONS_KEY = "plone.autoform.security.write-permissions"
 
 # Supermodel namespace and prefix
 
-FORM_NAMESPACE = 'http://namespaces.plone.org/supermodel/form'
-FORM_PREFIX = 'form'
+FORM_NAMESPACE = "http://namespaces.plone.org/supermodel/form"
+FORM_PREFIX = "form"
 
-SECURITY_NAMESPACE = 'http://namespaces.plone.org/supermodel/security'
-SECURITY_PREFIX = 'security'
+SECURITY_NAMESPACE = "http://namespaces.plone.org/supermodel/security"
+SECURITY_PREFIX = "security"
 
 
 class IFormFieldProvider(Interface):
-    """Marker interface for schemata that provide form fields.
-    """
+    """Marker interface for schemata that provide form fields."""
 
 
 class IAutoExtensibleForm(Interface):
@@ -41,22 +40,15 @@ class IAutoExtensibleForm(Interface):
     """
 
     ignorePrefix = zope.schema.Bool(
-        title='Do not set a prefix for additional schemata',
-        default=False
+        title="Do not set a prefix for additional schemata", default=False
     )
 
-    schema = zope.schema.Object(
-        title='Schema providing form fields',
-        schema=IInterface
-    )
+    schema = zope.schema.Object(title="Schema providing form fields", schema=IInterface)
 
     additionalSchemata = zope.schema.Tuple(
-        title='Supplementary schemata providing additional form fields',
-        value_type=zope.schema.Object(
-            title='Schema interface',
-            schema=IInterface
-        ),
-        required=False
+        title="Supplementary schemata providing additional form fields",
+        value_type=zope.schema.Object(title="Schema interface", schema=IInterface),
+        required=False,
     )
 
 
@@ -65,10 +57,7 @@ class IAutoObjectSubForm(Interface):
     to also have its fields updated with form hints. See subform.txt
     """
 
-    schema = zope.schema.Object(
-        title='Schema providing form fields',
-        schema=IInterface
-    )
+    schema = zope.schema.Object(title="Schema providing form fields", schema=IInterface)
 
 
 class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
@@ -77,27 +66,17 @@ class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     """
 
     w = zope.schema.Dict(
-        title='Shortcut lookup for all widgets',
-        description='Contains all widgets, including those from groups '
-                    'within this form',
-        key_type=zope.schema.ASCIILine(
-            title='Widget name, with prefix'
-        ),
-        value_type=zope.schema.Object(
-            title='Widget',
-            schema=IWidget
-        )
+        title="Shortcut lookup for all widgets",
+        description="Contains all widgets, including those from groups "
+        "within this form",
+        key_type=zope.schema.ASCIILine(title="Widget name, with prefix"),
+        value_type=zope.schema.Object(title="Widget", schema=IWidget),
     )
 
     fieldsets = zope.schema.Dict(
-        title='Lookup fieldset (group) by name',
-        key_type=zope.schema.ASCIILine(
-            title='Fieldset name'
-        ),
-        value_type=zope.schema.Object(
-            title='Fieldset',
-            schema=IFieldset
-        )
+        title="Lookup fieldset (group) by name",
+        key_type=zope.schema.ASCIILine(title="Fieldset name"),
+        value_type=zope.schema.Object(title="Fieldset", schema=IFieldset),
     )
 
 

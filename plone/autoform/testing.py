@@ -7,15 +7,13 @@ import plone.autoform
 
 AUTOFORM_FIXTURE = zca.ZCMLSandbox(
     bases=(z2.STARTUP,),
-    filename='configure.zcml',
+    filename="configure.zcml",
     package=plone.autoform,
-    name='plone.autoform:Fixture')
+    name="plone.autoform:Fixture",
+)
 
 AUTOFORM_INTEGRATION_TESTING = z2.IntegrationTesting(
-    bases=(AUTOFORM_FIXTURE,),
-    name='plone.autoform:Integration')
-
-optionflags = (
-    doctest.NORMALIZE_WHITESPACE
-    | doctest.ELLIPSIS
+    bases=(AUTOFORM_FIXTURE,), name="plone.autoform:Integration"
 )
+
+optionflags = doctest.NORMALIZE_WHITESPACE | doctest.ELLIPSIS

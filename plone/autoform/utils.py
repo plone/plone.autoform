@@ -30,8 +30,7 @@ _dottedCache = {}
 
 
 def resolveDottedName(dottedName):
-    """Resolve a dotted name to a real object
-    """
+    """Resolve a dotted name to a real object"""
     global _dottedCache
     if dottedName not in _dottedCache:
         _dottedCache[dottedName] = resolve(dottedName)
@@ -46,8 +45,7 @@ def mergedTaggedValuesForIRO(schema, name, iro):
     interfaces actually provided by 'form'.
     """
     # filter out settings irrelevant to this form
-    threeples = [t for t in mergedTaggedValueList(schema, name)
-                 if t[0] in iro]
+    threeples = [t for t in mergedTaggedValueList(schema, name) if t[0] in iro]
 
     # Sort by interface resolution order of the form interface,
     # then by IRO of the interface the value came from
@@ -55,6 +53,7 @@ def mergedTaggedValuesForIRO(schema, name, iro):
     def by_iro(threeple):
         interface = threeple[0]
         return iro.index(interface)
+
     threeples.sort(key=by_iro)
     d = {}
     # Now iterate through in the reverse order -- the values assigned last win.
@@ -70,9 +69,9 @@ def mergedTaggedValuesForForm(schema, name, form):
 
 # Some helper functions
 
+
 def _process_prefixed_name(prefix, fieldName):
-    """Give prefixed fieldname if applicable
-    """
+    """Give prefixed fieldname if applicable"""
     if prefix:
         return expandPrefix(prefix) + fieldName
     else:
@@ -80,28 +79,24 @@ def _process_prefixed_name(prefix, fieldName):
 
 
 def _bn(fieldInstance):
-    """Base Name: Give base (non-prefixed) fieldname
-    """
+    """Base Name: Give base (non-prefixed) fieldname"""
     prefix = fieldInstance.prefix
     fieldName = fieldInstance.__name__
     if prefix:
-        return fieldName[len(prefix) + 1:]
+        return fieldName[len(prefix) + 1 :]
     else:
         return fieldName
 
 
 def _process_widgets(form, widgets, modes, newFields):
-    """Update the fields list with widgets
-    """
+    """Update the fields list with widgets"""
 
     for fieldName in newFields:
         fieldInstance = newFields[fieldName]
         baseName = _bn(fieldInstance)
 
         widgetName = widgets.get(baseName, None)
-        widgetMode = modes.get(baseName, fieldInstance.mode) \
-            or form.mode \
-            or INPUT_MODE
+        widgetMode = modes.get(baseName, fieldInstance.mode) or form.mode or INPUT_MODE
 
         widgetFactory = None
         if widgetName is not None:
@@ -119,15 +114,8 @@ def _process_widgets(form, widgets, modes, newFields):
             newFields[fieldName].mode = widgetMode
 
 
-def _process_fieldsets(
-    form,
-    schema,
-    groups,
-    all_fields,
-    prefix,
-    default_group
-):
-    """ Keep track of which fields are in a fieldset, and, by elimination,
+def _process_fieldsets(form, schema, groups, all_fields, prefix, default_group):
+    """Keep track of which fields are in a fieldset, and, by elimination,
     which ones are not
     """
     # { name => e.g. 'hidden' }
@@ -158,8 +146,11 @@ def _process_fieldsets(
 
     for fieldset in fieldsets:
         new_fields = all_fields.select(
-            *[_process_prefixed_name(prefix, name) for name in fieldset.fields
-              if _process_prefixed_name(prefix, name) in all_fields]
+            *[
+                _process_prefixed_name(prefix, name)
+                for name in fieldset.fields
+                if _process_prefixed_name(prefix, name) in all_fields
+            ]
         )
 
         if fieldset.__name__ in groups:
@@ -168,31 +159,30 @@ def _process_fieldsets(
             group = groups[fieldset.__name__]
             group.fields += new_fields
             if (
-                fieldset.label and
-                group.label != fieldset.label and
-                group.__name__ != fieldset.label  # defaults to name!
+                fieldset.label
+                and group.label != fieldset.label
+                and group.__name__ != fieldset.label  # defaults to name!
             ):
                 group.label = fieldset.label
-            if (
-                fieldset.description and
-                group.description != fieldset.description
-            ):
+            if fieldset.description and group.description != fieldset.description:
                 group.description = fieldset.description
             if (
-                fieldset.order and
-                fieldset.order != DEFAULT_ORDER and
-                fieldset.order != group.order
+                fieldset.order
+                and fieldset.order != DEFAULT_ORDER
+                and fieldset.order != group.order
             ):
                 group.order = fieldset.order
 
-        if len(new_fields) > 0 or getattr(form, 'showEmptyGroups', False):
+        if len(new_fields) > 0 or getattr(form, "showEmptyGroups", False):
             _process_widgets(form, widgets, modes, new_fields)
             if fieldset.__name__ not in groups:
-                group = GroupFactory(fieldset.__name__,
-                                     label=fieldset.label,
-                                     description=fieldset.description,
-                                     order=fieldset.order,
-                                     fields=new_fields)
+                group = GroupFactory(
+                    fieldset.__name__,
+                    label=fieldset.label,
+                    description=fieldset.description,
+                    order=fieldset.order,
+                    fields=new_fields,
+                )
                 form.groups.append(group)
                 groups[group.__name__] = group
 
@@ -203,15 +193,9 @@ def _process_permissions(schema, form, all_fields):
     permission_cache = {}  # permission name -> allowed/disallowed
 
     # name => permission name
-    read_permissions = mergedTaggedValueDict(
-        schema,
-        READ_PERMISSIONS_KEY
-    )
+    read_permissions = mergedTaggedValueDict(schema, READ_PERMISSIONS_KEY)
     # name => permission name
-    write_permissions = mergedTaggedValueDict(
-        schema,
-        WRITE_PERMISSIONS_KEY
-    )
+    write_permissions = mergedTaggedValueDict(schema, WRITE_PERMISSIONS_KEY)
     security_manager = getSecurityManager()
     disallowed_fields = []
 
@@ -231,10 +215,7 @@ def _process_permissions(schema, form, all_fields):
                 permission_cache[permission_name] = True
             else:
                 permission_cache[permission_name] = bool(
-                    security_manager.checkPermission(
-                        permission.title,
-                        form.context
-                    )
+                    security_manager.checkPermission(permission.title, form.context)
                 )
         if not permission_cache.get(permission_name, True):
             disallowed_fields.append(field_name)
@@ -242,8 +223,7 @@ def _process_permissions(schema, form, all_fields):
     return all_fields.omit(*disallowed_fields)
 
 
-def processFields(form, schema, prefix='', defaultGroup=None,
-                  permissionChecks=True):
+def processFields(form, schema, prefix="", defaultGroup=None, permissionChecks=True):
     """Add the fields from the schema to the form, taking into account
     the hints in the various tagged values as well as fieldsets. If prefix
     is given, the fields will be prefixed with this prefix. If
@@ -266,20 +246,18 @@ def processFields(form, schema, prefix='', defaultGroup=None,
     do_not_process = list(form.fields.keys())
 
     for field_name, status in omitted.items():
-        if status and status != 'false':
+        if status and status != "false":
             do_not_process.append(_process_prefixed_name(prefix, field_name))
 
     for group in form.groups:
         do_not_process.extend(list(group.fields.keys()))
-        groups[getattr(group, '__name__', group.label)] = group
+        groups[getattr(group, "__name__", group.label)] = group
 
     # Find all allowed fields so that we have something to select from
     omit_read_only = form.mode != DISPLAY_MODE
-    all_fields = field.Fields(
-        schema,
-        prefix=prefix,
-        omitReadOnly=omit_read_only
-    ).omit(*do_not_process)
+    all_fields = field.Fields(schema, prefix=prefix, omitReadOnly=omit_read_only).omit(
+        *do_not_process
+    )
 
     if permissionChecks:
         all_fields = _process_permissions(schema, form, all_fields)
@@ -287,14 +265,14 @@ def processFields(form, schema, prefix='', defaultGroup=None,
 
 
 @deprecate(
-    'processFieldMoves must not be used any longer. Its implementation is '
-    'unreproducible if same schemas are coming in in different orders. '
-    'The new solution is part of the base.AutoFields class and does '
-    'follow strict rules by first creating a rule dependency tree.'
-    'This function will be remove in a 2.0 releaese and kept until then for '
-    'backward compatibility reasons.'
+    "processFieldMoves must not be used any longer. Its implementation is "
+    "unreproducible if same schemas are coming in in different orders. "
+    "The new solution is part of the base.AutoFields class and does "
+    "follow strict rules by first creating a rule dependency tree."
+    "This function will be remove in a 2.0 releaese and kept until then for "
+    "backward compatibility reasons."
 )
-def processFieldMoves(form, schema, prefix=''):
+def processFieldMoves(form, schema, prefix=""):
     """Process all field moves stored under ORDER_KEY in the schema tagged
     value. This should be run after all schemata have been processed with
     processFields().
@@ -303,21 +281,20 @@ def processFieldMoves(form, schema, prefix=''):
     # (name, 'before'/'after', other name)
     order = mergedTaggedValueList(schema, ORDER_KEY)
     for field_name, direction, relative_to in order:
-
         # Handle shortcut: leading . means 'in this schema'. May be useful
         # if you want to move a field relative to one in the current
         # schema or (more likely) a base schema of the current schema, without
         # having to repeat the full prefix of this schema.
 
-        if relative_to.startswith('.'):
+        if relative_to.startswith("."):
             relative_to = relative_to[1:]
             if prefix:
                 relative_to = expandPrefix(prefix) + relative_to
 
         try:
-            if direction == 'before':
+            if direction == "before":
                 move(form, field_name, before=relative_to, prefix=prefix)
-            elif direction == 'after':
+            elif direction == "after":
                 move(form, field_name, after=relative_to, prefix=prefix)
         except KeyError:
             # The relative_to field doesn't exist

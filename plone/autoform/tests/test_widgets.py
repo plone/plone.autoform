@@ -4,7 +4,6 @@ import unittest
 
 
 class TestParameterizedWidget(unittest.TestCase):
-
     layer = UNIT_TESTING
 
     def test_widget_instantiated_with_parameters(self):
@@ -16,7 +15,6 @@ class TestParameterizedWidget(unittest.TestCase):
 
         @implementer(IWidget)
         class DummyWidget:
-
             def __init__(self, request):
                 self.request = request
 
@@ -26,10 +24,10 @@ class TestParameterizedWidget(unittest.TestCase):
 
         field = Field()
         request = object()
-        widget = ParameterizedWidget(DummyWidget, foo='bar')(field, request)
+        widget = ParameterizedWidget(DummyWidget, foo="bar")(field, request)
 
         self.assertTrue(isinstance(widget, DummyWidget))
-        self.assertEqual('bar', widget.foo)
+        self.assertEqual("bar", widget.foo)
 
     def test_default_widget_instantiated(self):
         from plone.autoform.widgets import ParameterizedWidget
@@ -40,7 +38,6 @@ class TestParameterizedWidget(unittest.TestCase):
         from zope.schema import Field
 
         class DummyWidget:
-
             def __init__(self, request):
                 self.request = request
 
@@ -52,10 +49,10 @@ class TestParameterizedWidget(unittest.TestCase):
 
         field = Field()
         request = object()
-        widget = ParameterizedWidget(foo='bar')(field, request)
+        widget = ParameterizedWidget(foo="bar")(field, request)
 
         self.assertTrue(isinstance(widget, DummyWidget))
-        self.assertEqual('bar', widget.foo)
+        self.assertEqual("bar", widget.foo)
 
     def test_validates_for_field_widget(self):
         from plone.autoform.widgets import ParameterizedWidget
@@ -69,4 +66,4 @@ class TestParameterizedWidget(unittest.TestCase):
         except TypeError:
             pass
         else:
-            self.fail('Expected TypeError')
+            self.fail("Expected TypeError")
