@@ -43,7 +43,6 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "setuptools",
-        "six",
         "zope.interface",
         "zope.schema",
         "zope.security",
