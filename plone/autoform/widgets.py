@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.autoform.interfaces import IParameterizedWidget
 from plone.autoform.interfaces import IWidgetExportImportHandler
 from plone.autoform.utils import resolveDottedName
@@ -22,7 +21,7 @@ import z3c.form.browser.interfaces
 
 
 @implementer(IParameterizedWidget)
-class ParameterizedWidget(object):
+class ParameterizedWidget:
     """A factory for deferred construction of widgets with parameters.
 
     z3c.form widgets are associated with a particular request,
@@ -46,7 +45,7 @@ class ParameterizedWidget(object):
         if widget_factory is not None:
             if not IFieldWidget.implementedBy(widget_factory) \
                     and not IWidget.implementedBy(widget_factory) \
-                    and not isinstance(widget_factory, six.string_types):
+                    and not isinstance(widget_factory, str):
                 raise TypeError('widget_factory must be an IFieldWidget '
                                 'or an IWidget')
         self.widget_factory = widget_factory
@@ -54,17 +53,17 @@ class ParameterizedWidget(object):
 
     def __call__(self, field, request):
         __traceback_info__ = (
-            '{0}, processing:\n'
-            '- field "{1}"\n'
-            '- widget: {2}\n'
-            '- params: {3}\n'.format(
+            '{}, processing:\n'
+            '- field "{}"\n'
+            '- widget: {}\n'
+            '- params: {}\n'.format(
                 self.__class__.__name__,
                 field.__name__,
                 repr(self.widget_factory),
                 self.params
             )
         )
-        if isinstance(self.widget_factory, six.string_types):
+        if isinstance(self.widget_factory, str):
             __traceback_info__ += '- resolving dotted name\n'
             self.widget_factory = resolveDottedName(self.widget_factory)
         if self.widget_factory is None:
@@ -83,7 +82,7 @@ class ParameterizedWidget(object):
         return widget
 
     def __repr__(self):
-        return '{0}({1}, {2})'.format(
+        return '{}({}, {})'.format(
             self.__class__.__name__,
             self.widget_factory,
             self.params
@@ -97,8 +96,8 @@ class ParameterizedWidget(object):
         widget = self.widget_factory
         if widget is None:
             return
-        if not isinstance(widget, six.string_types):
-            widget = '{0}.{1}'.format(widget.__module__, widget.__name__)
+        if not isinstance(widget, str):
+            widget = f'{widget.__module__}.{widget.__name__}'
         return widget
 
     def getExportImportHandler(self, field):
@@ -112,12 +111,12 @@ class ParameterizedWidget(object):
             widgetFactory = sm.adapters.lookup(
                 (providedBy(field), IFormLayer), IFieldWidget)
             if widgetFactory is not None:
-                widgetName = '{0}.{1}'.format(
+                widgetName = '{}.{}'.format(
                     widgetFactory.__module__,
                     widgetFactory.__name__
                 )
             else:
-                widgetName = u''
+                widgetName = ''
 
         widgetHandler = queryUtility(IWidgetExportImportHandler,
                                      name=widgetName)
@@ -127,7 +126,7 @@ class ParameterizedWidget(object):
 
 
 @implementer(IWidgetExportImportHandler)
-class WidgetExportImportHandler(object):
+class WidgetExportImportHandler:
 
     def __init__(self, widget_schema):
         self.fieldAttributes = getFields(widget_schema)

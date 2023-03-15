@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.testing.zca import UNIT_TESTING
 
 import unittest
@@ -16,7 +15,7 @@ class TestParameterizedWidget(unittest.TestCase):
         from zope.schema import Field
 
         @implementer(IWidget)
-        class DummyWidget(object):
+        class DummyWidget:
 
             def __init__(self, request):
                 self.request = request
@@ -40,7 +39,7 @@ class TestParameterizedWidget(unittest.TestCase):
         from zope.interface import implementer
         from zope.schema import Field
 
-        class DummyWidget(object):
+        class DummyWidget:
 
             def __init__(self, request):
                 self.request = request
@@ -61,7 +60,7 @@ class TestParameterizedWidget(unittest.TestCase):
     def test_validates_for_field_widget(self):
         from plone.autoform.widgets import ParameterizedWidget
 
-        class NotAWidget(object):
+        class NotAWidget:
             pass
 
         try:

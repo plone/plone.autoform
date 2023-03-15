@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lxml import etree
 from plone.autoform.interfaces import FORM_NAMESPACE
 from plone.autoform.interfaces import FORM_PREFIX
@@ -24,7 +23,7 @@ from zope.interface.interface import InterfaceClass
 
 
 @implementer(IFieldMetadataHandler)
-class FormSchema(object):
+class FormSchema:
     """Support the form: namespace in model definitions.
     """
 
@@ -50,7 +49,7 @@ class FormSchema(object):
                 interface = resolveDottedName(interface_dotted_name)
                 if not isinstance(interface, InterfaceClass):
                     raise ValueError(
-                        '{0} not an Interface.'.format(interface_dotted_name)
+                        f'{interface_dotted_name} not an Interface.'
                     )
             else:
                 interface = Interface
@@ -104,7 +103,7 @@ class FormSchema(object):
             obj = resolveDottedName(widgetAttr)
             if not IFieldWidget.implementedBy(obj):
                 raise ValueError(
-                    'IFieldWidget not implemented by {0}'.format(obj)
+                    f'IFieldWidget not implemented by {obj}'
                 )
             widget = widgetAttr
         if widget is not None:
@@ -144,7 +143,7 @@ class FormSchema(object):
         mode_values = []
         for interface, value in mode:
             if interface is not Interface:
-                value = '{0}:{1}'.format(interface.__identifier__, value)
+                value = f'{interface.__identifier__}:{value}'
             mode_values.append(value)
         if mode_values:
             fieldNode.set(ns('mode', self.namespace), ' '.join(mode_values))
@@ -152,7 +151,7 @@ class FormSchema(object):
         omitted_values = []
         for interface, value in omitted:
             if interface is not Interface:
-                value = '{0}:{1}'.format(interface.__identifier__, value)
+                value = f'{interface.__identifier__}:{value}'
             omitted_values.append(value)
         if omitted_values:
             fieldNode.set(
@@ -168,7 +167,7 @@ class FormSchema(object):
 
 
 @implementer(IFieldMetadataHandler)
-class SecuritySchema(object):
+class SecuritySchema:
     """Support the security: namespace in model definitions.
     """
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from collections import OrderedDict
 from operator import attrgetter
 from plone.autoform.interfaces import ORDER_KEY
@@ -18,7 +17,7 @@ logger = logging.getLogger(__name__)
 _marker = object()
 
 
-class AutoFields(object):
+class AutoFields:
     """Mixin class for the WidgetsView and AutoExtensibleForm classes.
     Takes care of actually processing field updates
     """
@@ -145,7 +144,7 @@ class AutoFields(object):
     def _prepare_names(self, source, target, prefix):
             # calculate prefixed fieldname
             if prefix:
-                source = '{0}.{1}'.format(prefix, source)
+                source = f'{prefix}.{source}'
 
             # Handle shortcut: leading . means "in this form". May be useful
             # if you want to move a field relative to one in the current
@@ -238,15 +237,12 @@ class AutoFields(object):
                 if not (before or after):
                     raise ValueError(
                         'Direction of a field move must be before or '
-                        'after, but got {0}.'.format(rule['direction'])
+                        'after, but got {}.'.format(rule['direction'])
                     )
                 try:
                     move(self, name, before=before, after=after, prefix=prefix)
                 except KeyError as e:
-                    if six.PY2:
-                        message = e.message
-                    else:
-                        message = e.args[0]
+                    message = e.args[0]
                     if (
                         message.startswith('Field ') and
                         message.endswith(' not found')
@@ -254,7 +250,7 @@ class AutoFields(object):
                         # The relative_to field doesn't exist
                         logger.debug(
                             'Field move to non-existing: '
-                            'field name: {0}, rule: {1}'.format(
+                            'field name: {}, rule: {}'.format(
                                 prefix + '.' + name,
                                 str(rule)
                             )

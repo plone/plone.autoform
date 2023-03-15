@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.autoform.interfaces import MODES_KEY
 from plone.autoform.interfaces import OMITTED_KEY
 from plone.autoform.interfaces import ORDER_KEY
@@ -121,8 +120,8 @@ class widget(MetadataDictDirective):
 
         if field_name is None:  # Usage 3
             for field_name, widget in kw.items():
-                if not isinstance(widget, six.string_types):
-                    widget = '{0}.{1}'.format(
+                if not isinstance(widget, str):
+                    widget = '{}.{}'.format(
                         widget.__module__,
                         widget.__name__
                     )

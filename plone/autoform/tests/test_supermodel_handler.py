@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lxml import etree
 from plone.autoform.interfaces import MODES_KEY
 from plone.autoform.interfaces import OMITTED_KEY
@@ -23,7 +22,7 @@ import zope.schema
 
 
 @implementer(IWidget)
-class DummyWidget(object):
+class DummyWidget:
 
     def __init__(self, request):
         pass
@@ -50,7 +49,7 @@ class TestFormSchema(unittest.TestCase):
         )
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy')
+            dummy = zope.schema.TextLine(title='dummy')
 
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
@@ -93,8 +92,8 @@ class TestFormSchema(unittest.TestCase):
         field_node2.set(ns('omitted', self.namespace), 'yes')
 
         class IDummy(Interface):
-            dummy1 = zope.schema.TextLine(title=u'dummy1')
-            dummy2 = zope.schema.TextLine(title=u'dummy2')
+            dummy1 = zope.schema.TextLine(title='dummy1')
+            dummy2 = zope.schema.TextLine(title='dummy2')
 
         handler = FormSchema()
         handler.read(field_node1, IDummy, IDummy['dummy1'])
@@ -122,7 +121,7 @@ class TestFormSchema(unittest.TestCase):
         field_node = etree.Element('field')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy1')
+            dummy = zope.schema.TextLine(title='dummy1')
 
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
@@ -156,26 +155,26 @@ class TestFormSchema(unittest.TestCase):
         )
 
         class IDummy(Interface):
-            dummy1 = zope.schema.TextLine(title=u'dummy1')
-            dummy2 = zope.schema.TextLine(title=u'dummy2')
+            dummy1 = zope.schema.TextLine(title='dummy1')
+            dummy2 = zope.schema.TextLine(title='dummy2')
 
         handler = FormSchema()
         handler.read(field_node1, IDummy, IDummy['dummy1'])
         handler.read(field_node2, IDummy, IDummy['dummy2'])
 
         expected_modes = [
-            (IForm, u'dummy1', 'hidden'),
-            (IForm, u'dummy2', 'hidden'),
-            (IEditForm, u'dummy2', 'display')
+            (IForm, 'dummy1', 'hidden'),
+            (IForm, 'dummy2', 'hidden'),
+            (IEditForm, 'dummy2', 'display')
         ]
         self.assertEqual(
             expected_modes,
             IDummy.queryTaggedValue(MODES_KEY)
         )
         expected_omitted = [
-            (IForm, u'dummy1', 'true'),
-            (IForm, u'dummy2', 'true'),
-            (IEditForm, u'dummy2', 'false')
+            (IForm, 'dummy1', 'true'),
+            (IForm, 'dummy2', 'true'),
+            (IEditForm, 'dummy2', 'false')
         ]
         self.assertEqual(
             expected_omitted,
@@ -197,7 +196,7 @@ class TestFormSchema(unittest.TestCase):
         field_node.append(widget_node)
 
         class IDummy(Interface):
-            foo = zope.schema.TextLine(title=u'foo')
+            foo = zope.schema.TextLine(title='foo')
 
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['foo'])
@@ -221,7 +220,7 @@ class TestFormSchema(unittest.TestCase):
         field_node.append(widget_node)
 
         class IDummy(Interface):
-            foo = zope.schema.TextLine(title=u'foo')
+            foo = zope.schema.TextLine(title='foo')
 
         handler = FormSchema()
         handler.read(field_node, IDummy, IDummy['foo'])
@@ -238,7 +237,7 @@ class TestFormSchema(unittest.TestCase):
         field_node = etree.Element('field')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy1')
+            dummy = zope.schema.TextLine(title='dummy1')
 
         IDummy.setTaggedValue(WIDGETS_KEY, {'dummy': 'SomeWidget'})
         IDummy.setTaggedValue(OMITTED_KEY, [(Interface, 'dummy', 'true')])
@@ -261,7 +260,7 @@ class TestFormSchema(unittest.TestCase):
         field_node = etree.Element('field')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy1')
+            dummy = zope.schema.TextLine(title='dummy1')
 
         IDummy.setTaggedValue(WIDGETS_KEY, {'dummy': 'SomeWidget'})
         IDummy.setTaggedValue(OMITTED_KEY, [(Interface, 'dummy2', 'true')])
@@ -284,7 +283,7 @@ class TestFormSchema(unittest.TestCase):
         field_node = etree.Element('field')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy1')
+            dummy = zope.schema.TextLine(title='dummy1')
 
         handler = FormSchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
@@ -299,19 +298,19 @@ class TestFormSchema(unittest.TestCase):
         field_node2 = etree.Element('field')
 
         class IDummy(Interface):
-            dummy1 = zope.schema.TextLine(title=u'dummy1')
-            dummy2 = zope.schema.TextLine(title=u'dummy2')
+            dummy1 = zope.schema.TextLine(title='dummy1')
+            dummy2 = zope.schema.TextLine(title='dummy2')
 
         modes_values = [
-            (IForm, u'dummy1', 'hidden'),
-            (IForm, u'dummy2', 'hidden'),
-            (IEditForm, u'dummy2', 'display')
+            (IForm, 'dummy1', 'hidden'),
+            (IForm, 'dummy2', 'hidden'),
+            (IEditForm, 'dummy2', 'display')
         ]
         IDummy.setTaggedValue(MODES_KEY, modes_values)
         omitted_values = [
-            (IForm, u'dummy1', 'true'),
-            (IForm, u'dummy2', 'true'),
-            (IEditForm, u'dummy2', 'false')
+            (IForm, 'dummy1', 'true'),
+            (IForm, 'dummy2', 'true'),
+            (IEditForm, 'dummy2', 'false')
         ]
         IDummy.setTaggedValue(OMITTED_KEY, omitted_values)
 
@@ -344,7 +343,7 @@ class TestFormSchema(unittest.TestCase):
         pw = ParameterizedWidget('foo')
 
         class IDummy(Interface):
-            dummy1 = zope.schema.Text(title=u'dummy1')
+            dummy1 = zope.schema.Text(title='dummy1')
         IDummy.setTaggedValue(WIDGETS_KEY, {'dummy1': pw})
 
         fieldNode = etree.Element('field')
@@ -363,7 +362,7 @@ class TestFormSchema(unittest.TestCase):
         pw = ParameterizedWidget(None)
 
         class IDummy(Interface):
-            dummy1 = zope.schema.Text(title=u'dummy1')
+            dummy1 = zope.schema.Text(title='dummy1')
         IDummy.setTaggedValue(WIDGETS_KEY, {'dummy1': pw})
 
         fieldNode = etree.Element('field')
@@ -380,7 +379,7 @@ class TestFormSchema(unittest.TestCase):
         pw = ParameterizedWidget(DummyWidget, klass='custom')
 
         class IDummy(Interface):
-            dummy1 = zope.schema.Text(title=u'dummy1')
+            dummy1 = zope.schema.Text(title='dummy1')
         IDummy.setTaggedValue(WIDGETS_KEY, {'dummy1': pw})
 
         fieldNode = etree.Element('field')
@@ -401,7 +400,7 @@ class TestFormSchema(unittest.TestCase):
         pw = ParameterizedWidget(None, klass='custom')
 
         class IDummy(Interface):
-            dummy1 = zope.schema.Text(title=u'dummy1')
+            dummy1 = zope.schema.Text(title='dummy1')
         IDummy.setTaggedValue(WIDGETS_KEY, {'dummy1': pw})
 
         fieldNode = etree.Element('field')
@@ -425,17 +424,17 @@ class TestSecuritySchema(unittest.TestCase):
         field_node.set(ns('write-permission', self.namespace), 'dummy.Write')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy')
+            dummy = zope.schema.TextLine(title='dummy')
 
         handler = SecuritySchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
 
         self.assertEqual(
-            {u'dummy': 'dummy.Read'},
+            {'dummy': 'dummy.Read'},
             IDummy.getTaggedValue(READ_PERMISSIONS_KEY)
         )
         self.assertEqual(
-            {u'dummy': 'dummy.Write'},
+            {'dummy': 'dummy.Write'},
             IDummy.getTaggedValue(WRITE_PERMISSIONS_KEY)
         )
 
@@ -443,7 +442,7 @@ class TestSecuritySchema(unittest.TestCase):
         field_node = etree.Element('field')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy')
+            dummy = zope.schema.TextLine(title='dummy')
 
         handler = SecuritySchema()
         handler.read(field_node, IDummy, IDummy['dummy'])
@@ -455,10 +454,10 @@ class TestSecuritySchema(unittest.TestCase):
         field_node = etree.Element('field')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy')
+            dummy = zope.schema.TextLine(title='dummy')
 
-        IDummy.setTaggedValue(READ_PERMISSIONS_KEY, {u'dummy': 'dummy.Read'})
-        IDummy.setTaggedValue(WRITE_PERMISSIONS_KEY, {u'dummy': 'dummy.Write'})
+        IDummy.setTaggedValue(READ_PERMISSIONS_KEY, {'dummy': 'dummy.Read'})
+        IDummy.setTaggedValue(WRITE_PERMISSIONS_KEY, {'dummy': 'dummy.Write'})
 
         handler = SecuritySchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
@@ -476,9 +475,9 @@ class TestSecuritySchema(unittest.TestCase):
         field_node = etree.Element('field')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy')
+            dummy = zope.schema.TextLine(title='dummy')
 
-        IDummy.setTaggedValue(READ_PERMISSIONS_KEY, {u'dummy': None})
+        IDummy.setTaggedValue(READ_PERMISSIONS_KEY, {'dummy': None})
 
         handler = SecuritySchema()
         handler.write(field_node, IDummy, IDummy['dummy'])
@@ -496,7 +495,7 @@ class TestSecuritySchema(unittest.TestCase):
         field_node = etree.Element('field')
 
         class IDummy(Interface):
-            dummy = zope.schema.TextLine(title=u'dummy')
+            dummy = zope.schema.TextLine(title='dummy')
 
         handler = SecuritySchema()
         handler.write(field_node, IDummy, IDummy['dummy'])

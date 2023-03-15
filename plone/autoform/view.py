@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.autoform.base import AutoFields
 from plone.autoform.interfaces import IWidgetsView
 from plone.z3cform import z2

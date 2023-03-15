@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from AccessControl.SecurityManagement import setSecurityManager
 from AccessControl.SecurityManagement import getSecurityManager
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
@@ -19,7 +18,7 @@ import zope.schema
 class TestValidator(SimpleFieldValidator):
 
     def validate(self, value):
-        super(TestValidator, self).validate(value)
+        super().validate(value)
         raise Invalid('Test')
 
 
@@ -29,9 +28,9 @@ class TestUtils(unittest.TestCase):
 
     def setUp(self):
         from zope.security.permission import Permission
-        provideUtility(Permission('foo', u'foo', u''), name=u'foo')
+        provideUtility(Permission('foo', 'foo', ''), name='foo')
 
-        class DummySecurityManager(object):
+        class DummySecurityManager:
             checks = []
 
             def checkPermission(self, perm, context):
@@ -77,14 +76,14 @@ class TestUtils(unittest.TestCase):
         class schema(Interface):
             title = zope.schema.TextLine()
 
-        fieldset = Fieldset('custom', label=u'Custom',
+        fieldset = Fieldset('custom', label='Custom',
                             fields=['title'])
         schema.setTaggedValue(FIELDSETS_KEY, [fieldset])
 
         class subschema(schema):
             subtitle = zope.schema.TextLine()
 
-        fieldset = Fieldset('custom', label=u'Custom',
+        fieldset = Fieldset('custom', label='Custom',
                             fields=['subtitle'])
         subschema.setTaggedValue(FIELDSETS_KEY, [fieldset])
 
@@ -106,13 +105,13 @@ class TestUtils(unittest.TestCase):
         class schema1(Interface):
             title = zope.schema.TextLine()
 
-        fs1 = Fieldset('fs1', label=u'fs1', fields=['title'])
+        fs1 = Fieldset('fs1', label='fs1', fields=['title'])
         schema1.setTaggedValue(FIELDSETS_KEY, [fs1])
 
         class schema2(Interface):
             subtitle = zope.schema.TextLine()
 
-        fs2 = Fieldset('fs2', label=u'fs2', fields=['subtitle'])
+        fs2 = Fieldset('fs2', label='fs2', fields=['subtitle'])
         schema2.setTaggedValue(FIELDSETS_KEY, [fs2])
 
         class schema3(Interface):

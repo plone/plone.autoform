@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from AccessControl import getSecurityManager
 from plone.autoform.interfaces import IParameterizedWidget
 from plone.autoform.interfaces import MODES_KEY
@@ -106,7 +105,7 @@ def _process_widgets(form, widgets, modes, newFields):
 
         widgetFactory = None
         if widgetName is not None:
-            if isinstance(widgetName, six.string_types):
+            if isinstance(widgetName, str):
                 widgetFactory = resolveDottedName(widgetName)
             elif IFieldWidget.implementedBy(widgetName):
                 widgetFactory = widgetName

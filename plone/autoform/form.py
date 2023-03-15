@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.autoform.base import AutoFields
 from plone.autoform.interfaces import IAutoExtensibleForm
 from plone.autoform.interfaces import IAutoObjectSubForm
@@ -32,7 +31,7 @@ class AutoExtensibleForm(AutoFields, ExtensibleForm):
 
     def updateFields(self):
         self.updateFieldsFromSchemata()
-        super(AutoExtensibleForm, self).updateFields()
+        super().updateFields()
 
 
 @implementer(IAutoObjectSubForm)

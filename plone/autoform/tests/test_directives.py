@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.autoform import directives as form
 from plone.autoform.interfaces import MODES_KEY
 from plone.autoform.interfaces import OMITTED_KEY
@@ -14,7 +13,7 @@ import unittest
 import zope.schema
 
 
-class DummyWidget(object):
+class DummyWidget:
     pass
 
 
@@ -37,10 +36,10 @@ class TestSchemaDirectives(unittest.TestCase):
             form.read_permission(foo='zope2.View')
             form.write_permission(foo='cmf.ModifyPortalContent')
 
-            foo = zope.schema.TextLine(title=u'Foo')
-            bar = zope.schema.TextLine(title=u'Bar')
-            baz = zope.schema.TextLine(title=u'Baz')
-            qux = zope.schema.TextLine(title=u'Qux')
+            foo = zope.schema.TextLine(title='Foo')
+            bar = zope.schema.TextLine(title='Bar')
+            baz = zope.schema.TextLine(title='Baz')
+            qux = zope.schema.TextLine(title='Qux')
 
         model.finalizeSchemas(IDummy)
 
@@ -68,9 +67,9 @@ class TestSchemaDirectives(unittest.TestCase):
         class IDummy(model.Schema):
             form.widget(foo=DummyWidget)
 
-            foo = zope.schema.TextLine(title=u'Foo')
-            bar = zope.schema.TextLine(title=u'Bar')
-            baz = zope.schema.TextLine(title=u'Baz')
+            foo = zope.schema.TextLine(title='Foo')
+            bar = zope.schema.TextLine(title='Bar')
+            baz = zope.schema.TextLine(title='Baz')
 
         self.assertEqual(
             {'foo': 'plone.autoform.tests.test_directives.DummyWidget'},
@@ -83,14 +82,14 @@ class TestSchemaDirectives(unittest.TestCase):
         from plone.autoform.widgets import ParameterizedWidget
 
         @implementer(IWidget)
-        class DummyWidget(object):
+        class DummyWidget:
 
             def __init__(self, request):
                 pass
 
         class IDummy(model.Schema):
             form.widget('foo', DummyWidget, foo='bar')
-            foo = zope.schema.TextLine(title=u'Foo')
+            foo = zope.schema.TextLine(title='Foo')
 
         tv = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(tv['foo'], ParameterizedWidget))
@@ -103,14 +102,14 @@ class TestSchemaDirectives(unittest.TestCase):
         from plone.autoform.widgets import ParameterizedWidget
 
         @implementer(IWidget)
-        class DummyWidget(object):
+        class DummyWidget:
 
             def __init__(self, request):
                 pass
 
         class IDummy(model.Schema):
             form.widget('foo', foo='bar')
-            foo = zope.schema.TextLine(title=u'Foo')
+            foo = zope.schema.TextLine(title='Foo')
 
         tv = IDummy.queryTaggedValue(WIDGETS_KEY)
         self.assertTrue(isinstance(tv['foo'], ParameterizedWidget))
@@ -145,10 +144,10 @@ class TestSchemaDirectives(unittest.TestCase):
             form.write_permission(foo='cmf.ModifyPortalContent')
             form.write_permission(baz='another.Permission')
 
-            foo = zope.schema.TextLine(title=u'Foo')
-            bar = zope.schema.TextLine(title=u'Bar')
-            baz = zope.schema.TextLine(title=u'Baz')
-            qux = zope.schema.TextLine(title=u'Qux')
+            foo = zope.schema.TextLine(title='Foo')
+            bar = zope.schema.TextLine(title='Bar')
+            baz = zope.schema.TextLine(title='Baz')
+            qux = zope.schema.TextLine(title='Qux')
 
         self.assertEqual({'foo': 'some.dummy.Widget',
                           'baz': 'other.Widget'},
