@@ -14,8 +14,6 @@ from z3c.form.interfaces import IWidget
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
 
-import six
-
 
 class omitted(MetadataListDirective):
     """Directive used to omit one or more fields"""

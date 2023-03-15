@@ -10,7 +10,6 @@ from z3c.form import field
 from z3c.form.util import expandPrefix
 
 import logging
-import six
 
 
 logger = logging.getLogger(__name__)

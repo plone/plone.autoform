@@ -16,7 +16,6 @@ from zope.interface import implementer
 from zope.interface import providedBy
 from zope.schema import getFields
 
-import six
 import z3c.form.browser.interfaces
 
 
