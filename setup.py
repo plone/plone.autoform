@@ -42,7 +42,9 @@ setup(
     zip_safe=False,
     python_requires=">=3.8",
     install_requires=[
+        "lxml",
         "setuptools",
+        "zope.deprecation",
         "zope.interface",
         "zope.schema",
         "zope.security",
@@ -51,6 +53,11 @@ setup(
         "plone.z3cform>=2.0.0",
         "z3c.form",
     ],
+    extras_require={
+        "test": [
+            "plone.testing",
+        ],
+    },
     entry_points="""
     # -*- Entry points: -*-
     """,
