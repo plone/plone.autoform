@@ -35,8 +35,8 @@ class TestParameterizedWidget(unittest.TestCase):
         from plone.autoform.widgets import ParameterizedWidget
         from z3c.form.interfaces import IFieldWidget
         from zope.component import provideAdapter
-        from zope.interface import Interface
         from zope.interface import implementer
+        from zope.interface import Interface
         from zope.schema import Field
 
         class DummyWidget:

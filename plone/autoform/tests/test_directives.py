@@ -77,9 +77,9 @@ class TestSchemaDirectives(unittest.TestCase):
         )
 
     def test_widget_parameterized(self):
-        from zope.interface import implementer
-        from z3c.form.interfaces import IWidget
         from plone.autoform.widgets import ParameterizedWidget
+        from z3c.form.interfaces import IWidget
+        from zope.interface import implementer
 
         @implementer(IWidget)
         class DummyWidget:
@@ -97,9 +97,9 @@ class TestSchemaDirectives(unittest.TestCase):
         self.assertEqual('bar', tv['foo'].params['foo'])
 
     def test_widget_parameterized_default_widget_factory(self):
-        from zope.interface import implementer
-        from z3c.form.interfaces import IWidget
         from plone.autoform.widgets import ParameterizedWidget
+        from z3c.form.interfaces import IWidget
+        from zope.interface import implementer
 
         @implementer(IWidget)
         class DummyWidget:

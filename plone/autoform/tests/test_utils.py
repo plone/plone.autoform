@@ -1,5 +1,5 @@
-from AccessControl.SecurityManagement import setSecurityManager
 from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.SecurityManagement import setSecurityManager
 from plone.autoform.interfaces import WRITE_PERMISSIONS_KEY
 from plone.autoform.utils import processFields
 from plone.supermodel.interfaces import FIELDSETS_KEY
