@@ -92,7 +92,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual([g.__name__ for g in form.groups], ["custom"])
 
     def test_fieldset_configuration(self):
-        """Test, if fieldsets can be orderd via fieldset configuration on a
+        """Test, if fieldsets can be ordered via fieldset configuration on a
         schema without fields. This schema should also not be included in form
         groups.
         """

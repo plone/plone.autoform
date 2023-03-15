@@ -8,7 +8,7 @@ from zope.interface import implementer
 
 @implementer(IWidgetsView)
 class WidgetsView(AutoFields, DisplayForm):
-    """Mix-in to allow widgets (in view mode) to be accesed from browser
+    """Mix-in to allow widgets (in view mode) to be accessed from browser
     views.
     """
 
