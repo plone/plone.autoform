@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from setuptools import find_packages
 from setuptools import setup
 
@@ -9,12 +8,12 @@ def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
-version = '2.0.1.dev0'
+version = "2.0.1.dev0"
 
-long_description = (read('README.rst') + '\n' + read('CHANGES.rst'))
+long_description = read("README.rst") + "\n" + read("CHANGES.rst")
 
 setup(
-    name='plone.autoform',
+    name="plone.autoform",
     version=version,
     description="Tools to construct z3c.form forms",
     long_description=long_description,
@@ -32,26 +31,33 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords='plone form z3c.form',
-    author='Martin Aspeli',
-    author_email='optilude@gmail.com',
-    url='http://github.com/plone/plone.autoform',
-    license='LGPL',
+    keywords="plone form z3c.form",
+    author="Martin Aspeli",
+    author_email="optilude@gmail.com",
+    url="http://github.com/plone/plone.autoform",
+    license="LGPL",
     packages=find_packages(),
-    namespace_packages=['plone'],
+    namespace_packages=["plone"],
     include_package_data=True,
     zip_safe=False,
+    python_requires=">=3.8",
     install_requires=[
-        'setuptools',
-        'six',
-        'zope.interface',
-        'zope.schema',
-        'zope.security',
-        'zope.dottedname',
-        'plone.supermodel>=1.3',
-        'plone.z3cform>=2.0.0',
-        'z3c.form',
+        "lxml",
+        "setuptools",
+        "zope.deprecation",
+        "zope.interface",
+        "zope.schema",
+        "zope.security",
+        "zope.dottedname",
+        "plone.supermodel>=1.3",
+        "plone.z3cform>=2.0.0",
+        "z3c.form",
     ],
+    extras_require={
+        "test": [
+            "plone.testing",
+        ],
+    },
     entry_points="""
     # -*- Entry points: -*-
     """,

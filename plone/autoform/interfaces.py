@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.supermodel.interfaces import IFieldset
 from z3c.form.interfaces import IDisplayForm
 from z3c.form.interfaces import IFieldsForm
@@ -11,26 +10,25 @@ import zope.schema
 
 
 # Schema interface tagged value keys
-MODES_KEY = u'plone.autoform.modes'
-OMITTED_KEY = u'plone.autoform.omitted'
-ORDER_KEY = u'plone.autoform.order'
-WIDGETS_KEY = u'plone.autoform.widgets'
+MODES_KEY = "plone.autoform.modes"
+OMITTED_KEY = "plone.autoform.omitted"
+ORDER_KEY = "plone.autoform.order"
+WIDGETS_KEY = "plone.autoform.widgets"
 
-READ_PERMISSIONS_KEY = u'plone.autoform.security.read-permissions'
-WRITE_PERMISSIONS_KEY = u'plone.autoform.security.write-permissions'
+READ_PERMISSIONS_KEY = "plone.autoform.security.read-permissions"
+WRITE_PERMISSIONS_KEY = "plone.autoform.security.write-permissions"
 
 # Supermodel namespace and prefix
 
-FORM_NAMESPACE = 'http://namespaces.plone.org/supermodel/form'
-FORM_PREFIX = 'form'
+FORM_NAMESPACE = "http://namespaces.plone.org/supermodel/form"
+FORM_PREFIX = "form"
 
-SECURITY_NAMESPACE = 'http://namespaces.plone.org/supermodel/security'
-SECURITY_PREFIX = 'security'
+SECURITY_NAMESPACE = "http://namespaces.plone.org/supermodel/security"
+SECURITY_PREFIX = "security"
 
 
 class IFormFieldProvider(Interface):
-    """Marker interface for schemata that provide form fields.
-    """
+    """Marker interface for schemata that provide form fields."""
 
 
 class IAutoExtensibleForm(Interface):
@@ -42,22 +40,15 @@ class IAutoExtensibleForm(Interface):
     """
 
     ignorePrefix = zope.schema.Bool(
-        title=u'Do not set a prefix for additional schemata',
-        default=False
+        title="Do not set a prefix for additional schemata", default=False
     )
 
-    schema = zope.schema.Object(
-        title=u'Schema providing form fields',
-        schema=IInterface
-    )
+    schema = zope.schema.Object(title="Schema providing form fields", schema=IInterface)
 
     additionalSchemata = zope.schema.Tuple(
-        title=u'Supplementary schemata providing additional form fields',
-        value_type=zope.schema.Object(
-            title=u'Schema interface',
-            schema=IInterface
-        ),
-        required=False
+        title="Supplementary schemata providing additional form fields",
+        value_type=zope.schema.Object(title="Schema interface", schema=IInterface),
+        required=False,
     )
 
 
@@ -66,10 +57,7 @@ class IAutoObjectSubForm(Interface):
     to also have its fields updated with form hints. See subform.txt
     """
 
-    schema = zope.schema.Object(
-        title=u'Schema providing form fields',
-        schema=IInterface
-    )
+    schema = zope.schema.Object(title="Schema providing form fields", schema=IInterface)
 
 
 class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
@@ -78,27 +66,17 @@ class IWidgetsView(IAutoExtensibleForm, IFieldsForm, IDisplayForm):
     """
 
     w = zope.schema.Dict(
-        title=u'Shortcut lookup for all widgets',
-        description=u'Contains all widgets, including those from groups '
-                    u'within this form',
-        key_type=zope.schema.ASCIILine(
-            title=u'Widget name, with prefix'
-        ),
-        value_type=zope.schema.Object(
-            title=u'Widget',
-            schema=IWidget
-        )
+        title="Shortcut lookup for all widgets",
+        description="Contains all widgets, including those from groups "
+        "within this form",
+        key_type=zope.schema.ASCIILine(title="Widget name, with prefix"),
+        value_type=zope.schema.Object(title="Widget", schema=IWidget),
     )
 
     fieldsets = zope.schema.Dict(
-        title=u'Lookup fieldset (group) by name',
-        key_type=zope.schema.ASCIILine(
-            title=u'Fieldset name'
-        ),
-        value_type=zope.schema.Object(
-            title=u'Fieldset',
-            schema=IFieldset
-        )
+        title="Lookup fieldset (group) by name",
+        key_type=zope.schema.ASCIILine(title="Fieldset name"),
+        value_type=zope.schema.Object(title="Fieldset", schema=IFieldset),
     )
 
 

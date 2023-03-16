@@ -1,61 +1,62 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    i18n_domain="plone.autoform">
+    i18n_domain="plone.autoform"
+    >
 
-    <include package="plone.z3cform" />
-    <include package="plone.supermodel" />
+  <include package="plone.z3cform" />
+  <include package="plone.supermodel" />
 
-    <utility
-        factory=".supermodel.FormSchema"
-        name="plone.autoform.form"
-        />
+  <utility
+      factory=".supermodel.FormSchema"
+      name="plone.autoform.form"
+      />
 
-    <utility
-        factory=".supermodel.SecuritySchema"
-        name="plone.autoform.security"
-        />
+  <utility
+      factory=".supermodel.SecuritySchema"
+      name="plone.autoform.security"
+      />
 
-    <adapter
-        factory=".directives.OmittedPlugin"
-        name="plone.autoform.omitted"
-        />
+  <adapter
+      factory=".directives.OmittedPlugin"
+      name="plone.autoform.omitted"
+      />
 
-    <adapter
-        factory=".directives.ModePlugin"
-        name="plone.autoform.mode"
-        />
+  <adapter
+      factory=".directives.ModePlugin"
+      name="plone.autoform.mode"
+      />
 
-    <adapter
-        factory=".directives.WidgetPlugin"
-        name="plone.autoform.widget"
-        />
+  <adapter
+      factory=".directives.WidgetPlugin"
+      name="plone.autoform.widget"
+      />
 
-    <adapter
-        factory=".directives.OrderPlugin"
-        name="plone.autoform.order"
-        />
+  <adapter
+      factory=".directives.OrderPlugin"
+      name="plone.autoform.order"
+      />
 
-    <adapter
-        factory=".directives.ReadPermissionsPlugin"
-        name="plone.autoform.read_permissions"
-        />
+  <adapter
+      factory=".directives.ReadPermissionsPlugin"
+      name="plone.autoform.read_permissions"
+      />
 
-    <adapter
-        factory=".directives.WritePermissionsPlugin"
-        name="plone.autoform.write_permissions"
-        />
+  <adapter
+      factory=".directives.WritePermissionsPlugin"
+      name="plone.autoform.write_permissions"
+      />
 
-    <!-- widget import/export -->
+  <!-- widget import/export -->
 
-    <utility
-        provides=".interfaces.IWidgetExportImportHandler"
-        component=".widgets.TextInputWidgetExportImportHandler"
-        name="z3c.form.browser.text.TextFieldWidget"
-        />
+  <utility
+      provides=".interfaces.IWidgetExportImportHandler"
+      name="z3c.form.browser.text.TextFieldWidget"
+      component=".widgets.TextInputWidgetExportImportHandler"
+      />
 
-    <utility
-        provides=".interfaces.IWidgetExportImportHandler"
-        component=".widgets.TextAreaWidgetExportImportHandler"
-        name="z3c.form.browser.textarea.TextAreaFieldWidget"
-        />
+  <utility
+      provides=".interfaces.IWidgetExportImportHandler"
+      name="z3c.form.browser.textarea.TextAreaFieldWidget"
+      component=".widgets.TextAreaWidgetExportImportHandler"
+      />
 </configure>

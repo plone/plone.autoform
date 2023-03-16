@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.autoform.base import AutoFields
 from plone.autoform.interfaces import IWidgetsView
 from plone.z3cform import z2
@@ -9,7 +8,7 @@ from zope.interface import implementer
 
 @implementer(IWidgetsView)
 class WidgetsView(AutoFields, DisplayForm):
-    """Mix-in to allow widgets (in view mode) to be accesed from browser
+    """Mix-in to allow widgets (in view mode) to be accessed from browser
     views.
     """
 
@@ -29,7 +28,7 @@ class WidgetsView(AutoFields, DisplayForm):
         self._update()
 
     def render(self):
-        if getattr(self, 'index', None) is not None:
+        if getattr(self, "index", None) is not None:
             return self.index()
         raise NotImplementedError("You must implement the 'render' method")
 
@@ -66,7 +65,7 @@ class WidgetsView(AutoFields, DisplayForm):
 
             groups.append(group)
 
-            group_name = getattr(group, '__name__', str(idx))
+            group_name = getattr(group, "__name__", str(idx))
             self.fieldsets[group_name] = group
 
         self.groups = tuple(groups)

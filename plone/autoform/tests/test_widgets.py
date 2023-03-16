@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
 from plone.testing.zca import UNIT_TESTING
 
 import unittest
 
 
 class TestParameterizedWidget(unittest.TestCase):
-
     layer = UNIT_TESTING
 
     def test_widget_instantiated_with_parameters(self):
@@ -16,8 +14,7 @@ class TestParameterizedWidget(unittest.TestCase):
         from zope.schema import Field
 
         @implementer(IWidget)
-        class DummyWidget(object):
-
+        class DummyWidget:
             def __init__(self, request):
                 self.request = request
 
@@ -27,21 +24,20 @@ class TestParameterizedWidget(unittest.TestCase):
 
         field = Field()
         request = object()
-        widget = ParameterizedWidget(DummyWidget, foo='bar')(field, request)
+        widget = ParameterizedWidget(DummyWidget, foo="bar")(field, request)
 
         self.assertTrue(isinstance(widget, DummyWidget))
-        self.assertEqual('bar', widget.foo)
+        self.assertEqual("bar", widget.foo)
 
     def test_default_widget_instantiated(self):
         from plone.autoform.widgets import ParameterizedWidget
         from z3c.form.interfaces import IFieldWidget
         from zope.component import provideAdapter
-        from zope.interface import Interface
         from zope.interface import implementer
+        from zope.interface import Interface
         from zope.schema import Field
 
-        class DummyWidget(object):
-
+        class DummyWidget:
             def __init__(self, request):
                 self.request = request
 
@@ -53,15 +49,15 @@ class TestParameterizedWidget(unittest.TestCase):
 
         field = Field()
         request = object()
-        widget = ParameterizedWidget(foo='bar')(field, request)
+        widget = ParameterizedWidget(foo="bar")(field, request)
 
         self.assertTrue(isinstance(widget, DummyWidget))
-        self.assertEqual('bar', widget.foo)
+        self.assertEqual("bar", widget.foo)
 
     def test_validates_for_field_widget(self):
         from plone.autoform.widgets import ParameterizedWidget
 
-        class NotAWidget(object):
+        class NotAWidget:
             pass
 
         try:
@@ -70,4 +66,4 @@ class TestParameterizedWidget(unittest.TestCase):
         except TypeError:
             pass
         else:
-            self.fail('Expected TypeError')
+            self.fail("Expected TypeError")

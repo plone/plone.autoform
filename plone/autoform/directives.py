@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.autoform.interfaces import MODES_KEY
 from plone.autoform.interfaces import OMITTED_KEY
 from plone.autoform.interfaces import ORDER_KEY
@@ -15,20 +14,16 @@ from z3c.form.interfaces import IWidget
 from zope.interface import Interface
 from zope.interface.interfaces import IInterface
 
-import six
-
 
 class omitted(MetadataListDirective):
-    """Directive used to omit one or more fields
-    """
+    """Directive used to omit one or more fields"""
+
     key = OMITTED_KEY
-    value = 'true'
+    value = "true"
 
     def factory(self, *args):
         if not args:
-            raise TypeError(
-                'The omitted directive expects at least one argument.'
-            )
+            raise TypeError("The omitted directive expects at least one argument.")
         form_interface = Interface
         if IInterface.providedBy(args[0]):
             form_interface = args[0]
@@ -37,13 +32,12 @@ class omitted(MetadataListDirective):
 
 
 class no_omit(omitted):
-    """Directive used to prevent one or more fields from being omitted
-    """
-    value = 'false'
+    """Directive used to prevent one or more fields from being omitted"""
+
+    value = "false"
 
 
 class OmittedPlugin(ListCheckerPlugin):
-
     key = OMITTED_KEY
 
     def fieldNames(self):
@@ -54,15 +48,13 @@ class OmittedPlugin(ListCheckerPlugin):
 
 
 class mode(MetadataListDirective):
-    """Directive used to set the mode of one or more fields
-    """
+    """Directive used to set the mode of one or more fields"""
+
     key = MODES_KEY
 
     def factory(self, *args, **kw):
         if len(args) > 1:
-            raise TypeError(
-                'The mode directive expects 0 or 1 non-keyword arguments.'
-            )
+            raise TypeError("The mode directive expects 0 or 1 non-keyword arguments.")
         form_interface = Interface
         if args:
             form_interface = args[0]
@@ -121,19 +113,16 @@ class widget(MetadataDictDirective):
 
         if field_name is None:  # Usage 3
             for field_name, widget in kw.items():
-                if not isinstance(widget, six.string_types):
-                    widget = '{0}.{1}'.format(
-                        widget.__module__,
-                        widget.__name__
-                    )
+                if not isinstance(widget, str):
+                    widget = f"{widget.__module__}.{widget.__name__}"
                 widgets[field_name] = widget
         else:
-            if widget_class is not None \
-               and not IFieldWidget.implementedBy(widget_class) \
-               and not IWidget.implementedBy(widget_class):
-                raise TypeError(
-                    'widget_class must implement IWidget or IFieldWidget'
-                )
+            if (
+                widget_class is not None
+                and not IFieldWidget.implementedBy(widget_class)
+                and not IWidget.implementedBy(widget_class)
+            ):
+                raise TypeError("widget_class must implement IWidget or IFieldWidget")
             widgets[field_name] = ParameterizedWidget(widget_class, **kw)
 
         return widgets
@@ -144,23 +133,26 @@ class WidgetPlugin(DictCheckerPlugin):
 
 
 class order_before(MetadataListDirective):
-    """Directive used to order one field before another
-    """
+    """Directive used to order one field before another"""
+
     key = ORDER_KEY
 
     def factory(self, **kw):
-        return [(field_name, 'before', relative_to)
-                for field_name, relative_to in kw.items()]
+        return [
+            (field_name, "before", relative_to)
+            for field_name, relative_to in kw.items()
+        ]
 
 
 class order_after(MetadataListDirective):
-    """Directive used to order one field after another
-    """
+    """Directive used to order one field after another"""
+
     key = ORDER_KEY
 
     def factory(self, **kw):
-        return [(field_name, 'after', relative_to)
-                for field_name, relative_to in kw.items()]
+        return [
+            (field_name, "after", relative_to) for field_name, relative_to in kw.items()
+        ]
 
 
 class OrderPlugin(ListCheckerPlugin):
@@ -174,8 +166,8 @@ class OrderPlugin(ListCheckerPlugin):
 
 
 class read_permission(MetadataDictDirective):
-    """Directive used to set a field read permission
-    """
+    """Directive used to set a field read permission"""
+
     key = READ_PERMISSIONS_KEY
 
     def factory(self, **kw):
@@ -183,8 +175,8 @@ class read_permission(MetadataDictDirective):
 
 
 class write_permission(read_permission):
-    """Directive used to set a field write permission
-    """
+    """Directive used to set a field write permission"""
+
     key = WRITE_PERMISSIONS_KEY
 
 
