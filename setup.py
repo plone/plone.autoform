@@ -1,23 +1,22 @@
+from pathlib import Path
 from setuptools import find_packages
 from setuptools import setup
-
-import os
-
-
-def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
 
 version = "2.0.2.dev0"
 
-long_description = read("README.rst") + "\n" + read("CHANGES.rst")
+long_description = (
+    f"{Path('README.rst').read_text()}\n" f"{Path('CHANGES.rst').read_text()}"
+)
 
 setup(
     name="plone.autoform",
     version=version,
     description="Tools to construct z3c.form forms",
     long_description=long_description,
-    # Get more strings from https://pypi.org/classifiers/
+    long_description_content_type="text/x-rst",
+    # Get more strings from
+    # https://pypi.org/classifiers/
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
