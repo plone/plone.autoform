@@ -93,7 +93,7 @@ Omitting fields
 ~~~~~~~~~~~~~~~
 
 A field can be omitted entirely from all forms, or from some forms,
-using the ``omitted`` and ``no_omit`` diretives. In this example,
+using the ``omitted`` and ``no_omit`` directives. In this example,
 the ``dummy`` field is omitted from all forms, and the ``edit_only``
 field is omitted from all forms except those that provide the
 IEditForm interface::
