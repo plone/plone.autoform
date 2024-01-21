@@ -43,14 +43,10 @@ setup(
     install_requires=[
         "lxml",
         "setuptools",
-        "zope.deprecation",
-        "zope.interface",
-        "zope.schema",
-        "zope.security",
-        "zope.dottedname",
         "plone.supermodel>=1.3",
         "plone.z3cform>=2.0.0",
         "z3c.form",
+        "Zope",
     ],
     extras_require={
         "test": [
