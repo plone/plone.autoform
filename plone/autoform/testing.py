@@ -1,18 +1,18 @@
-from plone.testing import z2
 from plone.testing import zca
+from plone.testing import zope
 
 import doctest
 import plone.autoform
 
 
 AUTOFORM_FIXTURE = zca.ZCMLSandbox(
-    bases=(z2.STARTUP,),
+    bases=(zope.STARTUP,),
     filename="configure.zcml",
     package=plone.autoform,
     name="plone.autoform:Fixture",
 )
 
-AUTOFORM_INTEGRATION_TESTING = z2.IntegrationTesting(
+AUTOFORM_INTEGRATION_TESTING = zope.IntegrationTesting(
     bases=(AUTOFORM_FIXTURE,), name="plone.autoform:Integration"
 )
 
