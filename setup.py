@@ -37,7 +37,6 @@ setup(
     python_requires=">=3.10",
     install_requires=[
         "lxml",
-        "setuptools",
         "plone.supermodel>=1.3",
         "plone.z3cform>=2.0.0",
         "z3c.form",
