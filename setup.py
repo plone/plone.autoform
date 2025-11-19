@@ -1,9 +1,8 @@
 from pathlib import Path
-from setuptools import find_packages
 from setuptools import setup
 
 
-version = "2.0.5.dev0"
+version = "3.0.0.dev0"
 
 long_description = (
     f"{Path('README.rst').read_text()}\n" f"{Path('CHANGES.rst').read_text()}"
@@ -20,12 +19,10 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
+        "Framework :: Plone :: 6.2",
         "Framework :: Plone :: Core",
-        "Framework :: Plone :: 6.0",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
@@ -35,15 +32,11 @@ setup(
     author_email="optilude@gmail.com",
     url="http://github.com/plone/plone.autoform",
     license="LGPL",
-    packages=find_packages("src"),
-    namespace_packages=["plone"],
-    package_dir={"": "src"},
     include_package_data=True,
     zip_safe=False,
-    python_requires=">=3.8",
+    python_requires=">=3.10",
     install_requires=[
         "lxml",
-        "setuptools",
         "plone.supermodel>=1.3",
         "plone.z3cform>=2.0.0",
         "z3c.form",
