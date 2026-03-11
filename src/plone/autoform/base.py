@@ -11,7 +11,6 @@ from z3c.form.util import expandPrefix
 
 import logging
 
-
 logger = logging.getLogger(__name__)
 _marker = object()
 

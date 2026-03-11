@@ -44,7 +44,7 @@ class FormSchema:
         values = values.split(" ")
         for value in values:
             if ":" in value:
-                (interface_dotted_name, value) = value.split(":")
+                interface_dotted_name, value = value.split(":")
                 interface = resolveDottedName(interface_dotted_name)
                 if not isinstance(interface, InterfaceClass):
                     raise ValueError(f"{interface_dotted_name} not an Interface.")
