@@ -5,7 +5,6 @@ from plone.testing.zca import UNIT_TESTING
 import doctest
 import unittest
 
-
 test_files = [
     "../autoform.rst",
     "subform.txt",

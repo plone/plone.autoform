@@ -4,7 +4,6 @@ from plone.testing import zope
 import doctest
 import plone.autoform
 
-
 AUTOFORM_FIXTURE = zca.ZCMLSandbox(
     bases=(zope.STARTUP,),
     filename="configure.zcml",
