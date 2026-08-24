@@ -1,4 +1,5 @@
 from AccessControl import getSecurityManager
+from logging import getLogger
 from plone.autoform.interfaces import IParameterizedWidget
 from plone.autoform.interfaces import MODES_KEY
 from plone.autoform.interfaces import OMITTED_KEY
@@ -25,6 +26,7 @@ from zope.security.interfaces import IPermission
 
 
 _dottedCache = {}
+logger = getLogger(__name__)
 
 
 def resolveDottedName(dottedName):
@@ -209,7 +211,17 @@ def _process_permissions(schema, form, all_fields):
         if permission_name not in permission_cache:
             permission = queryUtility(IPermission, name=permission_name)
             if permission is None:
-                permission_cache[permission_name] = True
+                logger.warning(
+                    (
+                        "The permission %r was not found, "
+                        "forbidding access to field %r. "
+                        "Be sure to specify a properly registered permission id, "
+                        "e.g. zope2.View"
+                    ),
+                    permission_name,
+                    field_name,
+                )
+                permission_cache[permission_name] = False
             else:
                 permission_cache[permission_name] = bool(
                     security_manager.checkPermission(permission.title, form.context)
