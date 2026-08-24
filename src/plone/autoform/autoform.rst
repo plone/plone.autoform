@@ -255,7 +255,7 @@ Field permissions can be set like this::
     ...     {'five': u'dummy.PermissionOne', 'six': u'five.ManageSite'}
     ... )
 
-Note that if a permission is not found, the field will be allowed.
+Note that if a permission is not found, the field will be disallowed.
 
 Finally, fieldsets are configured like this::
 
@@ -280,7 +280,6 @@ The results of all of this can be seen below::
      'two',
      'ISupplementarySchema.two',
      'one',
-     'five',
      'IOtherSchema.six',
      'IOtherSchema.five']
 
