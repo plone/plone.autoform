@@ -2,7 +2,6 @@ from pathlib import Path
 from setuptools import find_packages
 from setuptools import setup
 
-
 version = "2.0.5.dev0"
 
 long_description = (
@@ -22,12 +21,15 @@ setup(
         "Framework :: Plone",
         "Framework :: Plone :: Core",
         "Framework :: Plone :: 6.0",
+        "Framework :: Plone :: 6.1",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords="plone form z3c.form",

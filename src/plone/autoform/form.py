@@ -4,7 +4,6 @@ from plone.autoform.interfaces import IAutoObjectSubForm
 from plone.z3cform.fieldsets.extensible import ExtensibleForm
 from zope.interface import implementer
 
-
 _marker = object()
 
 

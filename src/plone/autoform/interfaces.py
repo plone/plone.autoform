@@ -8,7 +8,6 @@ from zope.interface.interfaces import IInterface
 
 import zope.schema
 
-
 # Schema interface tagged value keys
 MODES_KEY = "plone.autoform.modes"
 OMITTED_KEY = "plone.autoform.omitted"
