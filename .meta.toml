@@ -5,5 +5,15 @@
 template = "default"
 commit-id = "2.11.2.dev0"
 
+[pyproject]
+dependencies_ignores = "['setuptools']"
+
 [tox]
 test_matrix = {"6.1" = ["*"], "6.0" = ["*"]}
+envlist_lines = """
+# Add envs to prevent python-check-versions to complain,
+# which would force us to update requires_python,
+# which I don't want to do in a bugfix release.
+# But be aware that with the default constraints py38-plone60 will fail installation.
+    py38-plone60
+"""
