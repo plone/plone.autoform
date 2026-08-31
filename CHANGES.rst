@@ -8,6 +8,16 @@ Changelog
 
 .. towncrier release notes start
 
+2.0.5 (2026-08-31)
+------------------
+
+Bug fixes:
+
+
+- Secure a field when a wrong permission is specified.
+  @ale-rt (#92)
+
+
 2.0.4 (2025-09-11)
 ------------------
 
