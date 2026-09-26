@@ -1,0 +1,2 @@
+Preserve custom Group subclasses when updating fields from schemata, instead of always replacing them with a plain group built through GroupFactory.
+@afonsojanu

@@ -5,6 +5,7 @@ from plone.autoform.utils import processFields
 from plone.supermodel.interfaces import DEFAULT_ORDER
 from plone.supermodel.utils import mergedTaggedValueList
 from plone.z3cform.fieldsets.group import GroupFactory
+from plone.z3cform.fieldsets.interfaces import IDescriptiveGroup
 from plone.z3cform.fieldsets.utils import move
 from z3c.form import field
 from z3c.form.util import expandPrefix
@@ -45,6 +46,13 @@ class AutoFields:
         groups = []
 
         for group in self.groups:
+            if IDescriptiveGroup.providedBy(group):
+                # This is already a fully-fledged group (for example an
+                # instance of a custom Group subclass), so leave it alone.
+                # Wrapping it in a generic GroupFactory would discard the
+                # custom class and any behaviour it adds.
+                groups.append(group)
+                continue
             group_name = getattr(group, "__name__", group.label)
             fieldset_group = GroupFactory(
                 group_name,

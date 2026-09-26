@@ -133,3 +133,33 @@ class TestBase(unittest.TestCase):
         autofields.request = {}
         autofields.updateFieldsFromSchemata()
         self.assertEqual(autofields.groups, [])
+
+    def test_updateFieldsFromSchemata_preserves_custom_group_class(self):
+        # A group that already provides IDescriptiveGroup (for instance an
+        # instance of a custom Group subclass with its own behaviour) must
+        # not be replaced by a generic GroupFactory, or its class and any
+        # extra attributes/methods would be lost.
+        from plone.autoform.base import AutoFields
+        from plone.z3cform.fieldsets.group import Group
+        from z3c.form import field
+
+        class CustomGroup(Group):
+            label = "Custom"
+
+            def custom_method(self):
+                return "custom"
+
+        custom_group = CustomGroup(None, None, None)
+        custom_group.__name__ = "custom"
+        custom_group.fields = field.Fields()
+        custom_group.description = "a custom group"
+
+        autofields = AutoFields()
+        autofields.request = {}
+        autofields.groups = [custom_group]
+        autofields.updateFieldsFromSchemata()
+
+        self.assertEqual(len(autofields.groups), 1)
+        self.assertIs(autofields.groups[0], custom_group)
+        self.assertIsInstance(autofields.groups[0], CustomGroup)
+        self.assertEqual(autofields.groups[0].custom_method(), "custom")
